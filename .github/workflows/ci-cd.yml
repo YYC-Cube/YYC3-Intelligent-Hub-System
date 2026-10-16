@@ -17,7 +17,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  NODE_VERSION: "20.x"
+  # Node 22：dev 链 undici@8（jsdom→vitest 测试栈）engines 要求 >=22.19，Node 20 下模块加载即崩
+  NODE_VERSION: "22.x"
   PNPM_VERSION: "10.x"
 
 jobs:
