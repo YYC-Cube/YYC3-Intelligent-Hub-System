@@ -1,6 +1,6 @@
 # YYC³ Intelligent Hub System · 安全响应头（M-11）
 #
-# 适用平台：Cloudflare Pages / Netlify / Vercel(自定义头) 等支持 `_headers`
+# 适用平台：Cloudflare Pages / Netlify 等支持 `_headers`
 # 约定的静态托管层。当前主部署目标 GitHub Pages 不支持自定义响应头，
 # 浏览器会将其作为普通静态文件忽略（无害）；本站已在 app/layout.tsx 以
 # <meta name="referrer"> 提供等价的 Referrer-Policy 声明。

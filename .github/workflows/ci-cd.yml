@@ -24,6 +24,7 @@ jobs:
   build:
     name: Build & Validate
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -42,11 +43,18 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: ESLint gate
+        run: pnpm lint
+
       - name: TypeScript type check
         run: npx tsc --noEmit
 
       - name: Vitest test gate
         run: pnpm test
+
+      # 生产依赖安全门禁：高危漏洞即失败（dev 链路豁免项在 pnpm-workspace.yaml 管理）
+      - name: Production dependency audit
+        run: pnpm audit --prod --audit-level=high
 
       - name: Build static export
         run: pnpm build

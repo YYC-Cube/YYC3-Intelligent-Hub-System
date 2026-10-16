@@ -1,10 +1,10 @@
-import tsParser from "@typescript-eslint/parser"
 import tsPlugin from "@typescript-eslint/eslint-plugin"
+import tsParser from "@typescript-eslint/parser"
+import prettierConfig from "eslint-config-prettier"
+import importPlugin from "eslint-plugin-import"
+import jsxA11y from "eslint-plugin-jsx-a11y"
 import reactPlugin from "eslint-plugin-react"
 import reactHooks from "eslint-plugin-react-hooks"
-import jsxA11y from "eslint-plugin-jsx-a11y"
-import importPlugin from "eslint-plugin-import"
-import prettierConfig from "eslint-config-prettier"
 
 /**
  * ESLint 扁平配置。
@@ -23,8 +23,6 @@ const eslintConfig = [
       "out-trash-*/**",
       "dist/**",
       "coverage/**",
-      "AI/**",
-      "AI高级功能/**",
       "mock-api/**",
       "next-env.d.ts",
     ],
@@ -92,7 +90,7 @@ const eslintConfig = [
   {
     // 构建配置与运维脚本运行于 CommonJS 宿主环境，允许 require 式导入，
     // 并要求保持 console 输出以便 CI 观测。
-    files: ["tailwind.config.ts", "postcss.config.*", "jest.config.ts", "next.config.*", "scripts/**/*.{js,cjs,mjs}"],
+    files: ["tailwind.config.ts", "postcss.config.*", "next.config.*", "scripts/**/*.{js,cjs,mjs}"],
     rules: {
       "@typescript-eslint/no-require-imports": "off",
       "no-console": "off",

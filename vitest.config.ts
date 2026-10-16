@@ -1,6 +1,6 @@
-import { defineConfig } from "vitest/config"
 import react from "@vitejs/plugin-react"
 import { fileURLToPath } from "node:url"
+import { defineConfig } from "vitest/config"
 
 /**
  * 阶段2 测试体系（vitest + @testing-library/react）。
@@ -17,6 +17,9 @@ export default defineConfig({
   },
   test: {
     environment: "jsdom",
+    // vmThreads：jsdom 环境按 worker 复用（此前 28 文件各自新建 jsdom 占总耗时 52%），
+    // 默认 isolate 语义保留，单文件间隔离不受影响。
+    pool: "vmThreads",
     globals: true,
     setupFiles: ["./vitest.setup.tsx"],
     include: ["tests/**/*.{test,spec}.{ts,tsx}"],
