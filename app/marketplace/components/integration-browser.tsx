@@ -2,19 +2,26 @@
 
 import type React from "react"
 
-import { useMemo, useState } from "react"
-import Link from "next/link"
 import { motion } from "framer-motion"
 import { Search, SlidersHorizontal, Star } from "lucide-react"
+import Link from "next/link"
+import { useMemo, useState } from "react"
 
-import { Navbar } from "@/components/ui/navbar"
-import { Footer } from "@/components/ui/footer"
+import { integrations as allIntegrations, categories, type Integration } from "@/app/data/integrations"
 import { Button } from "@/components/ui/button"
+import { Footer } from "@/components/ui/footer"
 import { Input } from "@/components/ui/input"
+import { Navbar } from "@/components/ui/navbar"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { categories, integrations as allIntegrations, type Integration } from "@/app/data/integrations"
 
-import { IntegrationCard } from "./integration-card"
+// H-1 收敛：统一卡片（编号+分类标签+简介+评分+收藏），与 /integrations 共用
+import { IntegrationCard } from "@/app/components/integrations/integration-card"
+import { useI18n } from "@/app/hooks/use-i18n"
+import { dataCat } from "@/lib/yyc3/i18n/data"
+// H-3：窗口化分页逻辑抽取为共享纯函数（与搜索结果页共用）
+import { buildPageWindow } from "@/app/utils/pagination"
+// M-8：「相关性」排序的加权评分共享实现（与搜索结果页共用）
+import { relevanceScore } from "@/app/utils/search-relevance"
 
 /** 排序方式的可选值 */
 type SortKey = "relevance" | "rating" | "installs" | "newest" | "price-low" | "price-high"
@@ -36,29 +43,6 @@ export interface IntegrationBrowserProps {
 }
 
 /**
- * 计算分页页码窗口。
- *
- * 当总页数较多时，仅返回当前页附近的连续页码，避免一次性渲染上百个按钮。
- *
- * @param currentPage - 当前页码（从 1 开始）
- * @param totalPages - 总页数
- * @param windowSize - 窗口内展示的页码数量，默认 5
- * @returns 需要渲染的页码数组
- */
-function buildPageWindow(currentPage: number, totalPages: number, windowSize = 5): number[] {
-  if (totalPages <= windowSize) {
-    return Array.from({ length: totalPages }, (_, i) => i + 1)
-  }
-
-  const half = Math.floor(windowSize / 2)
-  let start = Math.max(1, currentPage - half)
-  const end = Math.min(totalPages, start + windowSize - 1)
-  start = Math.max(1, end - windowSize + 1)
-
-  return Array.from({ length: end - start + 1 }, (_, i) => start + i)
-}
-
-/**
  * 集成应用分页浏览器。
  *
  * 面向应用市场提供统一的分页列表能力：支持关键字检索、分类筛选、多维排序与
@@ -74,8 +58,9 @@ export function IntegrationBrowser({
   source = allIntegrations,
   itemsPerPage = 12,
   showCategoryFilter = false,
-  emptyHint = "换个关键字或筛选条件试试吧",
+  emptyHint,
 }: IntegrationBrowserProps): React.JSX.Element {
+  const { t } = useI18n()
   const [keyword, setKeyword] = useState("")
   const [category, setCategory] = useState("全部分类")
   const [sortBy, setSortBy] = useState<SortKey>("relevance")
@@ -123,6 +108,10 @@ export function IntegrationBrowser({
         })
         break
       default:
+        // M-8：「相关性」排序落地——有关键词时按加权相关度（name > tags > description）排序
+        if (lowered) {
+          sorted.sort((a, b) => relevanceScore(lowered, b) - relevanceScore(lowered, a))
+        }
         break
     }
 
@@ -146,9 +135,9 @@ export function IntegrationBrowser({
       <Navbar />
 
       <main className="flex-1 container mx-auto px-4 py-8">
-        <nav aria-label="面包屑" className="flex items-center mb-6 text-sm">
+        <nav aria-label={t("marketplace.面包屑")} className="flex items-center mb-6 text-sm">
           <Link href="/marketplace" className="text-blue-600 hover:underline">
-            应用市场
+            {t("marketplace.应用市场")}
           </Link>
           <span className="text-gray-400 mx-2">/</span>
           <span className="text-gray-600">{title}</span>
@@ -162,10 +151,10 @@ export function IntegrationBrowser({
             <div className="flex items-center gap-2 rounded-lg bg-amber-50 px-3 py-2">
               <Star className="h-4 w-4 text-amber-500" aria-hidden="true" />
               <span className="text-sm text-amber-900">
-                平均评分 <strong>{averageRating.toFixed(1)}</strong>
+                {t("marketplace.平均评分")} <strong>{averageRating.toFixed(1)}</strong>
               </span>
             </div>
-            <span className="text-sm text-gray-500">共 {visible.length} 个集成应用</span>
+            <span className="text-sm text-gray-500">{t("marketplace.共 {count} 个集成应用", { count: String(visible.length) })}</span>
           </div>
         </div>
 
@@ -181,8 +170,8 @@ export function IntegrationBrowser({
                 setKeyword(event.target.value)
                 resetPage()
               }}
-              placeholder="搜索应用名称、简介、开发者或标签"
-              aria-label="搜索集成应用"
+              placeholder={t("marketplace.搜索应用名称、简介、开发者或标签")}
+              aria-label={t("marketplace.搜索集成应用")}
               className="pl-9"
             />
           </div>
@@ -195,13 +184,13 @@ export function IntegrationBrowser({
                 resetPage()
               }}
             >
-              <SelectTrigger className="w-full md:w-[180px]" aria-label="选择分类">
-                <SelectValue placeholder="选择分类" />
+              <SelectTrigger className="w-full md:w-[180px]" aria-label={t("marketplace.选择分类")}>
+                <SelectValue placeholder={t("marketplace.选择分类")} />
               </SelectTrigger>
               <SelectContent>
                 {categories.map((item) => (
                   <SelectItem key={item} value={item}>
-                    {item}
+                    {dataCat(item)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -217,16 +206,16 @@ export function IntegrationBrowser({
                 resetPage()
               }}
             >
-              <SelectTrigger className="w-full md:w-[180px]" aria-label="排序方式">
-                <SelectValue placeholder="排序方式" />
+              <SelectTrigger className="w-full md:w-[180px]" aria-label={t("marketplace.排序方式")}>
+                <SelectValue placeholder={t("marketplace.排序方式")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="relevance">相关性</SelectItem>
-                <SelectItem value="rating">评分</SelectItem>
-                <SelectItem value="installs">安装量</SelectItem>
-                <SelectItem value="newest">最新更新</SelectItem>
-                <SelectItem value="price-low">价格 (低到高)</SelectItem>
-                <SelectItem value="price-high">价格 (高到低)</SelectItem>
+                <SelectItem value="relevance">{t("marketplace.相关性")}</SelectItem>
+                <SelectItem value="rating">{t("marketplace.评分")}</SelectItem>
+                <SelectItem value="installs">{t("marketplace.安装量")}</SelectItem>
+                <SelectItem value="newest">{t("marketplace.最新更新")}</SelectItem>
+                <SelectItem value="price-low">{t("marketplace.价格 (低到高)")}</SelectItem>
+                <SelectItem value="price-high">{t("marketplace.价格 (高到低)")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -234,13 +223,13 @@ export function IntegrationBrowser({
 
         {visible.length === 0 ? (
           <div className="text-center py-16">
-            <div className="text-5xl mb-4" role="img" aria-label="空结果">
+            <div className="text-5xl mb-4" role="img" aria-label={t("marketplace.空结果")}>
               🔍
             </div>
-            <h2 className="text-2xl font-bold mb-2">未找到匹配的集成应用</h2>
-            <p className="text-gray-500 mb-6">{emptyHint}</p>
+            <h2 className="text-2xl font-bold mb-2">{t("marketplace.未找到匹配的集成应用")}</h2>
+            <p className="text-gray-500 mb-6">{emptyHint ?? t("marketplace.换个关键字或筛选条件试试吧")}</p>
             <Button asChild>
-              <Link href="/marketplace">返回应用市场</Link>
+              <Link href="/marketplace">{t("marketplace.返回应用市场")}</Link>
             </Button>
           </div>
         ) : (
@@ -259,7 +248,7 @@ export function IntegrationBrowser({
             </motion.ul>
 
             {totalPages > 1 ? (
-              <nav aria-label="分页导航" className="flex justify-center mt-8">
+              <nav aria-label={t("marketplace.分页导航")} className="flex justify-center mt-8">
                 <div className="flex items-center gap-2">
                   <Button
                     variant="outline"
@@ -267,7 +256,7 @@ export function IntegrationBrowser({
                     onClick={() => setCurrentPage(Math.max(safePage - 1, 1))}
                     disabled={safePage === 1}
                   >
-                    上一页
+                    {t("marketplace.上一页")}
                   </Button>
 
                   {pageWindow[0] > 1 ? (
@@ -308,7 +297,7 @@ export function IntegrationBrowser({
                     onClick={() => setCurrentPage(Math.min(safePage + 1, totalPages))}
                     disabled={safePage === totalPages}
                   >
-                    下一页
+                    {t("marketplace.下一页")}
                   </Button>
                 </div>
               </nav>

@@ -5,8 +5,8 @@ import { fileURLToPath } from "node:url"
 /**
  * 阶段2 测试体系（vitest + @testing-library/react）。
  *
- * 与既有 jest 配置并存：vitest 仅接管 `tests/**`，jest 继续负责 `__tests__/**`，
- * 两者互不干扰（见 jest.config.ts 的 testPathIgnorePatterns）。
+ * M-1 迁移后为全仓唯一测试运行器：接管 `tests/**` 全部单测，
+ * 既有 jest 双轨已于 M-1 收敛移除（__tests__/、jest.config.ts、jest.setup.ts）。
  */
 export default defineConfig({
   plugins: [react()],

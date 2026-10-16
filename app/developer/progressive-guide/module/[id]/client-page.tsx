@@ -10,6 +10,8 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
+import { useI18n } from "@/app/hooks/use-i18n"
+import { tc } from "@/lib/yyc3/i18n/data"
 
 // 模拟模块数据
 const moduleData = {
@@ -354,6 +356,7 @@ const stepTypeIcons = {
 }
 
 export default function ModuleDetailClient() {
+  const { t } = useI18n()
   const params = useParams()
   const moduleId = params.id as string
   const [module, setModule] = useState(moduleData)
@@ -418,17 +421,17 @@ export default function ModuleDetailClient() {
         <div className="container mx-auto max-w-6xl px-4 py-4">
           <div className="flex items-center text-sm">
             <Link href="/developer/progressive-guide" className="text-gray-500 hover:text-gray-900">
-              递进式开发指南
+              {t("developer.递进式开发指南")}
             </Link>
             <ChevronRight className="h-4 w-4 mx-2 text-gray-400" />
             <Link
               href={`/developer/progressive-guide?path=${module.pathId}`}
               className="text-gray-500 hover:text-gray-900"
             >
-              {module.pathTitle}
+              {tc("developer", module.pathTitle)}
             </Link>
             <ChevronRight className="h-4 w-4 mx-2 text-gray-400" />
-            <span className="font-medium">{module.title}</span>
+            <span className="font-medium">{tc("developer", module.title)}</span>
           </div>
         </div>
       </div>
@@ -437,21 +440,21 @@ export default function ModuleDetailClient() {
         {/* 模块标题和进度 */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-3xl font-bold">{module.title}</h1>
+            <h1 className="text-3xl font-bold">{tc("developer", module.title)}</h1>
             <Badge variant="outline" className="text-base px-3 py-1">
-              {module.pathTitle}
+              {tc("developer", module.pathTitle)}
             </Badge>
           </div>
-          <p className="text-xl text-gray-600 mb-4">{module.description}</p>
+          <p className="text-xl text-gray-600 mb-4">{tc("developer", module.description)}</p>
 
           <div className="flex items-center text-sm text-gray-500 mb-4">
             <Clock className="h-4 w-4 mr-1" />
-            <span>总时长: {module.duration} 分钟</span>
+            <span>{t("developer.总时长: {duration} 分钟", { duration: String(module.duration) })}</span>
           </div>
 
           <div className="bg-white p-4 rounded-lg border mb-4">
             <div className="flex justify-between mb-2">
-              <span className="font-medium">模块进度</span>
+              <span className="font-medium">{t("developer.模块进度")}</span>
               <span>{progress}%</span>
             </div>
             <Progress value={progress} className="h-2" />
@@ -463,7 +466,7 @@ export default function ModuleDetailClient() {
           {/* 左侧：步骤列表 */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-lg border p-4 sticky top-4">
-              <h2 className="font-medium mb-4">学习步骤</h2>
+              <h2 className="font-medium mb-4">{t("developer.学习步骤")}</h2>
               <div className="space-y-2">
                 {module.steps.map((step, index) => {
                   const StepIcon = stepTypeIcons[step.type as keyof typeof stepTypeIcons] || FileText
@@ -484,12 +487,14 @@ export default function ModuleDetailClient() {
                         {step.completed ? <CheckCircle className="h-4 w-4" /> : index + 1}
                       </div>
                       <div>
-                        <p className={`font-medium ${step.completed ? "text-green-600" : ""}`}>{step.title}</p>
+                        <p className={`font-medium ${step.completed ? "text-green-600" : ""}`}>
+                          {tc("developer", step.title)}
+                        </p>
                         <div className="flex items-center text-xs text-gray-500">
                           <StepIcon className="h-3 w-3 mr-1" />
-                          <span>{step.type}</span>
+                          <span>{tc("developer", step.type)}</span>
                           <span className="mx-1">•</span>
-                          <span>{step.duration} 分钟</span>
+                          <span>{t("developer.{duration} 分钟", { duration: String(step.duration) })}</span>
                         </div>
                       </div>
                     </button>
@@ -508,12 +513,12 @@ export default function ModuleDetailClient() {
                     <StepIcon className="h-5 w-5 text-blue-600" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold">{activeStep.title}</h2>
+                    <h2 className="text-xl font-bold">{tc("developer", activeStep.title)}</h2>
                     <div className="flex items-center text-sm text-gray-500">
                       <Badge variant="outline" className="mr-2">
-                        {activeStep.type}
+                        {tc("developer", activeStep.type)}
                       </Badge>
-                      <span>{activeStep.duration} 分钟</span>
+                      <span>{t("developer.{duration} 分钟", { duration: String(activeStep.duration) })}</span>
                     </div>
                   </div>
                 </div>
@@ -536,13 +541,13 @@ export default function ModuleDetailClient() {
               {getPrevStep() ? (
                 <Button variant="outline" onClick={() => handleStepChange(getPrevStep()!.id)}>
                   <ArrowLeft className="h-4 w-4 mr-2" />
-                  {getPrevStep()?.title}
+                  {tc("developer", getPrevStep()!.title)}
                 </Button>
               ) : (
                 <Button variant="outline" asChild>
                   <Link href={`/developer/progressive-guide/module/${module.prevModule.id}`}>
                     <ArrowLeft className="h-4 w-4 mr-2" />
-                    {module.prevModule.title}
+                    {tc("developer", module.prevModule.title)}
                   </Link>
                 </Button>
               )}
@@ -550,20 +555,20 @@ export default function ModuleDetailClient() {
               {activeStep.completed ? (
                 getNextStep() ? (
                   <Button onClick={() => handleStepChange(getNextStep()!.id)}>
-                    {getNextStep()?.title}
+                    {tc("developer", getNextStep()!.title)}
                     <ArrowRight className="h-4 w-4 ml-2" />
                   </Button>
                 ) : (
                   <Button asChild>
                     <Link href={`/developer/progressive-guide/module/${module.nextModule.id}`}>
-                      {module.nextModule.title}
+                      {tc("developer", module.nextModule.title)}
                       <ArrowRight className="h-4 w-4 ml-2" />
                     </Link>
                   </Button>
                 )
               ) : (
                 <Button onClick={handleCompleteStep}>
-                  完成本步骤
+                  {t("developer.完成本步骤")}
                   <CheckCircle className="h-4 w-4 ml-2" />
                 </Button>
               )}

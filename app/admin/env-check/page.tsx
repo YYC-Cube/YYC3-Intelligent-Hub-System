@@ -8,6 +8,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { InfoIcon, AlertTriangleIcon, CheckCircleIcon, CopyIcon, RefreshCwIcon, PlusIcon } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { useI18n } from "@/app/hooks/use-i18n"
+import { tc } from "@/lib/yyc3/i18n"
 import {
   Dialog,
   DialogContent,
@@ -85,6 +87,7 @@ export default function EnvironmentVariablesCheck() {
   const [newEnvKey, setNewEnvKey] = useState("")
   const [newEnvValue, setNewEnvValue] = useState("")
   const { toast } = useToast()
+  const { t } = useI18n()
 
   // 检测结果与自定义变量合并后即为最终展示列表。
   const envVariables = useMemo(
@@ -99,16 +102,16 @@ export default function EnvironmentVariablesCheck() {
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text)
     toast({
-      title: "已复制到剪贴板",
-      description: "环境变量信息已成功复制",
+      title: t("admin.已复制到剪贴板"),
+      description: t("admin.环境变量信息已成功复制"),
     })
   }
 
   const addCustomVariable = () => {
     if (!newEnvKey || !newEnvValue) {
       toast({
-        title: "输入错误",
-        description: "请输入环境变量的键和值",
+        title: t("admin.输入错误"),
+        description: t("admin.请输入环境变量的键和值"),
         variant: "destructive",
       })
       return
@@ -130,8 +133,8 @@ export default function EnvironmentVariablesCheck() {
     setNewEnvValue("")
 
     toast({
-      title: "添加成功",
-      description: "自定义环境变量已添加到列表（仅供参考）",
+      title: t("admin.添加成功"),
+      description: t("admin.自定义环境变量已添加到列表（仅供参考）"),
     })
   }
 
@@ -153,29 +156,29 @@ export default function EnvironmentVariablesCheck() {
       case "public":
         return (
           <Badge variant="outline" className="bg-sky-100 text-sky-800 border-sky-200">
-            公共
+            {t("admin.公共")}
           </Badge>
         )
       case "server":
         return (
           <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-200">
-            服务端
+            {t("admin.服务端")}
           </Badge>
         )
       case "missing":
         return (
           <Badge variant="outline" className="bg-red-100 text-red-800 border-red-200">
-            缺失
+            {t("admin.缺失")}
           </Badge>
         )
       case "custom":
         return (
           <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-200">
-            自定义
+            {t("admin.自定义")}
           </Badge>
         )
       default:
-        return <Badge variant="outline">未知</Badge>
+        return <Badge variant="outline">{t("admin.未知")}</Badge>
     }
   }
 
@@ -185,8 +188,8 @@ export default function EnvironmentVariablesCheck() {
         <CardHeader className="bg-gradient-to-r from-sky-600 to-blue-700 text-white">
           <div className="flex justify-between items-center">
             <div>
-              <CardTitle className="text-2xl">环境变量检查工具</CardTitle>
-              <CardDescription className="text-sky-100 mt-2">查看和管理当前项目中的环境变量配置</CardDescription>
+              <CardTitle className="text-2xl">{t("admin.环境变量检查工具")}</CardTitle>
+              <CardDescription className="text-sky-100 mt-2">{t("admin.查看和管理当前项目中的环境变量配置")}</CardDescription>
             </div>
             <Button
               variant="outline"
@@ -202,10 +205,11 @@ export default function EnvironmentVariablesCheck() {
         <CardContent className="pt-6">
           <Alert className="mb-6 bg-blue-50 border-blue-200">
             <InfoIcon className="h-5 w-5 text-blue-600" />
-            <AlertTitle className="text-blue-800">关于环境变量</AlertTitle>
+            <AlertTitle className="text-blue-800">{t("admin.关于环境变量")}</AlertTitle>
             <AlertDescription className="text-blue-700">
-              环境变量用于存储配置信息，如API密钥、数据库连接字符串等。以{" "}
-              <code className="bg-blue-100 px-1 rounded">NEXT_PUBLIC_</code> 开头的环境变量可在客户端访问。
+              {t("admin.环境变量用于存储配置信息，如API密钥、数据库连接字符串等。以")}{" "}
+              <code className="bg-blue-100 px-1 rounded">NEXT_PUBLIC_</code>{" "}
+              {t("admin.开头的环境变量可在客户端访问。")}
             </AlertDescription>
           </Alert>
 
@@ -213,12 +217,12 @@ export default function EnvironmentVariablesCheck() {
             <Table>
               <TableHeader>
                 <TableRow className="bg-gray-50">
-                  <TableHead className="w-[50px]">状态</TableHead>
-                  <TableHead className="w-[200px]">变量名</TableHead>
-                  <TableHead className="w-[100px]">类型</TableHead>
-                  <TableHead>值</TableHead>
-                  <TableHead className="w-[250px]">描述</TableHead>
-                  <TableHead className="w-[80px]">操作</TableHead>
+                  <TableHead className="w-[50px]">{t("admin.状态")}</TableHead>
+                  <TableHead className="w-[200px]">{t("admin.变量名")}</TableHead>
+                  <TableHead className="w-[100px]">{t("admin.类型")}</TableHead>
+                  <TableHead>{t("admin.值")}</TableHead>
+                  <TableHead className="w-[250px]">{t("admin.描述")}</TableHead>
+                  <TableHead className="w-[80px]">{t("admin.操作")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -235,10 +239,12 @@ export default function EnvironmentVariablesCheck() {
                           variable.value
                         )
                       ) : (
-                        <span className="text-red-500">未设置</span>
+                        <span className="text-red-500">{t("admin.未设置")}</span>
                       )}
                     </TableCell>
-                    <TableCell className="text-gray-600 text-sm">{variable.description || "-"}</TableCell>
+                    <TableCell className="text-gray-600 text-sm">
+                      {variable.description ? tc("admin", variable.description) : "-"}
+                    </TableCell>
                     <TableCell>
                       <Button
                         variant="ghost"
@@ -257,43 +263,45 @@ export default function EnvironmentVariablesCheck() {
 
         <CardFooter className="flex justify-between border-t p-6">
           <div className="text-sm text-gray-500">
-            检测到 {envVariables.length} 个环境变量，
-            {envVariables.filter((v) => v.status === "ok").length} 个正常，
-            {envVariables.filter((v) => v.status === "warning").length} 个警告，
-            {envVariables.filter((v) => v.status === "error").length} 个错误
+            {t("admin.检测到 {total} 个环境变量，{ok} 个正常，{warn} 个警告，{error} 个错误", {
+              total: String(envVariables.length),
+              ok: String(envVariables.filter((v) => v.status === "ok").length),
+              warn: String(envVariables.filter((v) => v.status === "warning").length),
+              error: String(envVariables.filter((v) => v.status === "error").length),
+            })}
           </div>
 
           <Dialog>
             <DialogTrigger asChild>
               <Button className="bg-gradient-to-r from-sky-600 to-blue-700 hover:from-sky-700 hover:to-blue-800">
                 <PlusIcon className="h-4 w-4 mr-2" />
-                添加自定义变量
+                {t("admin.添加自定义变量")}
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>添加自定义环境变量</DialogTitle>
+                <DialogTitle>{t("admin.添加自定义环境变量")}</DialogTitle>
                 <DialogDescription>
-                  添加的变量仅在此会话中可见，不会永久保存。要永久添加环境变量，请修改项目根目录中的 .env.local 文件。
+                  {t("admin.添加的变量仅在此会话中可见，不会永久保存。要永久添加环境变量，请修改项目根目录中的 .env.local 文件。")}
                 </DialogDescription>
               </DialogHeader>
 
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="envKey" className="text-right">
-                    变量名
+                    {t("admin.变量名")}
                   </Label>
                   <Input
                     id="envKey"
                     value={newEnvKey}
                     onChange={(e) => setNewEnvKey(e.target.value)}
-                    placeholder="例如: NEXT_PUBLIC_API_URL"
+                    placeholder={t("admin.例如: NEXT_PUBLIC_API_URL")}
                     className="col-span-3"
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="envValue" className="text-right">
-                    变量值
+                    {t("admin.变量值")}
                   </Label>
                   <Input
                     id="envValue"
@@ -306,7 +314,7 @@ export default function EnvironmentVariablesCheck() {
               </div>
 
               <DialogFooter>
-                <Button onClick={addCustomVariable}>添加变量</Button>
+                <Button onClick={addCustomVariable}>{t("admin.添加变量")}</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>

@@ -1,5 +1,21 @@
 allowBuilds:
   '@swc/core': true
+  '@parcel/watcher': true
   esbuild: true
   unrs-resolver: true
   workerd: true
+  dotenv: true
+
+# 依赖覆盖：强制提升存在修复版的传递依赖
+overrides:
+  postcss-selector-parser: '>=7.1.6'
+
+# 审计豁免（2026-10-17 复核）：
+#   braces (GHSA-vfj7-8cjw-p6xm) — 上游 <=3.0.3 全版本受影响且无修复发布；
+#   传递链全部为构建期工具（tailwindcss → chokidar/fast-glob/micromatch），
+#   不进入静态导出运行时产物，实际暴露面为零。
+#   （历史豁免 sprintf-js/GHSA-hp3w-g68c-fv3c 已随 M-1 jest 移除而撤销）
+# 待上游发布修复版后移除豁免。
+auditConfig:
+  ignoreGhsas:
+    - GHSA-vfj7-8cjw-p6xm

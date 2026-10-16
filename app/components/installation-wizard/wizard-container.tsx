@@ -9,6 +9,7 @@ import { Progress } from "@/components/ui/progress"
 import { ChevronLeft, ChevronRight, Check, AlertCircle } from "lucide-react"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { cn } from "@/lib/utils"
+import { useI18n } from "@/app/hooks/use-i18n"
 
 interface WizardStep {
   id: string
@@ -29,6 +30,7 @@ interface WizardContainerProps {
 }
 
 export function WizardContainer({ steps, onComplete, onCancel, title, description }: WizardContainerProps) {
+  const { t } = useI18n()
   const [currentStep, setCurrentStep] = useState(0)
   const [stepData, setStepData] = useState<Record<string, any>>({})
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set())
@@ -76,7 +78,7 @@ export function WizardContainer({ steps, onComplete, onCancel, title, descriptio
               {description && <p className="text-gray-600 mt-2">{description}</p>}
             </div>
             <Button variant="outline" onClick={onCancel}>
-              取消
+              {t("install.取消")}
             </Button>
           </div>
 
@@ -84,9 +86,14 @@ export function WizardContainer({ steps, onComplete, onCancel, title, descriptio
           <div className="mt-6">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm text-gray-600">
-                步骤 {currentStep + 1} / {steps.length}
+                {t("install.步骤 {current} / {total}", {
+                  current: String(currentStep + 1),
+                  total: String(steps.length),
+                })}
               </span>
-              <span className="text-sm text-gray-600">{Math.round(progress)}% 完成</span>
+              <span className="text-sm text-gray-600">
+                {t("install.{percent}% 完成", { percent: String(Math.round(progress)) })}
+              </span>
             </div>
             <Progress value={progress} className="h-2" />
           </div>
@@ -94,7 +101,7 @@ export function WizardContainer({ steps, onComplete, onCancel, title, descriptio
           {/* 步骤概览 */}
           <Collapsible open={showStepDetails} onOpenChange={setShowStepDetails}>
             <CollapsibleTrigger className="flex items-center justify-between w-full mt-4 p-2 hover:bg-gray-50 rounded-lg transition-colors">
-              <span className="text-sm font-medium">查看所有步骤</span>
+              <span className="text-sm font-medium">{t("install.查看所有步骤")}</span>
               <ChevronRight className={cn("h-4 w-4 transition-transform", showStepDetails && "rotate-90")} />
             </CollapsibleTrigger>
             <CollapsibleContent>
@@ -134,7 +141,7 @@ export function WizardContainer({ steps, onComplete, onCancel, title, descriptio
                     <div className="flex-1">
                       <h4 className="font-medium">{step.title}</h4>
                       <p className="text-sm text-gray-600">{step.description}</p>
-                      {step.isOptional && <span className="text-xs text-gray-400">（可选）</span>}
+                      {step.isOptional && <span className="text-xs text-gray-400">{t("install.（可选）")}</span>}
                     </div>
                   </div>
                 ))}
@@ -163,17 +170,17 @@ export function WizardContainer({ steps, onComplete, onCancel, title, descriptio
           <div className="flex items-center justify-between">
             <Button variant="outline" onClick={handlePrevious} disabled={currentStep === 0}>
               <ChevronLeft className="h-4 w-4 mr-2" />
-              上一步
+              {t("install.上一步")}
             </Button>
 
             <div className="flex items-center space-x-2">
               {steps[currentStep]?.isOptional && (
                 <Button variant="ghost" onClick={handleNext}>
-                  跳过
+                  {t("install.跳过")}
                 </Button>
               )}
               <Button onClick={handleNext} disabled={!canProceed() && !steps[currentStep]?.isOptional}>
-                {currentStep === steps.length - 1 ? "完成" : "下一步"}
+                {currentStep === steps.length - 1 ? t("install.完成") : t("install.下一步")}
                 {currentStep !== steps.length - 1 && <ChevronRight className="h-4 w-4 ml-2" />}
               </Button>
             </div>

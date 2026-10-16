@@ -1,7 +1,5 @@
 import { EnsembleEngine } from "./core/ensemble-engine"
 import { LearningEngine } from "./core/learning-engine"
-import { EnhancedRecommendationService } from "./services/enhanced-recommendation"
-import { UserBehaviorAnalyzer } from "./services/user-behavior-analyzer"
 import { MODEL_CONFIGS } from "./config/model-configs"
 import type { EnsembleConfig } from "./types/ai-types"
 
@@ -23,8 +21,6 @@ function createDefaultEnsembleConfig(): EnsembleConfig {
 
 export { EnsembleEngine } from "./core/ensemble-engine"
 export { LearningEngine } from "./core/learning-engine"
-export { EnhancedRecommendationService } from "./services/enhanced-recommendation"
-export { UserBehaviorAnalyzer } from "./services/user-behavior-analyzer"
 export { BasePredictor } from "./core/models/base-predictor"
 export * from "./types/ai-types"
 export { MODEL_CONFIGS, TRAINING_PARAMS } from "./config/model-configs"
@@ -32,18 +28,17 @@ export { MODEL_CONFIGS, TRAINING_PARAMS } from "./config/model-configs"
 /**
  * AI 引擎聚合实例。
  *
- * 收敛集成中心所需的四类能力：集成预测（ensemble）、在线学习（learning）、
- * 推荐（recommendation）与用户行为分析（behavior）。
+ * 收敛集成中心所需的本地推理能力：多模型集成预测（ensemble）与
+ * 在线学习（learning）。
+ *
+ * 注: 原云端推荐/行为分析服务（第三方 AI SDK）已随依赖移除，
+ * 对应能力由本地 ensemble 引擎与 `app/services/ai-assistant/` 提供。
  */
 export interface AIEngine {
   /** 多模型集成预测引擎 */
   ensemble: EnsembleEngine
   /** 在线学习引擎 */
   learning: LearningEngine
-  /** 增强推荐服务 */
-  recommendation: EnhancedRecommendationService
-  /** 用户行为分析器 */
-  behavior: UserBehaviorAnalyzer
 }
 
 let aiEngineInstance: AIEngine | null = null
@@ -61,8 +56,6 @@ export function createAIEngine(): AIEngine {
     aiEngineInstance = {
       ensemble: new EnsembleEngine(createDefaultEnsembleConfig()),
       learning: new LearningEngine(),
-      recommendation: new EnhancedRecommendationService(),
-      behavior: new UserBehaviorAnalyzer(),
     }
   }
 

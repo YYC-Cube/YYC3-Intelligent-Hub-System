@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { useI18n } from "@/app/hooks/use-i18n"
 
 interface ConnectButtonProps {
   className?: string
@@ -18,6 +19,8 @@ export function ConnectButton({
   onClick,
   disabled = false,
 }: ConnectButtonProps) {
+  const { t } = useI18n()
+
   return (
     <Button
       className={cn(
@@ -30,7 +33,7 @@ export function ConnectButton({
       onClick={onClick}
       disabled={disabled}
     >
-      连接
+      {t("ui.连接")}
     </Button>
   )
 }

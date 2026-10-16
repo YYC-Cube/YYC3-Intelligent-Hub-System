@@ -2,12 +2,13 @@
 
 import type React from "react"
 
-import { Button } from "@/components/ui/button"
-import { Heart } from "lucide-react"
 import { useFavorites } from "@/app/context/favorites-context"
-import { cn } from "@/lib/utils"
+import { useI18n } from "@/app/hooks/use-i18n"
+import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
+import { cn } from "@/lib/utils"
 import { motion } from "framer-motion"
+import { Heart } from "lucide-react"
 
 interface FavoriteButtonProps {
   id: string
@@ -26,6 +27,8 @@ export function FavoriteButton({
 }: FavoriteButtonProps) {
   const { isFavorite, toggleFavorite } = useFavorites()
   const { toast } = useToast()
+  // H-4：文案走 i18n（favorites 命名空间），与其他组件一致，不再硬编码中文
+  const { t } = useI18n()
   const isFav = isFavorite(id)
 
   const handleToggleFavorite = (e: React.MouseEvent) => {
@@ -35,8 +38,10 @@ export function FavoriteButton({
     toggleFavorite(id)
 
     toast({
-      title: isFav ? "已从收藏中移除" : "已添加到收藏",
-      description: isFav ? "该集成应用已从您的收藏列表中移除" : "该集成应用已添加到您的收藏列表",
+      title: isFav ? t("favorites.已从收藏中移除") : t("favorites.已添加到收藏"),
+      description: isFav
+        ? t("favorites.该集成应用已从您的收藏列表中移除")
+        : t("favorites.该集成应用已添加到您的收藏列表"),
     })
   }
 
@@ -48,8 +53,8 @@ export function FavoriteButton({
       className={cn(
         "group",
         isFav &&
-          variant !== "ghost" &&
-          "bg-pink-50 border-pink-200 text-pink-600 hover:bg-pink-100 hover:text-pink-700",
+        variant !== "ghost" &&
+        "bg-pink-50 border-pink-200 text-pink-600 hover:bg-pink-100 hover:text-pink-700",
         className,
       )}
     >
@@ -64,7 +69,7 @@ export function FavoriteButton({
             isFav ? "fill-pink-500 text-pink-500" : "fill-none group-hover:text-pink-500",
           )}
         />
-        {showText && (isFav ? "已收藏" : "收藏")}
+        {showText && (isFav ? t("favorites.已收藏") : t("favorites.收藏"))}
       </motion.div>
     </Button>
   )

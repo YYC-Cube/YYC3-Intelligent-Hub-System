@@ -7,6 +7,8 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { calculateCategoryHeat } from "@/app/services/category-trends"
 import { CategoryMemoryService } from "@/app/services/category-memory"
 import { useClientSnapshot } from "@/hooks/use-client-snapshot"
+import { useI18n } from "@/app/hooks/use-i18n"
+import { tc, dataCat, dataSub } from "@/lib/yyc3/i18n/data"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -131,6 +133,7 @@ export default function CollapsibleCategoryFilter({
   onSelectCategory,
   onExpandedChange,
 }: CollapsibleCategoryFilterProps) {
+  const { t } = useI18n()
   const [isCollapsed, setIsCollapsed] = useState(false)
   // 用户交互产生的「覆盖值」；为 null 时回退到本地记忆，避免 effect 中同步 setState。
   const [expandedOverride, setExpandedOverride] = useState<Record<string, boolean> | null>(null)
@@ -229,7 +232,7 @@ export default function CollapsibleCategoryFilter({
       >
         {/* 头部控制区域 */}
         <div className="p-4 border-b border-blue-300/30 flex justify-between items-center">
-          {!isCollapsed && <h2 className="text-lg font-semibold text-white">分类导航</h2>}
+          {!isCollapsed && <h2 className="text-lg font-semibold text-white">{t("integrations.分类导航")}</h2>}
           <div className="flex items-center space-x-2">
             {!isCollapsed && (
               <Tooltip>
@@ -244,7 +247,7 @@ export default function CollapsibleCategoryFilter({
                   />
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>重置筛选</p>
+                  <p>{t("integrations.重置筛选")}</p>
                 </TooltipContent>
               </Tooltip>
             )}
@@ -260,7 +263,7 @@ export default function CollapsibleCategoryFilter({
                 />
               </TooltipTrigger>
               <TooltipContent>
-                <p>{isCollapsed ? "展开导航" : "收起导航"}</p>
+                <p>{isCollapsed ? t("integrations.展开导航") : t("integrations.收起导航")}</p>
               </TooltipContent>
             </Tooltip>
           </div>
@@ -313,11 +316,11 @@ export default function CollapsibleCategoryFilter({
                               <CategoryIcon
                                 className={cn("transition-all duration-300", isCollapsed ? "h-5 w-5" : "h-4 w-4 mr-2")}
                               />
-                              {!isCollapsed && <span>{displayName}</span>}
+                              {!isCollapsed && <span>{tc("integrations", displayName)}</span>}
                             </Button3D>
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p>{category}</p>
+                            <p>{dataCat(category)}</p>
                           </TooltipContent>
                         </Tooltip>
 
@@ -361,11 +364,11 @@ export default function CollapsibleCategoryFilter({
                                     onClick={() => handleSelectCategory(category, subcategory)}
                                   >
                                     <ChevronRight className="h-3 w-3 mr-2 text-white/70" />
-                                    <span>{subDisplayName}</span>
+                                    <span>{tc("integrations", subDisplayName)}</span>
                                   </Button3D>
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                  <p>{subcategory}</p>
+                                  <p>{dataSub(subcategory)}</p>
                                 </TooltipContent>
                               </Tooltip>
                             )

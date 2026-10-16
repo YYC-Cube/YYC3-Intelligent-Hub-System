@@ -1,7 +1,7 @@
-import { describe, it, expect } from "vitest"
-import { readFileSync } from "node:fs"
+import { categories, iconMap, integrations, PRICE_FILTER_MAX, subcategories } from "@/app/data/integrations"
+import { readdirSync, readFileSync } from "node:fs"
 import { resolve } from "node:path"
-import { integrations, categories, subcategories, iconMap } from "@/app/data/integrations"
+import { describe, expect, it } from "vitest"
 
 const ITEMS_PER_PAGE = 30
 
@@ -74,9 +74,14 @@ describe("单元测试 · 数据集（核心数据源）", () => {
 
 describe("单元测试 · 确定性生成（P0-3 回归）", () => {
   it("TC-U-030 数据源不含 Math.random（避免 SSR/CSR 水合不一致）", () => {
-    const src = readFileSync(resolve(process.cwd(), "app/data/integrations.ts"), "utf8")
+    // L-4 拆分后数据源为目录模块，逐文件扫描以覆盖全部子模块
+    const dataDir = resolve(process.cwd(), "app/data/integrations")
+    const sources = readdirSync(dataDir)
+      .filter((f) => f.endsWith(".ts"))
+      .map((f) => readFileSync(resolve(dataDir, f), "utf8"))
+      .join("\n")
     // 允许注释中提及，但代码中不得出现调用
-    const codeLines = src
+    const codeLines = sources
       .split("\n")
       .filter((line) => !line.trim().startsWith("//") && !line.trim().startsWith("*"))
       .join("\n")
@@ -88,5 +93,17 @@ describe("单元测试 · 确定性生成（P0-3 回归）", () => {
     const mod = await import("@/app/data/integrations")
     const second = JSON.stringify(mod.integrations)
     expect(second).toBe(first)
+  })
+
+  it("TC-U-036 付费价格全域可被价格筛选上限表达（H-6 边界不变量）", () => {
+    const maxPrice = Math.max(
+      ...integrations
+        .filter((i) => typeof i.price.value === "number")
+        .map((i) => i.price.value as number),
+    )
+    // 滑块上限必须覆盖数据集付费价格最大值（否则 ¥max+ 区间不可达）
+    expect(maxPrice).toBeLessThanOrEqual(PRICE_FILTER_MAX)
+    // 上限需为滑块步长 5 的整数倍，保证上限值本身可被滑块精确表达
+    expect(PRICE_FILTER_MAX % 5).toBe(0)
   })
 })

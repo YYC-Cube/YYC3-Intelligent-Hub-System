@@ -45,6 +45,9 @@ jobs:
       - name: TypeScript type check
         run: npx tsc --noEmit
 
+      - name: Vitest test gate
+        run: pnpm test
+
       - name: Build static export
         run: pnpm build
         env:

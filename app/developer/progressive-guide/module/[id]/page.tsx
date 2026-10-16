@@ -1,4 +1,4 @@
-import dynamic from "next/dynamic"
+import ClientLoader from "./client-loader"
 
 const MODULE_IDS = [
   "component-basics", "state-management", "routing", "api-integration",
@@ -9,8 +9,6 @@ export function generateStaticParams() {
   return MODULE_IDS.map((id) => ({ id }))
 }
 
-const ModuleDetailClient = dynamic(() => import("./client-page"), { ssr: false })
-
 export default function ModuleDetailPage() {
-  return <ModuleDetailClient />
+  return <ClientLoader />
 }

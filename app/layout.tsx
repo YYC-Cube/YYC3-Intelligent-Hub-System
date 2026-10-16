@@ -10,6 +10,7 @@ import { EncryptionProvider } from "./context/encryption-context"
 import { integrations } from "./data/integrations"
 import { Toaster } from "@/components/ui/toaster"
 import { ErrorBoundary } from "./components/error-handling/error-boundary"
+import { I18nBootstrap } from "./components/i18n/i18n-bootstrap"
 import { BRAND, ICON_BASE, THEME_COLORS, brandAssets } from "@/lib/yyc3/brand"
 
 export const metadata: Metadata = {
@@ -63,6 +64,12 @@ export const metadata: Metadata = {
   },
 
   robots: { index: true, follow: true },
+
+  // M-11：静态导出无法设置 HTTP Referrer-Policy 响应头，以 meta 等价声明。
+  // 与 public/_headers 的部署层策略保持一致。
+  other: {
+    referrer: "strict-origin-when-cross-origin",
+  },
 }
 
 export const viewport: Viewport = {
@@ -83,6 +90,7 @@ export default function RootLayout({
   return (
     <html lang="zh-CN" suppressHydrationWarning>
       <body className="font-sans antialiased">
+        <I18nBootstrap />
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           <ErrorBoundary>
             <AuthProvider>

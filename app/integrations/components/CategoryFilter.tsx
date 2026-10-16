@@ -1,10 +1,12 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { ChevronDown, ChevronRight, Link } from "lucide-react"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
-import { calculateCategoryHeat } from "@/app/services/category-trends"
+import { useI18n } from "@/app/hooks/use-i18n"
+import { tc } from "@/lib/yyc3/i18n/data"
 import { cn } from "@/lib/utils"
 
 type CategoryFilterProps = {
@@ -73,19 +75,11 @@ export default function CategoryFilter({
   selectedSubcategory,
   onSelectCategory,
 }: CategoryFilterProps) {
+  const { t } = useI18n()
+  const router = useRouter()
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({
     [selectedCategory]: true,
   })
-  // 分类热度完全由 `categories` 派生（纯计算），渲染期直接得出。
-  const categoryHeats = useMemo<Record<string, ReturnType<typeof calculateCategoryHeat>>>(() => {
-    const heats: Record<string, ReturnType<typeof calculateCategoryHeat>> = {}
-    categories.forEach((category) => {
-      if (category !== "全部分类") {
-        heats[category] = calculateCategoryHeat(category)
-      }
-    })
-    return heats
-  }, [categories])
 
   const toggleCategory = (category: string) => {
     setExpandedCategories((prev) => ({
@@ -102,7 +96,7 @@ export default function CategoryFilter({
   return (
     <aside className="w-64 flex flex-col h-screen bg-gradient-to-r from-sky-600 via-blue-500 to-sky-400 shadow-xl">
       <div className="p-4 border-b border-sky-300/30 flex justify-between items-center">
-        <h2 className="text-lg font-semibold text-white">分类导航</h2>
+        <h2 className="text-lg font-semibold text-white">{t("integrations.分类导航")}</h2>
       </div>
       <div className="flex-1 overflow-auto custom-scrollbar">
         <div className="space-y-1 p-4 pt-2">
@@ -141,7 +135,7 @@ export default function CategoryFilter({
                       <span className="mr-2 inline-block w-5 text-center">
                         {index + 1 < 10 ? `0${index + 1}` : index + 1}
                       </span>
-                      <span className="inline-block w-16 text-center">{displayName}</span>
+                      <span className="inline-block w-16 text-center">{tc("integrations", displayName)}</span>
                     </Button>
                   </div>
                 </div>
@@ -150,7 +144,7 @@ export default function CategoryFilter({
                   <Collapsible open={isExpanded}>
                     <CollapsibleContent>
                       <div className="ml-6 mt-1 space-y-1 border-l-2 border-sky-300/30 pl-2">
-                        {subcategories[category].map((subcategory, subIndex) => {
+                        {subcategories[category].map((subcategory) => {
                           const isSubSelected = selectedCategory === category && selectedSubcategory === subcategory
                           const subDisplayName = getSubcategoryDisplayName(category, subcategory)
 
@@ -167,7 +161,7 @@ export default function CategoryFilter({
                                 onClick={() => onSelectCategory(category, subcategory)}
                               >
                                 <Link className="h-3 w-3 mr-1.5 opacity-70" />
-                                <span className="inline-block">{subDisplayName}</span>
+                                <span className="inline-block">{tc("integrations", subDisplayName)}</span>
                               </Button>
                             </div>
                           )
@@ -185,9 +179,9 @@ export default function CategoryFilter({
         <Button
           variant="outline"
           className="w-full bg-white/10 text-white border-sky-300/30 hover:bg-white/20 hover:border-white/40 backdrop-blur-sm"
-          onClick={() => (window.location.href = "/account/subscriptions")}
+          onClick={() => router.push("/account/subscriptions")}
         >
-          管理订阅
+          {t("integrations.管理订阅")}
         </Button>
       </div>
     </aside>

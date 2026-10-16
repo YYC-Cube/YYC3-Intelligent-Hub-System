@@ -1,5 +1,6 @@
 // 简单的身份验证模拟
 // 在实际应用中，应该使用NextAuth.js或类似的身份验证库
+import { t } from "@/lib/yyc3/i18n"
 
 // 模拟用户数据库
 const users = [
@@ -30,14 +31,14 @@ export async function login(email: string, password: string) {
     return { success: true, user: { id: user.id, name: user.name, email: user.email } }
   }
 
-  return { success: false, message: "邮箱或密码不正确" }
+  return { success: false, message: t("auth.邮箱或密码不正确") }
 }
 
 // 注册功能
 export async function register(name: string, email: string, password: string) {
   // 检查邮箱是否已被使用
   if (users.find((u) => u.email === email)) {
-    return { success: false, message: "该邮箱已被注册" }
+    return { success: false, message: t("auth.该邮箱已被注册") }
   }
 
   // 创建新用户（实际应用中应该存入数据库）

@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react"
 import { useAuth } from "./auth-context"
 import { useToast } from "@/hooks/use-toast"
+import { useI18n } from "@/app/hooks/use-i18n"
 import {
   deriveKey,
   encryptData,
@@ -50,6 +51,7 @@ interface EncryptionProviderProps {
 export function EncryptionProvider({ children }: EncryptionProviderProps) {
   const { user, isAuthenticated } = useAuth()
   const { toast } = useToast()
+  const { t } = useI18n()
   const [encryptionStatus, setEncryptionStatus] = useState<EncryptionStatus>("disabled")
   const [encryptionSettings, setEncryptionSettings] = useState<EncryptionSettings>(defaultEncryptionSettings)
   const [encryptionKey, setEncryptionKey] = useState<CryptoKey | null>(null)
@@ -60,8 +62,10 @@ export function EncryptionProvider({ children }: EncryptionProviderProps) {
     setIsSupported(isEncryptionSupported())
     if (!isEncryptionSupported()) {
       toast({
-        title: "浏览器不支持加密",
-        description: "您的浏览器不支持所需的加密API，请使用最新版本的Chrome、Firefox、Safari或Edge浏览器。",
+        title: t("encryption.浏览器不支持加密"),
+        description: t(
+          "encryption.您的浏览器不支持所需的加密API，请使用最新版本的Chrome、Firefox、Safari或Edge浏览器。",
+        ),
         variant: "destructive",
       })
     }
@@ -102,8 +106,8 @@ export function EncryptionProvider({ children }: EncryptionProviderProps) {
     async (password: string, hint?: string): Promise<boolean> => {
       if (!isAuthenticated || !user || !isSupported) {
         toast({
-          title: "设置加密失败",
-          description: "请先登录或使用支持的浏览器",
+          title: t("encryption.设置加密失败"),
+          description: t("encryption.请先登录或使用支持的浏览器"),
           variant: "destructive",
         })
         return false
@@ -135,8 +139,8 @@ export function EncryptionProvider({ children }: EncryptionProviderProps) {
         setEncryptionStatus("enabled")
 
         toast({
-          title: "加密已启用",
-          description: "您的数据现在将使用端到端加密进行保护",
+          title: t("encryption.加密已启用"),
+          description: t("encryption.您的数据现在将使用端到端加密进行保护"),
         })
 
         return true
@@ -145,8 +149,8 @@ export function EncryptionProvider({ children }: EncryptionProviderProps) {
         setEncryptionStatus("error")
 
         toast({
-          title: "设置加密失败",
-          description: "无法设置加密，请稍后重试",
+          title: t("encryption.设置加密失败"),
+          description: t("encryption.无法设置加密，请稍后重试"),
           variant: "destructive",
         })
 
@@ -174,8 +178,8 @@ export function EncryptionProvider({ children }: EncryptionProviderProps) {
         const isValid = await verifyPassword(password, keyPackage.salt, keyPackage.encryptedValidationToken)
         if (!isValid) {
           toast({
-            title: "解锁失败",
-            description: "密码不正确",
+            title: t("encryption.解锁失败"),
+            description: t("encryption.密码不正确"),
             variant: "destructive",
           })
           return false
@@ -189,8 +193,8 @@ export function EncryptionProvider({ children }: EncryptionProviderProps) {
         setEncryptionStatus("enabled")
 
         toast({
-          title: "加密已解锁",
-          description: "您现在可以访问加密的数据",
+          title: t("encryption.加密已解锁"),
+          description: t("encryption.您现在可以访问加密的数据"),
         })
 
         return true
@@ -199,8 +203,8 @@ export function EncryptionProvider({ children }: EncryptionProviderProps) {
         setEncryptionStatus("error")
 
         toast({
-          title: "解锁失败",
-          description: "无法解锁加密，请稍后重试",
+          title: t("encryption.解锁失败"),
+          description: t("encryption.无法解锁加密，请稍后重试"),
           variant: "destructive",
         })
 
@@ -233,8 +237,8 @@ export function EncryptionProvider({ children }: EncryptionProviderProps) {
       localStorage.removeItem(`key_package_${user.id}`)
 
       toast({
-        title: "加密已禁用",
-        description: "您的数据将不再使用端到端加密",
+        title: t("encryption.加密已禁用"),
+        description: t("encryption.您的数据将不再使用端到端加密"),
       })
 
       return true
@@ -242,8 +246,8 @@ export function EncryptionProvider({ children }: EncryptionProviderProps) {
       console.error("禁用加密失败:", error)
 
       toast({
-        title: "禁用加密失败",
-        description: "无法禁用加密，请稍后重试",
+        title: t("encryption.禁用加密失败"),
+        description: t("encryption.无法禁用加密，请稍后重试"),
         variant: "destructive",
       })
 
@@ -322,8 +326,8 @@ export function EncryptionProvider({ children }: EncryptionProviderProps) {
         const isValid = await verifyPassword(oldPassword, keyPackage.salt, keyPackage.encryptedValidationToken)
         if (!isValid) {
           toast({
-            title: "更改密码失败",
-            description: "当前密码不正确",
+            title: t("encryption.更改密码失败"),
+            description: t("encryption.当前密码不正确"),
             variant: "destructive",
           })
           return false
@@ -341,8 +345,8 @@ export function EncryptionProvider({ children }: EncryptionProviderProps) {
         setEncryptionKey(key)
 
         toast({
-          title: "密码已更改",
-          description: "您的加密密码已成功更改",
+          title: t("encryption.密码已更改"),
+          description: t("encryption.您的加密密码已成功更改"),
         })
 
         return true
@@ -350,8 +354,8 @@ export function EncryptionProvider({ children }: EncryptionProviderProps) {
         console.error("更改密码失败:", error)
 
         toast({
-          title: "更改密码失败",
-          description: "无法更改密码，请稍后重试",
+          title: t("encryption.更改密码失败"),
+          description: t("encryption.无法更改密码，请稍后重试"),
           variant: "destructive",
         })
 

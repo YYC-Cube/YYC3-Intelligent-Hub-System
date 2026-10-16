@@ -2,6 +2,8 @@
 
 import { useEffect, useRef } from "react"
 import { categories } from "@/app/data/integrations"
+import { useI18n } from "@/app/hooks/use-i18n"
+import { dataCat } from "@/lib/yyc3/i18n/data"
 
 type CategoryVisualizationProps = {
   onSelectCategory: (category: string, subcategory?: string) => void
@@ -9,6 +11,7 @@ type CategoryVisualizationProps = {
 
 export default function CategoryVisualization({ onSelectCategory }: CategoryVisualizationProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const { t, locale } = useI18n()
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -50,7 +53,7 @@ export default function CategoryVisualization({ onSelectCategory }: CategoryVisu
       ctx.font = "14px sans-serif"
       ctx.textAlign = "center"
       ctx.textBaseline = "middle"
-      ctx.fillText("集成分类", centerX, centerY)
+      ctx.fillText(t("ui.集成分类"), centerX, centerY)
 
       // 绘制分类节点
       const angleStep = (Math.PI * 2) / filteredCategories.length
@@ -80,14 +83,15 @@ export default function CategoryVisualization({ onSelectCategory }: CategoryVisu
         ctx.textBaseline = "middle"
 
         // 处理长文本
+        const label = dataCat(category)
         const maxLength = 6
-        if (category.length > maxLength) {
-          const firstLine = category.substring(0, maxLength)
-          const secondLine = category.substring(maxLength)
+        if (label.length > maxLength) {
+          const firstLine = label.substring(0, maxLength)
+          const secondLine = label.substring(maxLength)
           ctx.fillText(firstLine, x, y - 6)
           ctx.fillText(secondLine, x, y + 6)
         } else {
-          ctx.fillText(category, x, y)
+          ctx.fillText(label, x, y)
         }
 
         // 为每个主分类添加点击事件区域
@@ -128,11 +132,11 @@ export default function CategoryVisualization({ onSelectCategory }: CategoryVisu
       window.removeEventListener("resize", setCanvasSize)
       canvas.removeEventListener("click", handleClick)
     }
-  }, [onSelectCategory])
+  }, [onSelectCategory, t, locale])
 
   return (
     <div className="w-full bg-white rounded-lg shadow-md p-4 mb-6">
-      <h3 className="text-lg font-semibold mb-4">分类导航图</h3>
+      <h3 className="text-lg font-semibold mb-4">{t("ui.分类导航图")}</h3>
       <div className="w-full">
         <canvas ref={canvasRef} className="w-full" style={{ height: "500px" }}></canvas>
       </div>

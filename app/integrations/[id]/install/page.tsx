@@ -1,4 +1,4 @@
-import dynamic from "next/dynamic"
+import ClientLoader from "./client-loader"
 
 import { integrations } from "@/app/data/integrations"
 
@@ -14,8 +14,6 @@ export function generateStaticParams() {
   return integrations.map((integration) => ({ id: integration.id }))
 }
 
-const IntegrationInstallClient = dynamic(() => import("./client-page"), { ssr: false })
-
 export default function IntegrationInstallPage() {
-  return <IntegrationInstallClient />
+  return <ClientLoader />
 }

@@ -18,9 +18,11 @@ import {
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useI18n } from "@/app/hooks/use-i18n"
 
 export function UpdateNotification() {
   const { updateAvailable, updateInfo, dismissUpdate } = useVersionCheck()
+  const { t } = useI18n()
   const [showDetails, setShowDetails] = useState(false)
 
   if (!updateAvailable || !updateInfo) {
@@ -28,7 +30,8 @@ export function UpdateNotification() {
   }
 
   const { currentVersion, latestVersion, updateType } = updateInfo
-  const updateTypeText = updateType === "major" ? "重大更新" : updateType === "minor" ? "功能更新" : "补丁更新"
+  const updateTypeText =
+    updateType === "major" ? t("common.重大更新") : updateType === "minor" ? t("common.功能更新") : t("common.补丁更新")
   const updateTypeClass =
     updateType === "major"
       ? "bg-red-100 text-red-800"
@@ -44,16 +47,19 @@ export function UpdateNotification() {
             <div>
               <CardTitle className="text-lg flex items-center">
                 <AlertCircle className="h-5 w-5 mr-2 text-yellow-500" />
-                发现新版本
+                {t("common.发现新版本")}
                 <span className={`ml-2 text-xs px-2 py-1 rounded-full ${updateTypeClass}`}>{updateTypeText}</span>
               </CardTitle>
               <CardDescription>
-                版本 {latestVersion.version} 已发布，您当前的版本是 {currentVersion}
+                {t("common.版本 {latest} 已发布，您当前的版本是 {current}", {
+                  latest: latestVersion.version,
+                  current: currentVersion,
+                })}
               </CardDescription>
             </div>
             <Button variant="ghost" size="icon" onClick={dismissUpdate} className="h-8 w-8">
               <X className="h-4 w-4" />
-              <span className="sr-only">关闭</span>
+              <span className="sr-only">{t("common.关闭")}</span>
             </Button>
           </div>
         </CardHeader>
@@ -61,10 +67,10 @@ export function UpdateNotification() {
           {showDetails ? (
             <div className="space-y-2 text-sm">
               <div>
-                <span className="font-medium">发布日期：</span> {formatDate(latestVersion.releaseDate)}
+                <span className="font-medium">{t("common.发布日期：")}</span> {formatDate(latestVersion.releaseDate)}
               </div>
               <div>
-                <span className="font-medium">更新内容：</span>
+                <span className="font-medium">{t("common.更新内容：")}</span>
                 <div className="mt-1 p-2 bg-gray-50 rounded text-xs whitespace-pre-line">
                   {latestVersion.releaseNotes}
                 </div>
@@ -72,7 +78,7 @@ export function UpdateNotification() {
             </div>
           ) : (
             <Button variant="link" size="sm" className="p-0 h-auto" onClick={() => setShowDetails(true)}>
-              查看更新详情
+              {t("common.查看更新详情")}
             </Button>
           )}
         </CardContent>
@@ -80,7 +86,7 @@ export function UpdateNotification() {
           <UpdateSettings />
           <Button size="sm" className="gap-1" onClick={() => window.open(latestVersion.downloadUrl, "_blank")}>
             <Download className="h-4 w-4" />
-            立即更新
+            {t("common.立即更新")}
           </Button>
         </CardFooter>
       </Card>
@@ -90,6 +96,7 @@ export function UpdateNotification() {
 
 function UpdateSettings() {
   const { settings, updateSettings } = useVersionCheck()
+  const { t } = useI18n()
   const [open, setOpen] = useState(false)
 
   const handleIntervalChange = (value: string) => {
@@ -117,19 +124,19 @@ function UpdateSettings() {
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="gap-1">
           <Settings className="h-4 w-4" />
-          更新设置
+          {t("common.更新设置")}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>更新检查设置</DialogTitle>
-          <DialogDescription>配置应用如何检查和通知新版本</DialogDescription>
+          <DialogTitle>{t("common.更新检查设置")}</DialogTitle>
+          <DialogDescription>{t("common.配置应用如何检查和通知新版本")}</DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label htmlFor="auto-check">自动检查更新</Label>
-              <p className="text-sm text-muted-foreground">允许应用定期检查新版本</p>
+              <Label htmlFor="auto-check">{t("common.自动检查更新")}</Label>
+              <p className="text-sm text-muted-foreground">{t("common.允许应用定期检查新版本")}</p>
             </div>
             <Switch
               id="auto-check"
@@ -140,8 +147,8 @@ function UpdateSettings() {
 
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label htmlFor="notify-startup">启动时通知</Label>
-              <p className="text-sm text-muted-foreground">应用启动时检查并通知更新</p>
+              <Label htmlFor="notify-startup">{t("common.启动时通知")}</Label>
+              <p className="text-sm text-muted-foreground">{t("common.应用启动时检查并通知更新")}</p>
             </div>
             <Switch
               id="notify-startup"
@@ -151,23 +158,23 @@ function UpdateSettings() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="check-interval">检查频率</Label>
+            <Label htmlFor="check-interval">{t("common.检查频率")}</Label>
             <Select value={getIntervalValue()} onValueChange={handleIntervalChange} disabled={!settings.autoCheck}>
               <SelectTrigger id="check-interval" className="w-full">
-                <SelectValue placeholder="选择检查频率" />
+                <SelectValue placeholder={t("common.选择检查频率")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="hourly">每小时</SelectItem>
-                <SelectItem value="daily">每天</SelectItem>
-                <SelectItem value="weekly">每周</SelectItem>
-                <SelectItem value="monthly">每月</SelectItem>
-                <SelectItem value="never">从不</SelectItem>
+                <SelectItem value="hourly">{t("common.每小时")}</SelectItem>
+                <SelectItem value="daily">{t("common.每天")}</SelectItem>
+                <SelectItem value="weekly">{t("common.每周")}</SelectItem>
+                <SelectItem value="monthly">{t("common.每月")}</SelectItem>
+                <SelectItem value="never">{t("common.从不")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </div>
         <DialogFooter>
-          <Button onClick={() => setOpen(false)}>保存设置</Button>
+          <Button onClick={() => setOpen(false)}>{t("common.保存设置")}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -17,6 +17,8 @@ export type { Store, StoreBackend, StoreErrorCode } from "./types"
 
 export { MemoryStore, selectKeys } from "./memory"
 
+export { LocalStorageStore, getBrowserStore } from "./local"
+
 export {
   BrowserStore,
   createBrowserStore,

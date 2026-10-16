@@ -5,6 +5,7 @@ import { Info, ChevronDown, ChevronUp } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { formatDate, getRelativeTimeString } from "@/app/utils/format-date"
+import { useI18n } from "@/app/hooks/use-i18n"
 
 interface VersionDisplayProps {
   className?: string
@@ -13,7 +14,8 @@ interface VersionDisplayProps {
 
 export function VersionDisplay({ className = "", showDetails = false }: VersionDisplayProps) {
   const [isExpanded, setIsExpanded] = useState(false)
-  const version = process.env.NEXT_PUBLIC_APP_VERSION || "开发版本"
+  const { t } = useI18n()
+  const version = process.env.NEXT_PUBLIC_APP_VERSION || t("ui.开发版本")
   const buildDate = process.env.NEXT_PUBLIC_BUILD_DATE
 
   // 解析版本信息（假设格式为 v1.2.3-hash 或 1.2.3）
@@ -32,13 +34,13 @@ export function VersionDisplay({ className = "", showDetails = false }: VersionD
                 onClick={() => setIsExpanded(!isExpanded)}
               >
                 <Info className="h-3 w-3 mr-1" />
-                <span>版本 {versionInfo.display}</span>
+                <span>{t("ui.版本 {version}", { version: versionInfo.display })}</span>
                 {showDetails &&
                   (isExpanded ? <ChevronUp className="h-3 w-3 ml-1" /> : <ChevronDown className="h-3 w-3 ml-1" />)}
               </Button>
             </TooltipTrigger>
             <TooltipContent side="bottom">
-              <p>应用当前版本信息</p>
+              <p>{t("ui.应用当前版本信息")}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -50,30 +52,30 @@ export function VersionDisplay({ className = "", showDetails = false }: VersionD
             <tbody>
               {versionInfo.major !== undefined && (
                 <tr>
-                  <td className="pr-4 py-1 font-medium">主版本:</td>
+                  <td className="pr-4 py-1 font-medium">{t("ui.主版本:")}</td>
                   <td>{versionInfo.major}</td>
                 </tr>
               )}
               {versionInfo.minor !== undefined && (
                 <tr>
-                  <td className="pr-4 py-1 font-medium">次版本:</td>
+                  <td className="pr-4 py-1 font-medium">{t("ui.次版本:")}</td>
                   <td>{versionInfo.minor}</td>
                 </tr>
               )}
               {versionInfo.patch !== undefined && (
                 <tr>
-                  <td className="pr-4 py-1 font-medium">修订号:</td>
+                  <td className="pr-4 py-1 font-medium">{t("ui.修订号:")}</td>
                   <td>{versionInfo.patch}</td>
                 </tr>
               )}
               {versionInfo.hash && (
                 <tr>
-                  <td className="pr-4 py-1 font-medium">提交哈希:</td>
+                  <td className="pr-4 py-1 font-medium">{t("ui.提交哈希:")}</td>
                   <td>{versionInfo.hash}</td>
                 </tr>
               )}
               <tr>
-                <td className="pr-4 py-1 font-medium">构建时间:</td>
+                <td className="pr-4 py-1 font-medium">{t("ui.构建时间:")}</td>
                 <td>
                   {buildDate ? (
                     <TooltipProvider>
@@ -87,12 +89,12 @@ export function VersionDisplay({ className = "", showDetails = false }: VersionD
                       </Tooltip>
                     </TooltipProvider>
                   ) : (
-                    "未知"
+                    t("ui.未知")
                   )}
                 </td>
               </tr>
               <tr>
-                <td className="pr-4 py-1 font-medium">环境:</td>
+                <td className="pr-4 py-1 font-medium">{t("ui.环境:")}</td>
                 <td>{process.env.NODE_ENV || "development"}</td>
               </tr>
             </tbody>

@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, type ReactNode } from "react"
 import { LoadingScreen } from "./loading-screen"
+import { useI18n } from "@/app/hooks/use-i18n"
 
 interface LoadingContextType {
   isLoading: boolean
@@ -17,8 +18,9 @@ interface GlobalLoadingProviderProps {
 }
 
 export function GlobalLoadingProvider({ children }: GlobalLoadingProviderProps) {
+  const { t } = useI18n()
   const [isLoading, setIsLoading] = useState(false)
-  const [message, setMessage] = useState("加载中...")
+  const [message, setMessage] = useState(t("ui.加载中..."))
   const [progress, setProgress] = useState<number | undefined>(undefined)
   const [onComplete, setOnComplete] = useState<(() => void) | undefined>(undefined)
   const [timeout, setTimeout] = useState(3000)
@@ -29,7 +31,7 @@ export function GlobalLoadingProvider({ children }: GlobalLoadingProviderProps) 
     onComplete?: () => void
     timeout?: number
   }) => {
-    setMessage(options?.message || "加载中...")
+    setMessage(options?.message || t("ui.加载中..."))
     setProgress(options?.progress)
     setOnComplete(options?.onComplete)
     if (options?.timeout) setTimeout(options.timeout)

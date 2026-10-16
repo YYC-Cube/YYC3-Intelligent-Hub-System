@@ -19,6 +19,8 @@ const eslintConfig = [
       "node_modules/**",
       ".next/**",
       "out/**",
+      // 历次构建产物归档目录（如 out-trash-20261016），非源码，禁止参与 lint
+      "out-trash-*/**",
       "dist/**",
       "coverage/**",
       "AI/**",

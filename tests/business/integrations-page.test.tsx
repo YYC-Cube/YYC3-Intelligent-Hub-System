@@ -19,6 +19,30 @@ vi.mock("next/navigation", () => ({
   }),
 }))
 vi.mock("@/components/ui/navbar", () => ({ Navbar: () => null }))
+// H-1 统一卡片引入 FavoriteButton：与 integration-card.test.tsx 同款隔离 mock
+// （页面运行时由 layout 的 FavoritesProvider 提供，业务链路测试不关注收藏状态）
+vi.mock("@/app/context/favorites-context", () => ({
+  useFavorites: () => ({
+    favorites: [],
+    favoritesData: [],
+    addFavorite: vi.fn(),
+    removeFavorite: vi.fn(),
+    toggleFavorite: vi.fn(),
+    isFavorite: vi.fn(() => false),
+    clearFavorites: vi.fn(),
+    loading: false,
+    syncStatus: "idle",
+    lastSyncTime: null,
+    syncWithCloud: vi.fn(),
+    syncOptions: {},
+    updateSyncOptions: vi.fn(),
+    hasPendingChanges: false,
+    isEncrypted: false,
+  }),
+}))
+vi.mock("@/hooks/use-toast", () => ({
+  useToast: () => ({ toast: vi.fn(), toasts: [], dismiss: vi.fn() }),
+}))
 
 const countByCategory = (category: string) => integrations.filter((i) => i.category === category).length
 

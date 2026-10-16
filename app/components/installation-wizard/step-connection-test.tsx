@@ -7,8 +7,11 @@ import { useEffect, useState } from "react"
 import { AlertCircle, CheckCircle2, Loader2, RefreshCw } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { cn } from "@/lib/utils"
+import { useI18n } from "@/app/hooks/use-i18n"
+import { dataIntegrationName } from "@/lib/yyc3/i18n/data"
 
 export function StepConnectionTest() {
+  const { t } = useI18n()
   const { formData, connectionStatus, connectionMessage, setConnectionStatus } = useWizard()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -24,12 +27,12 @@ export function StepConnectionTest() {
       const isSuccess = Math.random() > 0.3
 
       if (isSuccess) {
-        setConnectionStatus("success", "连接成功！集成应用已准备就绪。")
+        setConnectionStatus("success", t("install.连接成功！集成应用已准备就绪。"))
       } else {
-        setConnectionStatus("error", "连接失败。请检查您的认证信息并重试。")
+        setConnectionStatus("error", t("install.连接失败。请检查您的认证信息并重试。"))
       }
     } catch (error) {
-      setConnectionStatus("error", "发生错误，请稍后重试。")
+      setConnectionStatus("error", t("install.发生错误，请稍后重试。"))
     } finally {
       setIsSubmitting(false)
     }
@@ -45,26 +48,26 @@ export function StepConnectionTest() {
     <div className="space-y-6">
       <div className="space-y-4">
         <div className="bg-gray-50 p-4 rounded-lg border">
-          <h3 className="text-sm font-medium mb-2">连接信息</h3>
+          <h3 className="text-sm font-medium mb-2">{t("install.连接信息")}</h3>
           <div className="grid grid-cols-2 gap-2 text-sm">
-            <div className="text-gray-500">集成名称:</div>
-            <div>{formData.name}</div>
-            <div className="text-gray-500">环境:</div>
+            <div className="text-gray-500">{t("install.集成名称:")}</div>
+            <div>{dataIntegrationName(formData.name)}</div>
+            <div className="text-gray-500">{t("install.环境:")}</div>
             <div>
               {formData.environment === "production"
-                ? "生产环境"
+                ? t("install.生产环境")
                 : formData.environment === "development"
-                  ? "开发环境"
+                  ? t("install.开发环境")
                   : formData.environment === "testing"
-                    ? "测试环境"
-                    : "预发布环境"}
+                    ? t("install.测试环境")
+                    : t("install.预发布环境")}
             </div>
-            <div className="text-gray-500">认证方式:</div>
-            <div>{formData.authType === "apiKey" ? "API密钥" : "OAuth 2.0"}</div>
-            <div className="text-gray-500">数据格式:</div>
+            <div className="text-gray-500">{t("install.认证方式:")}</div>
+            <div>{formData.authType === "apiKey" ? t("install.API密钥") : "OAuth 2.0"}</div>
+            <div className="text-gray-500">{t("install.数据格式:")}</div>
             <div>{formData.dataFormat?.toUpperCase()}</div>
-            <div className="text-gray-500">同步间隔:</div>
-            <div>{formData.syncInterval} 分钟</div>
+            <div className="text-gray-500">{t("install.同步间隔:")}</div>
+            <div>{t("install.{count} 分钟", { count: String(formData.syncInterval) })}</div>
           </div>
         </div>
 
@@ -85,10 +88,10 @@ export function StepConnectionTest() {
 
             <div>
               <h3 className="font-medium">
-                {connectionStatus === "success" && "连接成功"}
-                {connectionStatus === "error" && "连接失败"}
-                {connectionStatus === "testing" && "正在测试连接"}
-                {connectionStatus === "idle" && "准备测试连接"}
+                {connectionStatus === "success" && t("install.连接成功")}
+                {connectionStatus === "error" && t("install.连接失败")}
+                {connectionStatus === "testing" && t("install.正在测试连接")}
+                {connectionStatus === "idle" && t("install.准备测试连接")}
               </h3>
               <p className="text-sm text-gray-600">{connectionMessage}</p>
             </div>
@@ -98,8 +101,8 @@ export function StepConnectionTest() {
         {connectionStatus === "error" && (
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
-            <AlertTitle>连接错误</AlertTitle>
-            <AlertDescription>无法连接到集成应用。请检查您的认证信息并确保网络连接正常。</AlertDescription>
+            <AlertTitle>{t("install.连接错误")}</AlertTitle>
+            <AlertDescription>{t("install.无法连接到集成应用。请检查您的认证信息并确保网络连接正常。")}</AlertDescription>
           </Alert>
         )}
 
@@ -113,12 +116,12 @@ export function StepConnectionTest() {
             {isSubmitting || connectionStatus === "testing" ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                测试中...
+                {t("install.测试中...")}
               </>
             ) : (
               <>
                 <RefreshCw className="h-4 w-4" />
-                重新测试连接
+                {t("install.重新测试连接")}
               </>
             )}
           </Button>

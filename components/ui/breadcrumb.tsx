@@ -1,7 +1,10 @@
+"use client"
+
 import * as React from "react"
 import { ChevronRight, MoreHorizontal } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { useI18n } from "@/app/hooks/use-i18n"
 
 const Breadcrumb = React.forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>(({ className, ...props }, ref) => (
   <nav ref={ref} aria-label="breadcrumb" className={cn("flex", className)} {...props} />
@@ -65,7 +68,9 @@ const BreadcrumbSeparator = ({ children, className, ...props }: React.HTMLAttrib
 )
 BreadcrumbSeparator.displayName = "BreadcrumbSeparator"
 
-const BreadcrumbEllipsis = ({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) => (
+const BreadcrumbEllipsis = ({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) => {
+  const { t } = useI18n()
+  return (
   <span
     role="presentation"
     aria-hidden="true"
@@ -73,9 +78,10 @@ const BreadcrumbEllipsis = ({ className, ...props }: React.HTMLAttributes<HTMLSp
     {...props}
   >
     <MoreHorizontal className="h-4 w-4" />
-    <span className="sr-only">更多</span>
+    <span className="sr-only">{t("ui.更多")}</span>
   </span>
-)
+  )
+}
 BreadcrumbEllipsis.displayName = "BreadcrumbElipssis"
 
 export {

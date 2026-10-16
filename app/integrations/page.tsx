@@ -16,6 +16,8 @@ import { useClientSnapshot } from "@/hooks/use-client-snapshot"
 import { Badge } from "@/components/ui/badge"
 import { TrendingUp, Users, Star, Filter, RotateCcw, Zap } from "lucide-react"
 import { Button3D } from "@/app/components/ui/3d-button"
+import { useI18n } from "@/app/hooks/use-i18n"
+import { dataCat, dataSub } from "@/lib/yyc3/i18n/data"
 
 const ITEMS_PER_PAGE = 30
 
@@ -38,6 +40,7 @@ const EMPTY_SELECTION: MemorySelection = {}
 const getMemorySelection = (): MemorySelection => CategoryMemoryService.getSelection()
 
 export default function IntegrationsPage() {
+  const { t } = useI18n()
   const searchParams = useSearchParams()
   const memorySelection = useClientSnapshot(getMemorySelection, EMPTY_SELECTION)
 
@@ -137,18 +140,18 @@ export default function IntegrationsPage() {
                     {selectedSubcategory && (
                       <Badge variant="secondary" className="bg-blue-100 text-blue-800 px-3 py-1">
                         <Filter className="h-3 w-3 mr-1" />
-                        {selectedCategory} → {selectedSubcategory}
+                        {dataCat(selectedCategory)} → {dataSub(selectedSubcategory)}
                       </Badge>
                     )}
                     {searchQuery && (
                       <Badge variant="secondary" className="bg-green-100 text-green-800 px-3 py-1">
                         <Zap className="h-3 w-3 mr-1" />
-                        搜索: {searchQuery}
+                        {t("integrations.搜索: {query}", { query: searchQuery })}
                       </Badge>
                     )}
                     {isSearching && (
                       <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 px-3 py-1 animate-pulse">
-                        搜索中...
+                        {t("integrations.搜索中...")}
                       </Badge>
                     )}
                     {(selectedCategory !== "全部分类" || selectedSubcategory || searchQuery) && (
@@ -160,7 +163,7 @@ export default function IntegrationsPage() {
                         className="text-gray-600 hover:text-gray-800"
                       >
                         <RotateCcw className="h-3 w-3 mr-1" />
-                        重置筛选
+                        {t("integrations.重置筛选")}
                       </Button3D>
                     )}
                   </div>
@@ -186,7 +189,7 @@ export default function IntegrationsPage() {
                     </div>
                     <div>
                       <p className="text-2xl font-bold text-blue-900">{filterStats.filtered}</p>
-                      <p className="text-sm text-blue-700/80">个应用</p>
+                      <p className="text-sm text-blue-700/80">{t("integrations.个应用")}</p>
                     </div>
                   </div>
                 </motion.div>
@@ -203,7 +206,7 @@ export default function IntegrationsPage() {
                     </div>
                     <div>
                       <p className="text-2xl font-bold text-blue-900">{filterStats.categories}</p>
-                      <p className="text-sm text-blue-700/80">个分类</p>
+                      <p className="text-sm text-blue-700/80">{t("integrations.个分类")}</p>
                     </div>
                   </div>
                 </motion.div>
@@ -220,7 +223,7 @@ export default function IntegrationsPage() {
                     </div>
                     <div>
                       <p className="text-2xl font-bold text-blue-900">{filterStats.averageRating.toFixed(1)}</p>
-                      <p className="text-sm text-blue-700/80">平均评分</p>
+                      <p className="text-sm text-blue-700/80">{t("integrations.平均评分")}</p>
                     </div>
                   </div>
                 </motion.div>
@@ -234,7 +237,7 @@ export default function IntegrationsPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.2 }}
               >
-                <IntegrationGrid integrations={paginatedIntegrations} />
+                <IntegrationGrid integrations={paginatedIntegrations} detailHref="/integrations" />
               </motion.div>
             </div>
 

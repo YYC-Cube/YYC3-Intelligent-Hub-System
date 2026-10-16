@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
 import { useToast } from "@/hooks/use-toast"
+import { useI18n } from "@/app/hooks/use-i18n"
 
 async function hashPassword(password: string): Promise<string> {
   const encoder = new TextEncoder()
@@ -47,6 +48,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const { toast } = useToast()
+  const { t } = useI18n()
 
   // 从localStorage加载用户数据
   useEffect(() => {
@@ -82,8 +84,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       if (!foundUser) {
         toast({
-          title: "登录失败",
-          description: "邮箱或密码不正确",
+          title: t("auth.登录失败"),
+          description: t("auth.邮箱或密码不正确"),
           variant: "destructive",
         })
         return false
@@ -92,8 +94,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const hashedInput = await hashPassword(password)
       if (foundUser.passwordHash !== hashedInput && foundUser.password !== password) {
         toast({
-          title: "登录失败",
-          description: "邮箱或密码不正确",
+          title: t("auth.登录失败"),
+          description: t("auth.邮箱或密码不正确"),
           variant: "destructive",
         })
         return false
@@ -113,16 +115,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
       localStorage.setItem("user", JSON.stringify(userObj))
 
       toast({
-        title: "登录成功",
-        description: `欢迎回来，${userObj.name}！`,
+        title: t("auth.登录成功"),
+        description: t("auth.欢迎回来，{name}！", { name: userObj.name }),
       })
 
       return true
     } catch (error) {
       console.error("Login error:", error)
       toast({
-        title: "登录失败",
-        description: "发生错误，请稍后重试",
+        title: t("auth.登录失败"),
+        description: t("auth.发生错误，请稍后重试"),
         variant: "destructive",
       })
       return false
@@ -145,8 +147,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       if (users.some((u: any) => u.email === email)) {
         toast({
-          title: "注册失败",
-          description: "该邮箱已被注册",
+          title: t("auth.注册失败"),
+          description: t("auth.该邮箱已被注册"),
           variant: "destructive",
         })
         return false
@@ -181,16 +183,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
       localStorage.setItem("user", JSON.stringify(userObj))
 
       toast({
-        title: "注册成功",
-        description: `欢迎，${name}！`,
+        title: t("auth.注册成功"),
+        description: t("auth.欢迎，{name}！", { name }),
       })
 
       return true
     } catch (error) {
       console.error("Register error:", error)
       toast({
-        title: "注册失败",
-        description: "发生错误，请稍后重试",
+        title: t("auth.注册失败"),
+        description: t("auth.发生错误，请稍后重试"),
         variant: "destructive",
       })
       return false
@@ -204,8 +206,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setUser(null)
     localStorage.removeItem("user")
     toast({
-      title: "已退出登录",
-      description: "您已成功退出登录",
+      title: t("auth.已退出登录"),
+      description: t("auth.您已成功退出登录"),
     })
   }
 

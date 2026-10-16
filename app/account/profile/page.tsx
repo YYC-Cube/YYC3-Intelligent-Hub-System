@@ -12,14 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator"
 import { useAuth } from "@/app/context/auth-context"
 import { useFavorites } from "@/app/context/favorites-context"
-
-/** 账号相关快捷入口 */
-const ACCOUNT_SHORTCUTS = [
-  { href: "/favorites", label: "我的收藏", description: "查看已收藏的集成应用" },
-  { href: "/account/encryption", label: "加密设置", description: "管理本地数据加密与密钥" },
-  { href: "/account/sync", label: "同步设置", description: "配置多设备数据同步策略" },
-  { href: "/account/subscriptions", label: "订阅与积分", description: "查看套餐、积分余额与消耗记录" },
-] as const
+import { useI18n } from "@/app/hooks/use-i18n"
 
 /**
  * 账号资料页面。
@@ -33,8 +26,17 @@ const ACCOUNT_SHORTCUTS = [
 export default function ProfilePage() {
   const { user, isAuthenticated, isLoading } = useAuth()
   const { favorites } = useFavorites()
+  const { t } = useI18n()
 
-  const displayName = user?.name ?? "未登录"
+  /** 账号相关快捷入口 */
+  const accountShortcuts = [
+    { href: "/favorites", label: t("account.我的收藏"), description: t("account.查看已收藏的集成应用") },
+    { href: "/account/encryption", label: t("account.加密设置"), description: t("account.管理本地数据加密与密钥") },
+    { href: "/account/sync", label: t("account.同步设置"), description: t("account.配置多设备数据同步策略") },
+    { href: "/account/subscriptions", label: t("account.订阅与积分"), description: t("account.查看套餐、积分余额与消耗记录") },
+  ] as const
+
+  const displayName = user?.name ?? t("account.未登录")
   const initial = displayName.slice(0, 1).toUpperCase()
 
   return (
@@ -47,22 +49,22 @@ export default function ProfilePage() {
           className="mb-6 inline-flex items-center text-sm text-gray-600 hover:text-gray-900"
         >
           <ArrowLeft className="mr-2 h-4 w-4" aria-hidden="true" />
-          返回首页
+          {t("account.返回首页")}
         </Link>
 
-        <h1 className="mb-6 text-2xl font-bold">账号资料</h1>
+        <h1 className="mb-6 text-2xl font-bold">{t("account.账号资料")}</h1>
 
         {isLoading ? (
           <div className="flex items-center justify-center py-24 text-gray-500">
             <Loader2 className="mr-2 h-5 w-5 animate-spin" aria-hidden="true" />
-            正在加载账号信息…
+            {t("account.正在加载账号信息…")}
           </div>
         ) : (
           <div className="grid gap-6 lg:grid-cols-3">
             <Card className="lg:col-span-2">
               <CardHeader>
-                <CardTitle>基本信息</CardTitle>
-                <CardDescription>账号标识与安全状态概览</CardDescription>
+                <CardTitle>{t("account.基本信息")}</CardTitle>
+                <CardDescription>{t("account.账号标识与安全状态概览")}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex items-center gap-4">
@@ -72,7 +74,7 @@ export default function ProfilePage() {
                   <div>
                     <p className="text-lg font-semibold">{displayName}</p>
                     <Badge variant={isAuthenticated ? "default" : "secondary"}>
-                      {isAuthenticated ? "已登录" : "未登录"}
+                      {isAuthenticated ? t("account.已登录") : t("account.未登录")}
                     </Badge>
                   </div>
                 </div>
@@ -82,28 +84,30 @@ export default function ProfilePage() {
                 <dl className="space-y-4">
                   <div className="flex items-center gap-3">
                     <Mail className="h-4 w-4 text-gray-400" aria-hidden="true" />
-                    <dt className="w-20 text-sm text-gray-500">邮箱</dt>
+                    <dt className="w-20 text-sm text-gray-500">{t("account.邮箱")}</dt>
                     <dd className="text-sm">{user?.email ?? "—"}</dd>
                   </div>
                   <div className="flex items-center gap-3">
                     <Heart className="h-4 w-4 text-gray-400" aria-hidden="true" />
-                    <dt className="w-20 text-sm text-gray-500">收藏</dt>
-                    <dd className="text-sm">{favorites.length} 个集成应用</dd>
+                    <dt className="w-20 text-sm text-gray-500">{t("account.收藏")}</dt>
+                    <dd className="text-sm">
+                      {t("account.{count} 个集成应用", { count: String(favorites.length) })}
+                    </dd>
                   </div>
                   <div className="flex items-center gap-3">
                     <ShieldCheck className="h-4 w-4 text-gray-400" aria-hidden="true" />
-                    <dt className="w-20 text-sm text-gray-500">最近同步</dt>
+                    <dt className="w-20 text-sm text-gray-500">{t("account.最近同步")}</dt>
                     <dd className="text-sm">{user?.lastSyncTime ?? "—"}</dd>
                   </div>
                 </dl>
 
                 {!isAuthenticated ? (
                   <p className="rounded-md bg-amber-50 p-3 text-sm text-amber-900">
-                    登录后可同步收藏、订阅与加密配置。请前往
+                    {t("account.登录后可同步收藏、订阅与加密配置。请前往")}
                     <Link href="/" className="mx-1 text-blue-600 hover:underline">
-                      首页
+                      {t("account.首页")}
                     </Link>
-                    完成登录。
+                    {t("account.完成登录。")}
                   </p>
                 ) : null}
               </CardContent>
@@ -111,11 +115,11 @@ export default function ProfilePage() {
 
             <Card>
               <CardHeader>
-                <CardTitle>快捷入口</CardTitle>
-                <CardDescription>账号与数据管理</CardDescription>
+                <CardTitle>{t("account.快捷入口")}</CardTitle>
+                <CardDescription>{t("account.账号与数据管理")}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
-                {ACCOUNT_SHORTCUTS.map((shortcut) => (
+                {accountShortcuts.map((shortcut) => (
                   <Button key={shortcut.href} asChild variant="outline" className="h-auto w-full justify-start py-3">
                     <Link href={shortcut.href} className="flex flex-col items-start gap-0.5">
                       <span className="text-sm font-medium">{shortcut.label}</span>

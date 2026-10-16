@@ -8,12 +8,15 @@ import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import type { Integration } from "@/app/data/integrations"
 import { iconMap } from "@/app/data/integrations"
+import { useI18n } from "@/app/hooks/use-i18n"
+import { dataIntegrationDesc, dataIntegrationName } from "@/lib/yyc3/i18n/data"
 
 interface FeaturedCarouselProps {
   integrations: Integration[]
 }
 
 export function FeaturedCarousel({ integrations }: FeaturedCarouselProps) {
+  const { t } = useI18n()
   const [currentIndex, setCurrentIndex] = useState(0)
   const [direction, setDirection] = useState(0)
 
@@ -57,7 +60,7 @@ export function FeaturedCarousel({ integrations }: FeaturedCarouselProps) {
 
   return (
     <div className="relative">
-      <h2 className="text-2xl font-bold mb-6">特色集成</h2>
+      <h2 className="text-2xl font-bold mb-6">{t("marketplace.特色集成")}</h2>
 
       <div className="relative overflow-hidden rounded-xl">
         <AnimatePresence initial={false} custom={direction}>
@@ -86,12 +89,12 @@ export function FeaturedCarousel({ integrations }: FeaturedCarouselProps) {
                           <Icon className="w-6 h-6 text-white" />
                         </div>
                         <div>
-                          <h3 className="text-2xl font-bold">{integration.name}</h3>
+                          <h3 className="text-2xl font-bold">{dataIntegrationName(integration.name)}</h3>
                           <div className="text-sm text-white/80">{integration.developer}</div>
                         </div>
                       </div>
 
-                      <p className="mb-4 line-clamp-2">{integration.description}</p>
+                      <p className="mb-4 line-clamp-2">{dataIntegrationDesc(integration.description)}</p>
 
                       <div className="flex items-center gap-4 mb-4">
                         <div className="flex items-center">
@@ -101,17 +104,17 @@ export function FeaturedCarousel({ integrations }: FeaturedCarouselProps) {
                         </div>
                         <div className="text-white/80">
                           {integration.installCount > 1000
-                            ? `${(integration.installCount / 1000).toFixed(1)}K+ 安装`
-                            : `${integration.installCount} 安装`}
+                            ? t("marketplace.{count}K+ 安装", { count: (integration.installCount / 1000).toFixed(1) })
+                            : t("marketplace.{count} 安装", { count: String(integration.installCount) })}
                         </div>
                       </div>
 
                       <div className="flex gap-3 mt-auto">
                         <Button asChild className="bg-white text-blue-700 hover:bg-white/90">
-                          <Link href={`/marketplace/integration/${integration.id}`}>查看详情</Link>
+                          <Link href={`/marketplace/integration/${integration.id}`}>{t("marketplace.查看详情")}</Link>
                         </Button>
                         <Button asChild variant="outline" className="text-white border-white/30 hover:bg-white/10">
-                          <Link href={`/integrations/${integration.id}/install`}>立即安装</Link>
+                          <Link href={`/integrations/${integration.id}/install`}>{t("marketplace.立即安装")}</Link>
                         </Button>
                       </div>
                     </div>

@@ -3,16 +3,20 @@
 import { VersionCheckProvider } from "@/app/context/version-check-context"
 import { CheckUpdateButton } from "@/app/components/version/check-update-button"
 import { VersionDisplay } from "@/app/components/ui/version-display"
+import { useI18n } from "@/app/hooks/use-i18n"
+import { tc } from "@/lib/yyc3/i18n/data"
 
 function VersionPageContent() {
+  const { t } = useI18n()
+
   return (
     <div className="container py-10">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">版本信息</h1>
+        <h1 className="text-3xl font-bold mb-6">{t("pages.版本信息")}</h1>
 
         <div className="bg-white rounded-lg shadow p-6 mb-8">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">当前版本</h2>
+            <h2 className="text-xl font-semibold">{t("pages.当前版本")}</h2>
             <CheckUpdateButton />
           </div>
 
@@ -22,7 +26,7 @@ function VersionPageContent() {
         </div>
 
         <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold mb-4">版本历史</h2>
+          <h2 className="text-xl font-semibold mb-4">{t("pages.版本历史")}</h2>
 
           <div className="space-y-8">
             <VersionHistoryItem
@@ -73,11 +77,13 @@ interface VersionHistoryItemProps {
 }
 
 function VersionHistoryItem({ version, date, changes }: VersionHistoryItemProps) {
+  const { t } = useI18n()
+
   return (
     <div className="border-b pb-6 last:border-0 last:pb-0">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
-        <h3 className="text-lg font-medium">版本 {version}</h3>
-        <span className="text-sm text-gray-500">{date}</span>
+        <h3 className="text-lg font-medium">{t("pages.版本 {version}", { version })}</h3>
+        <span className="text-sm text-gray-500">{tc("pages", date)}</span>
       </div>
 
       <div className="space-y-3">
@@ -95,9 +101,9 @@ function VersionHistoryItem({ version, date, changes }: VersionHistoryItemProps)
               }
             `}
             >
-              {change.type === "feature" ? "新功能" : change.type === "fix" ? "修复" : "改进"}
+              {change.type === "feature" ? t("pages.新功能") : change.type === "fix" ? t("pages.修复") : t("pages.改进")}
             </span>
-            <span>{change.text}</span>
+            <span>{tc("pages", change.text)}</span>
           </div>
         ))}
       </div>

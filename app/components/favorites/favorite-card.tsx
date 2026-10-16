@@ -13,6 +13,13 @@ import { iconMap } from "@/app/data/integrations"
 import { useFavorites } from "@/app/context/favorites-context"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
+import { useI18n } from "@/app/hooks/use-i18n"
+import { tc } from "@/lib/yyc3/i18n"
+import {
+  dataCat,
+  dataIntegrationDesc,
+  dataIntegrationName,
+} from "@/lib/yyc3/i18n/data"
 
 interface FavoriteCardProps {
   integration: Integration
@@ -30,6 +37,7 @@ export function FavoriteCard({
   showSelectCheckbox = false,
 }: FavoriteCardProps) {
   const { removeFavorite } = useFavorites()
+  const { t } = useI18n()
   const [isHovering, setIsHovering] = useState(false)
   const Icon = iconMap[integration.icon as keyof typeof iconMap] || iconMap.Calendar
 
@@ -57,7 +65,7 @@ export function FavoriteCard({
       {showSelectCheckbox && (
         <button
           type="button"
-          aria-label={isSelected ? "取消选择" : "选择"}
+          aria-label={isSelected ? t("favorites.取消选择") : t("favorites.选择")}
           aria-pressed={isSelected}
           className="absolute left-2 top-2 z-10 w-5 h-5 rounded-full border-2 flex items-center justify-center cursor-pointer"
           onClick={handleSelect}
@@ -73,7 +81,7 @@ export function FavoriteCard({
             isSelected && "border-primary",
           )}
         >
-          {integration.new && <Badge className="absolute top-2 right-2 bg-green-500 hover:bg-green-600">新上线</Badge>}
+          {integration.new && <Badge className="absolute top-2 right-2 bg-green-500 hover:bg-green-600">{t("favorites.新上线")}</Badge>}
           <CardContent className="p-4 flex flex-col h-full">
             <div className="flex items-center gap-3 mb-3">
               <div
@@ -83,12 +91,12 @@ export function FavoriteCard({
                 <Icon className="w-6 h-6" style={{ color: integration.color }} />
               </div>
               <div>
-                <h3 className="font-semibold text-sm line-clamp-1">{integration.name}</h3>
+                <h3 className="font-semibold text-sm line-clamp-1">{dataIntegrationName(integration.name)}</h3>
                 <div className="text-xs text-gray-500">{integration.developer}</div>
               </div>
             </div>
 
-            <p className="text-xs text-gray-600 mb-3 line-clamp-2">{integration.description}</p>
+            <p className="text-xs text-gray-600 mb-3 line-clamp-2">{dataIntegrationDesc(integration.description)}</p>
 
             <div className="mt-auto">
               <div className="flex items-center justify-between mb-2">
@@ -117,12 +125,12 @@ export function FavoriteCard({
                   }
                 >
                   {integration.price.type === "free"
-                    ? "免费"
+                    ? tc("favorites", "免费")
                     : integration.price.type === "freemium"
-                      ? "免费增值"
-                      : `¥${integration.price.value}/月`}
+                      ? tc("favorites", "免费增值")
+                      : t("favorites.¥{price}/月", { price: String(integration.price.value) })}
                 </Badge>
-                <div className="text-xs text-gray-500">{integration.category}</div>
+                <div className="text-xs text-gray-500">{dataCat(integration.category)}</div>
               </div>
             </div>
 
@@ -130,12 +138,12 @@ export function FavoriteCard({
             {isHovering && (
               <div className="absolute inset-0 bg-black/5 backdrop-blur-[1px] flex items-center justify-center gap-2">
                 <Button size="sm" variant="default" asChild>
-                  <Link href={`/integrations/${integration.id}/install`}>安装</Link>
+                  <Link href={`/integrations/${integration.id}/install`}>{t("favorites.安装")}</Link>
                 </Button>
                 <Button size="sm" variant="outline" asChild>
                   <Link href={`/marketplace/integration/${integration.id}`}>
                     <ExternalLink className="h-3 w-3 mr-1" />
-                    详情
+                    {t("favorites.详情")}
                   </Link>
                 </Button>
                 <Button size="sm" variant="destructive" onClick={handleRemove}>

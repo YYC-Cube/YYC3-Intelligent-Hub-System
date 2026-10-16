@@ -8,8 +8,10 @@ import { WizardNavigation } from "./wizard-navigation"
 import { Switch } from "@/components/ui/switch"
 import { Slider } from "@/components/ui/slider"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useI18n } from "@/app/hooks/use-i18n"
 
 export function StepConfiguration() {
+  const { t } = useI18n()
   const { formData, updateFormData } = useWizard()
   const [webhookUrl, setWebhookUrl] = useState(formData.webhookUrl || "")
   const [syncInterval, setSyncInterval] = useState(formData.syncInterval || 15)
@@ -31,7 +33,7 @@ export function StepConfiguration() {
     <div className="space-y-6">
       <div className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="webhookUrl">Webhook URL（可选）</Label>
+          <Label htmlFor="webhookUrl">{t("install.Webhook URL（可选）")}</Label>
           <Input
             id="webhookUrl"
             placeholder="https://your-domain.com/webhook"
@@ -39,14 +41,14 @@ export function StepConfiguration() {
             onChange={(e) => setWebhookUrl(e.target.value)}
             className="max-w-md"
           />
-          <p className="text-xs text-gray-500">输入接收事件通知的Webhook URL</p>
+          <p className="text-xs text-gray-500">{t("install.输入接收事件通知的Webhook URL")}</p>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="dataFormat">数据格式</Label>
+          <Label htmlFor="dataFormat">{t("install.数据格式")}</Label>
           <Select value={dataFormat} onValueChange={setDataFormat}>
             <SelectTrigger className="max-w-md">
-              <SelectValue placeholder="选择数据格式" />
+              <SelectValue placeholder={t("install.选择数据格式")} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="json">JSON</SelectItem>
@@ -54,11 +56,11 @@ export function StepConfiguration() {
               <SelectItem value="csv">CSV</SelectItem>
             </SelectContent>
           </Select>
-          <p className="text-xs text-gray-500">选择数据交换的格式</p>
+          <p className="text-xs text-gray-500">{t("install.选择数据交换的格式")}</p>
         </div>
 
         <div className="space-y-2">
-          <Label>同步间隔（分钟）: {syncInterval}</Label>
+          <Label>{t("install.同步间隔（分钟）: {syncInterval}", { syncInterval: String(syncInterval) })}</Label>
           <Slider
             value={[syncInterval]}
             onValueChange={(value) => setSyncInterval(value[0])}
@@ -67,21 +69,21 @@ export function StepConfiguration() {
             step={5}
             className="max-w-md"
           />
-          <p className="text-xs text-gray-500">设置数据同步的频率</p>
+          <p className="text-xs text-gray-500">{t("install.设置数据同步的频率")}</p>
         </div>
 
         <div className="flex items-center justify-between max-w-md">
           <div className="space-y-0.5">
-            <Label htmlFor="notifications">启用通知</Label>
-            <p className="text-xs text-gray-500">接收有关集成状态的通知</p>
+            <Label htmlFor="notifications">{t("install.启用通知")}</Label>
+            <p className="text-xs text-gray-500">{t("install.接收有关集成状态的通知")}</p>
           </div>
           <Switch id="notifications" checked={enableNotifications} onCheckedChange={setEnableNotifications} />
         </div>
 
         <div className="flex items-center justify-between max-w-md">
           <div className="space-y-0.5">
-            <Label htmlFor="logging">启用日志记录</Label>
-            <p className="text-xs text-gray-500">记录集成活动以便于故障排除</p>
+            <Label htmlFor="logging">{t("install.启用日志记录")}</Label>
+            <p className="text-xs text-gray-500">{t("install.记录集成活动以便于故障排除")}</p>
           </div>
           <Switch id="logging" checked={enableLogging} onCheckedChange={setEnableLogging} />
         </div>

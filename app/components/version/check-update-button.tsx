@@ -5,6 +5,7 @@ import { RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useVersionCheck } from "@/app/context/version-check-context"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { useI18n } from "@/app/hooks/use-i18n"
 
 interface CheckUpdateButtonProps {
   variant?: "default" | "outline" | "ghost"
@@ -14,6 +15,7 @@ interface CheckUpdateButtonProps {
 
 export function CheckUpdateButton({ variant = "outline", size = "sm", className = "" }: CheckUpdateButtonProps) {
   const { checking, checkForUpdates } = useVersionCheck()
+  const { t } = useI18n()
   const [showTooltip, setShowTooltip] = useState(false)
 
   const handleClick = async () => {
@@ -34,11 +36,11 @@ export function CheckUpdateButton({ variant = "outline", size = "sm", className 
             disabled={checking}
           >
             <RefreshCw className={`h-4 w-4 ${checking ? "animate-spin" : ""}`} />
-            检查更新
+            {t("common.检查更新")}
           </Button>
         </TooltipTrigger>
         <TooltipContent>
-          <p>已检查更新</p>
+          <p>{t("common.已检查更新")}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

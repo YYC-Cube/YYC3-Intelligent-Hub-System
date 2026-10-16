@@ -6,9 +6,11 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { formatDistanceToNow } from "date-fns"
 import { zhCN } from "date-fns/locale"
 import { Check, Cloud, CloudOff, RefreshCw } from "lucide-react"
+import { useI18n } from "@/app/hooks/use-i18n"
 
 export function SyncIndicator() {
   const { syncStatus, lastSyncTime, syncWithCloud, hasPendingChanges } = useFavorites()
+  const { t } = useI18n()
 
   const getStatusIcon = () => {
     switch (syncStatus) {
@@ -28,15 +30,15 @@ export function SyncIndicator() {
   const getStatusText = () => {
     switch (syncStatus) {
       case "success":
-        return "已同步"
+        return t("sync.已同步")
       case "syncing":
-        return "同步中..."
+        return t("sync.同步中...")
       case "error":
-        return "同步失败"
+        return t("sync.同步失败")
       case "conflict":
-        return "冲突"
+        return t("sync.冲突")
       default:
-        return hasPendingChanges ? "未同步" : "已同步"
+        return hasPendingChanges ? t("sync.未同步") : t("sync.已同步")
     }
   }
 
@@ -60,9 +62,9 @@ export function SyncIndicator() {
   const getTooltipText = () => {
     if (lastSyncTime) {
       const timeAgo = formatDistanceToNow(new Date(lastSyncTime), { addSuffix: true, locale: zhCN })
-      return `上次同步: ${timeAgo}`
+      return t("sync.上次同步: {time}", { time: timeAgo })
     }
-    return "尚未同步"
+    return t("sync.尚未同步")
   }
 
   return (
@@ -76,8 +78,8 @@ export function SyncIndicator() {
         </TooltipTrigger>
         <TooltipContent>
           <p>{getTooltipText()}</p>
-          {hasPendingChanges && <p className="text-xs text-yellow-600">有未同步的更改</p>}
-          <p className="text-xs text-gray-500">点击进行同步</p>
+          {hasPendingChanges && <p className="text-xs text-yellow-600">{t("sync.有未同步的更改")}</p>}
+          <p className="text-xs text-gray-500">{t("sync.点击进行同步")}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

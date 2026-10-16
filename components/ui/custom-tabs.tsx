@@ -4,6 +4,7 @@ import * as React from "react"
 import { X } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { useI18n } from "@/app/hooks/use-i18n"
 
 // 定义标签项的类型
 interface TabItem {
@@ -28,6 +29,7 @@ const CustomTabs: React.FC<CustomTabsProps> = ({
   onTabChange,
   className,
 }) => {
+  const { t } = useI18n()
   const [activeTab, setActiveTab] = React.useState(defaultValue)
 
   // 处理标签变化
@@ -56,7 +58,7 @@ const CustomTabs: React.FC<CustomTabsProps> = ({
 
   // 确保有标签数据
   if (tabs.length === 0) {
-    return <div className="w-full h-[50px] flex items-center justify-center text-gray-500">暂无标签</div>
+    return <div className="w-full h-[50px] flex items-center justify-center text-gray-500">{t("ui.暂无标签")}</div>
   }
 
   return (

@@ -1,21 +1,24 @@
 "use client"
 
-import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react"
+import { useToast } from "@/hooks/use-toast"
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react"
 import type { Integration } from "../data/integrations"
 import { useAuth } from "./auth-context"
 import { useEncryption } from "./encryption-context"
-import { useToast } from "@/hooks/use-toast"
+// B-3：契约与键名取自 @/lib/yyc3/store；B-2：存储实例统一经 hub 组合根获取
+import { getHubStore } from "@/lib/yyc3/hub"
+import { putJson, scopedKeys, staticKeys } from "@/lib/yyc3/store"
 import {
   fetchCloudFavorites,
-  saveToCloud,
   getUserSyncOptions,
-  updateSyncStats,
-  resolveConflicts,
   hasConflicts,
-  updateLastSyncTime,
+  resolveConflicts,
   saveEncryptedToCloud,
-  type SyncStatus,
+  saveToCloud,
+  updateLastSyncTime,
+  updateSyncStats,
   type SyncOptions,
+  type SyncStatus,
 } from "../services/cloud-sync"
 
 type FavoritesContextType = {
@@ -70,19 +73,20 @@ export function FavoritesProvider({ children, integrations }: FavoritesProviderP
   const [lastSavedFavorites, setLastSavedFavorites] = useState<string[]>([])
   const [isEncrypted, setIsEncrypted] = useState(false)
 
-  // 从localStorage加载收藏数据
+  // 从存储适配器加载收藏数据（P1-5：经 @yyc3/store 契约收口）
   useEffect(() => {
     const loadFavorites = async () => {
       try {
-        // 如果用户已登录，尝试加载本地数据
-        const storageKey = isAuthenticated ? `favorites_${user?.id}` : "favorites"
-        const storedFavorites = localStorage.getItem(storageKey)
+        const store = getHubStore()
+        // 如果用户已登录，尝试加载本地数据（B-3/M-5：以 user 是否就绪分片，杜绝 favorites_undefined 幽灵键）
+        const storageKey = user ? scopedKeys.favorites(user.id) : staticKeys.anonymousFavorites
+        const storedFavorites = await store.get(storageKey)
 
         if (storedFavorites) {
           let parsedFavorites = JSON.parse(storedFavorites)
 
-          // 检查数据是否已加密
-          const isDataEncrypted = localStorage.getItem(`favorites_encrypted_${user?.id}`) === "true"
+          // 检查数据是否已加密（仅登录态读取分片标记键，未登录恒为明文）
+          const isDataEncrypted = user ? (await store.get(scopedKeys.favoritesEncrypted(user.id))) === "true" : false
           setIsEncrypted(isDataEncrypted)
 
           // 如果数据已加密且加密已启用，尝试解密
@@ -109,7 +113,7 @@ export function FavoritesProvider({ children, integrations }: FavoritesProviderP
           setLastSyncTime(user.lastSyncTime || null)
         }
       } catch (error) {
-        console.error("Error loading favorites from localStorage:", error)
+        console.error("Error loading favorites from store:", error)
       } finally {
         setLoading(false)
       }
@@ -139,18 +143,19 @@ export function FavoritesProvider({ children, integrations }: FavoritesProviderP
     return () => clearInterval(timer)
   }, [isAuthenticated, user, syncOptions.autoSync, syncOptions.syncInterval, hasPendingChanges]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // 保存收藏数据到localStorage
+  // 保存收藏数据到存储适配器
   useEffect(() => {
     if (!loading) {
       saveFavoritesToLocalStorage()
     }
   }, [favorites, loading]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // 保存收藏数据到localStorage，支持加密
+  // 保存收藏数据到存储适配器，支持加密（P1-5：经 @yyc3/store 契约收口）
   const saveFavoritesToLocalStorage = useCallback(async () => {
+    const store = getHubStore()
     if (!isAuthenticated || !user) {
-      // 未登录，保存到普通localStorage
-      localStorage.setItem("favorites", JSON.stringify(favorites))
+      // 未登录，保存到普通本地存储
+      await putJson(store, staticKeys.anonymousFavorites, favorites)
       return
     }
 
@@ -160,15 +165,15 @@ export function FavoritesProvider({ children, integrations }: FavoritesProviderP
       // 如果加密已启用，加密数据
       if (encryptionStatus === "enabled" && encryptionSettings.enabled) {
         dataToSave = await encrypt(dataToSave)
-        localStorage.setItem(`favorites_encrypted_${user.id}`, "true")
+        await store.put(scopedKeys.favoritesEncrypted(user.id), "true")
         setIsEncrypted(true)
       } else {
-        localStorage.setItem(`favorites_encrypted_${user.id}`, "false")
+        await store.put(scopedKeys.favoritesEncrypted(user.id), "false")
         setIsEncrypted(false)
       }
 
       // 保存数据
-      localStorage.setItem(`favorites_${user.id}`, dataToSave)
+      await store.put(scopedKeys.favorites(user.id), dataToSave)
 
       // 检查是否有未同步的更改
       const hasChanges = JSON.stringify(favorites) !== JSON.stringify(lastSavedFavorites)
@@ -340,7 +345,8 @@ export function FavoritesProvider({ children, integrations }: FavoritesProviderP
     }
 
     try {
-      const statsStr = localStorage.getItem(`sync_stats_${user.id}`)
+      // M-4：useCallback 同步读取路径，按同步内核契约使用 getSync（见 lib/yyc3/store/local.ts）
+      const statsStr = getHubStore().getSync(scopedKeys.syncStats(user.id))
       return statsStr ? JSON.parse(statsStr) : { totalSyncs: 0, failedSyncs: 0, itemsSynced: 0, lastSyncTime: null }
     } catch (error) {
       console.error("Error loading sync stats:", error)
@@ -357,7 +363,8 @@ export function FavoritesProvider({ children, integrations }: FavoritesProviderP
       setSyncOptions(newOptions)
 
       try {
-        localStorage.setItem(`sync_options_${user.id}`, JSON.stringify(newOptions))
+        // M-4：事件处理器内同步写入路径，按同步内核契约使用 putSync（见 lib/yyc3/store/local.ts）
+        getHubStore().putSync(scopedKeys.syncOptions(user.id), JSON.stringify(newOptions))
       } catch (error) {
         console.error("Error saving sync options:", error)
       }

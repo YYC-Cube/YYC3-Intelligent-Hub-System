@@ -21,6 +21,7 @@ import {
   ShoppingBag,
   Share2,
 } from "lucide-react"
+import { dataCat } from "@/lib/yyc3/i18n/data"
 
 interface CategoryGridProps {
   categories: string[]
@@ -55,7 +56,7 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
                 <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-3">
                   {categoryIcons[category] || <BarChart className="w-6 h-6 text-gray-600" />}
                 </div>
-                <h3 className="text-sm font-medium">{category}</h3>
+                <h3 className="text-sm font-medium">{dataCat(category)}</h3>
               </CardContent>
             </Card>
           </Link>

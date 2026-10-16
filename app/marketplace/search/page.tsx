@@ -1,17 +1,23 @@
 "use client"
 
-import { useState, useMemo } from "react"
-import { useSearchParams } from "next/navigation"
-import { Navbar } from "@/components/ui/navbar"
+import { IntegrationCard } from "@/app/components/integrations/integration-card"
+import { SiteFooter } from "@/app/components/site-footer"
+import { integrations, PRICE_FILTER_MAX } from "@/app/data/integrations"
+import { useI18n } from "@/app/hooks/use-i18n"
+import { buildPageWindow } from "@/app/utils/pagination"
+import { relevanceScore } from "@/app/utils/search-relevance"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Navbar } from "@/components/ui/navbar"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { integrations } from "@/app/data/integrations"
-import { IntegrationCard } from "../components/integration-card"
-import { FilterSidebar } from "../components/filter-sidebar"
+import { motion } from "framer-motion"
 import { Filter, Search, SlidersHorizontal } from "lucide-react"
 import Link from "next/link"
-import { motion } from "framer-motion"
+import { useRouter, useSearchParams } from "next/navigation"
+import { useMemo, useState } from "react"
+import { z } from "zod"
+import { FilterSidebar } from "../components/filter-sidebar"
+// H-3：窗口化分页（与市场浏览页共用），替代全量页码渲染（84 页 → 最多 5 个按钮）
 
 /** 中文价格类型 → 内部价格枚举 的映射（常量，置于模块作用域以保证引用稳定）。 */
 const PRICE_TYPE_MAP: Record<string, string> = {
@@ -20,14 +26,36 @@ const PRICE_TYPE_MAP: Record<string, string> = {
   付费: "paid",
 }
 
+/** M-7：逗号分隔的 URL 列表参数 → 字符串数组（空串返回空数组），消除 memo 与事件处理器间的重复解析。 */
+function splitListParam(value: string): string[] {
+  return value ? value.split(",") : []
+}
+
+/**
+ * M-9：URL 数值参数 schema —— 字符串转有限数值后夹取至 [min, max]；
+ * 缺参/NaN/越界一律回退 fallback，杜绝恶意或损坏的查询串进入筛选逻辑。
+ */
+function numericParamSchema(fallback: number, min: number, max: number) {
+  return z
+    .string()
+    .transform((raw) => Number(raw))
+    .refine((value) => Number.isFinite(value))
+    .transform((value) => Math.min(max, Math.max(min, value)))
+    .catch(fallback)
+}
+
 export default function SearchPage() {
+  const { t } = useI18n()
+  const router = useRouter()
   const searchParams = useSearchParams()
   const query = searchParams.get("q") || ""
   const categoryParam = searchParams.get("categories") || ""
   const priceTypesParam = searchParams.get("priceTypes") || ""
-  const minRating = Number.parseFloat(searchParams.get("minRating") || "0")
-  const minPrice = Number.parseInt(searchParams.get("minPrice") || "0")
-  const maxPrice = Number.parseInt(searchParams.get("maxPrice") || "100")
+  // M-9：数值参数经 zod schema 校验并夹取范围（minRating ∈ [0,5]，价格 ∈ [0, PRICE_FILTER_MAX]）
+  const minRating = numericParamSchema(0, 0, 5).parse(searchParams.get("minRating") ?? "")
+  // H-6：默认值/哨兵值统一取 PRICE_FILTER_MAX（120），未显式筛选时不裁剪 ¥101–109 区间
+  const minPrice = numericParamSchema(0, 0, PRICE_FILTER_MAX).parse(searchParams.get("minPrice") ?? "")
+  const maxPrice = numericParamSchema(PRICE_FILTER_MAX, 0, PRICE_FILTER_MAX).parse(searchParams.get("maxPrice") ?? "")
 
   const [searchQuery, setSearchQuery] = useState(query)
   const [showFilters, setShowFilters] = useState(false)
@@ -35,15 +63,11 @@ export default function SearchPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 12
 
-  // 解析筛选参数（原始参数字符串即为唯一来源，保持派生简单、依赖明确）
-  const selectedCategories = categoryParam ? categoryParam.split(",") : []
-  const selectedPriceTypes = priceTypesParam ? priceTypesParam.split(",") : []
-
   // 结果列表由筛选条件纯派生，避免 effect + setState 带来的额外渲染。
   const filteredIntegrations = useMemo(() => {
-    // 在 memo 内部重新解析，使依赖数组与推断依赖完全一致（React Compiler 友好）
-    const activeCategories = categoryParam ? categoryParam.split(",") : []
-    const activePriceTypes = priceTypesParam ? priceTypesParam.split(",") : []
+    // M-7：仅 memo 内解析一次（原始参数字符串为唯一来源），事件处理器按需调用同一帮助函数
+    const activeCategories = splitListParam(categoryParam)
+    const activePriceTypes = splitListParam(priceTypesParam)
 
     // 筛选集成应用
     let filtered = [...integrations]
@@ -77,8 +101,8 @@ export default function SearchPage() {
       filtered = filtered.filter((integration) => integration.rating >= minRating)
     }
 
-    // 价格范围筛选
-    if (minPrice > 0 || maxPrice < 100) {
+    // 价格范围筛选（H-6：哨兵值与滑块上限同源 PRICE_FILTER_MAX）
+    if (minPrice > 0 || maxPrice < PRICE_FILTER_MAX) {
       filtered = filtered.filter((integration) => {
         if (integration.price.type === "free") return minPrice === 0
         if (!integration.price.value) return true
@@ -112,7 +136,11 @@ export default function SearchPage() {
         })
         break
       default:
-        // 默认按相关性排序，这里简化为不做特殊处理
+        // M-8：「相关性」排序落地——加权相关度（name > tags > description），
+        // 仅在有关键词时生效；无命中项得分同为 0，Array.prototype.sort 保持原顺序
+        if (query) {
+          filtered.sort((a, b) => relevanceScore(query, b) - relevanceScore(query, a))
+        }
         break
     }
 
@@ -130,7 +158,9 @@ export default function SearchPage() {
     const params = new URLSearchParams()
     params.append("q", searchQuery)
 
-    // 保留其他筛选参数
+    // 保留其他筛选参数（M-7：局部解析，避免组件顶层冗余派生）
+    const selectedCategories = splitListParam(categoryParam)
+    const selectedPriceTypes = splitListParam(priceTypesParam)
     if (selectedCategories.length > 0) {
       params.append("categories", selectedCategories.join(","))
     }
@@ -140,13 +170,13 @@ export default function SearchPage() {
     if (minRating > 0) {
       params.append("minRating", minRating.toString())
     }
-    if (minPrice > 0 || maxPrice < 100) {
+    if (minPrice > 0 || maxPrice < PRICE_FILTER_MAX) {
       params.append("minPrice", minPrice.toString())
       params.append("maxPrice", maxPrice.toString())
     }
 
-    // 跳转到搜索结果页面
-    window.location.href = `/marketplace/search?${params.toString()}`
+    // SPA 内跳转到搜索结果页，保留客户端状态并避免静态导出整页刷新
+    router.push(`/marketplace/search?${params.toString()}`)
   }
 
   return (
@@ -156,17 +186,17 @@ export default function SearchPage() {
       <main className="flex-1 container mx-auto px-4 py-8">
         <div className="flex items-center mb-6">
           <Link href="/marketplace" className="text-blue-600 hover:underline mr-2">
-            市场首页
+            {t("marketplace.市场首页")}
           </Link>
           <span className="text-gray-400 mx-2">/</span>
-          <span className="text-gray-600">搜索结果</span>
+          <span className="text-gray-600">{t("marketplace.搜索结果")}</span>
         </div>
 
         <div className="flex flex-col md:flex-row gap-4 mb-6">
           <div className="flex-1 relative">
             <Input
               type="text"
-              placeholder="搜索集成应用..."
+              placeholder={t("marketplace.搜索集成应用...")}
               className="pl-10"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -174,10 +204,10 @@ export default function SearchPage() {
             />
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
           </div>
-          <Button onClick={handleSearch}>搜索</Button>
+          <Button onClick={handleSearch}>{t("marketplace.搜索")}</Button>
           <Button variant="outline" onClick={() => setShowFilters(!showFilters)}>
             <Filter className="h-4 w-4 mr-2" />
-            筛选
+            {t("marketplace.筛选")}
           </Button>
         </div>
 
@@ -185,7 +215,7 @@ export default function SearchPage() {
 
         <div className="flex flex-col md:flex-row justify-between items-center mb-6">
           <h1 className="text-2xl font-bold mb-2 md:mb-0">
-            {query ? `"${query}" 的搜索结果` : "浏览集成应用"}
+            {query ? t('marketplace."{query}" 的搜索结果', { query }) : t("marketplace.浏览集成应用")}
             <span className="text-gray-500 text-lg ml-2">({filteredIntegrations.length})</span>
           </h1>
 
@@ -193,15 +223,15 @@ export default function SearchPage() {
             <SlidersHorizontal className="h-4 w-4 text-gray-500" />
             <Select value={sortBy} onValueChange={setSortBy}>
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="排序方式" />
+                <SelectValue placeholder={t("marketplace.排序方式")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="relevance">相关性</SelectItem>
-                <SelectItem value="rating">评分</SelectItem>
-                <SelectItem value="installs">安装量</SelectItem>
-                <SelectItem value="newest">最新更新</SelectItem>
-                <SelectItem value="price-low">价格 (低到高)</SelectItem>
-                <SelectItem value="price-high">价格 (高到低)</SelectItem>
+                <SelectItem value="relevance">{t("marketplace.相关性")}</SelectItem>
+                <SelectItem value="rating">{t("marketplace.评分")}</SelectItem>
+                <SelectItem value="installs">{t("marketplace.安装量")}</SelectItem>
+                <SelectItem value="newest">{t("marketplace.最新更新")}</SelectItem>
+                <SelectItem value="price-low">{t("marketplace.价格 (低到高)")}</SelectItem>
+                <SelectItem value="price-high">{t("marketplace.价格 (高到低)")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -210,10 +240,10 @@ export default function SearchPage() {
         {filteredIntegrations.length === 0 ? (
           <div className="text-center py-12">
             <div className="text-5xl mb-4">🔍</div>
-            <h2 className="text-2xl font-bold mb-2">未找到匹配的集成应用</h2>
-            <p className="text-gray-500 mb-6">尝试使用不同的关键词或筛选条件</p>
+            <h2 className="text-2xl font-bold mb-2">{t("marketplace.未找到匹配的集成应用")}</h2>
+            <p className="text-gray-500 mb-6">{t("marketplace.尝试使用不同的关键词或筛选条件")}</p>
             <Button asChild>
-              <Link href="/marketplace">返回市场首页</Link>
+              <Link href="/marketplace">{t("marketplace.返回市场首页")}</Link>
             </Button>
           </div>
         ) : (
@@ -239,9 +269,9 @@ export default function SearchPage() {
                     onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                     disabled={safePage === 1}
                   >
-                    上一页
+                    {t("marketplace.上一页")}
                   </Button>
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  {buildPageWindow(safePage, totalPages).map((page) => (
                     <Button
                       key={page}
                       variant={safePage === page ? "default" : "outline"}
@@ -257,7 +287,7 @@ export default function SearchPage() {
                     onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                     disabled={safePage === totalPages}
                   >
-                    下一页
+                    {t("marketplace.下一页")}
                   </Button>
                 </div>
               </div>
@@ -266,31 +296,8 @@ export default function SearchPage() {
         )}
       </main>
 
-      {/* 页脚 */}
-      <footer className="bg-gray-900 text-white py-10">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="mb-6 md:mb-0">
-              <h2 className="text-xl font-bold">言语云³ 集成中心</h2>
-              <p className="text-gray-400 mt-2">© {new Date().getFullYear()} YY C³-IC. 保留所有权利。</p>
-            </div>
-            <div className="flex space-x-6">
-              <Link href="#" className="hover:text-blue-400 transition-colors">
-                关于我们
-              </Link>
-              <Link href="#" className="hover:text-blue-400 transition-colors">
-                联系我们
-              </Link>
-              <Link href="#" className="hover:text-blue-400 transition-colors">
-                隐私政策
-              </Link>
-              <Link href="#" className="hover:text-blue-400 transition-colors">
-                服务条款
-              </Link>
-            </div>
-          </div>
-        </div>
-      </footer>
+      {/* 页脚（L-3：统一组件，消灭空锚点假链接） */}
+      <SiteFooter />
     </div>
   )
 }

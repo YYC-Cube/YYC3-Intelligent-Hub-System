@@ -8,10 +8,13 @@ import CategoryHeatBadge from "./category-heat-badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useRouter } from "next/navigation"
 import CategorySubscribeButton from "./category-subscribe-button"
+import { useI18n } from "@/app/hooks/use-i18n"
+import { dataCat } from "@/lib/yyc3/i18n/data"
 
 export default function HotCategories() {
   const [activeTab, setActiveTab] = useState("hot")
   const router = useRouter()
+  const { t } = useI18n()
 
   // 热度数据完全由静态 `categories` 派生，直接在渲染期计算，
   // 无需借助 state + effect（避免 react-hooks/set-state-in-effect）。
@@ -26,17 +29,17 @@ export default function HotCategories() {
     <Card className="w-full">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg flex justify-between items-center">
-          <span>分类热度指标</span>
+          <span>{t("category.分类热度指标")}</span>
         </CardTitle>
       </CardHeader>
       <CardContent>
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="w-full mb-4">
             <TabsTrigger value="hot" className="flex-1">
-              热门分类
+              {t("category.热门分类")}
             </TabsTrigger>
             <TabsTrigger value="trending" className="flex-1">
-              上升趋势
+              {t("category.上升趋势")}
             </TabsTrigger>
           </TabsList>
           <TabsContent value="hot">
@@ -57,11 +60,13 @@ export default function HotCategories() {
                       className="text-sm font-medium hover:underline"
                       onClick={() => handleCategoryClick(category.category)}
                     >
-                      {category.category}
+                      {dataCat(category.category)}
                     </button>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-muted-foreground">{category.installCount.toLocaleString()} 安装</span>
+                    <span className="text-xs text-muted-foreground">
+                      {t("category.{count} 安装", { count: category.installCount.toLocaleString() })}
+                    </span>
                     <CategorySubscribeButton categoryName={category.category} size="sm" showText={false} />
                   </div>
                 </div>
@@ -85,11 +90,13 @@ export default function HotCategories() {
                       className="text-sm font-medium hover:underline"
                       onClick={() => handleCategoryClick(category.category)}
                     >
-                      {category.category}
+                      {dataCat(category.category)}
                     </button>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-muted-foreground">+{category.growthRate}% 增长</span>
+                    <span className="text-xs text-muted-foreground">
+                      {t("category.+{rate}% 增长", { rate: String(category.growthRate) })}
+                    </span>
                     <CategorySubscribeButton categoryName={category.category} size="sm" showText={false} />
                   </div>
                 </div>

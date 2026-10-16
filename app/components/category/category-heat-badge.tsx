@@ -1,8 +1,12 @@
+"use client"
+
 import type React from "react"
 import type { HeatLevel, TrendDirection } from "@/app/services/category-trends"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { TrendingUp, TrendingDown, Minus, Flame, Activity } from "lucide-react"
+import { useI18n } from "@/app/hooks/use-i18n"
+import { tc } from "@/lib/yyc3/i18n/data"
 
 interface CategoryHeatBadgeProps {
   heatLevel: HeatLevel
@@ -19,6 +23,7 @@ export default function CategoryHeatBadge({
   showTrend = true,
   size = "md",
 }: CategoryHeatBadgeProps) {
+  const { t } = useI18n()
   // 热度级别对应的样式和图标
   const heatStyles: Record<HeatLevel, { bg: string; text: string; icon: React.ReactNode }> = {
     极热: {
@@ -78,19 +83,22 @@ export default function CategoryHeatBadge({
         <TooltipTrigger asChild>
           <Badge className={`${bg} ${text} ${sizeClasses[size]} flex items-center gap-1 font-medium`}>
             {icon && <span className="mr-0.5">{icon}</span>}
-            {heatLevel}
+            {tc("category", heatLevel)}
             {showTrend && (
               <span className={`ml-1 flex items-center ${trendText}`}>
                 {trendIcon}
-                <span className="ml-0.5">{growthRate > 0 ? `+${growthRate}%` : `${growthRate}%`}</span>
+                <span className="ml-0.5">{growthRate > 0 ? `+${String(growthRate)}%` : `${String(growthRate)}%`}</span>
               </span>
             )}
           </Badge>
         </TooltipTrigger>
         <TooltipContent>
-          <p>热度: {heatLevel}</p>
+          <p>{t("category.热度: {level}", { level: tc("category", heatLevel) })}</p>
           <p>
-            趋势: {trend} ({growthRate > 0 ? `+${growthRate}%` : `${growthRate}%`})
+            {t("category.趋势: {trend} ({rate})", {
+              trend: tc("category", trend),
+              rate: growthRate > 0 ? `+${String(growthRate)}%` : `${String(growthRate)}%`,
+            })}
           </p>
         </TooltipContent>
       </Tooltip>

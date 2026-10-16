@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react"
 import IntegrationGrid from "@/app/integrations/components/IntegrationGrid"
 import { makeIntegrations } from "../fixtures/integrations"
 
-vi.mock("@/app/integrations/components/IntegrationCard", async () => {
+vi.mock("@/app/components/integrations/integration-card", async () => {
   const React = await import("react")
   return {
     default: ({ integration }: any) =>

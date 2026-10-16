@@ -38,17 +38,17 @@
 - **UI组件**: shadcn/ui + Tailwind CSS
 - **状态管理**: React Context
 - **动画**: Framer Motion
-- **AI集成**: AI SDK + OpenAI
+- **AI集成**: 本地 ensemble 引擎 + OpenAI 兼容端点（原生 fetch）
 - **类型系统**: TypeScript
-- **构建工具**: Turbopack
-- **部署平台**: Vercel
+- **构建工具**: Turbopack（Next.js 16 默认）
+- **部署平台**: GitHub Pages（静态导出 `output: 'export'`）
 
 ## 开发环境设置
 
 ### 系统要求
 
-- Node.js 18.0.0 或更高版本
-- npm 9.0.0 或更高版本
+- Node.js 20.9 或更高版本（推荐 22 LTS）
+- pnpm 9 或更高版本
 - Git
 - 支持的操作系统: Windows 10/11, macOS 10.15+, Ubuntu 20.04+
 
@@ -61,13 +61,13 @@ git clone <https://github.com/yanyu-cloud/integration-center.git>
 cd integration-center
 \`\`\`
 
-2. 安装依赖:
+1. 安装依赖:
 
 \`\`\`bash
 npm install
 \`\`\`
 
-3. 设置环境变量:
+1. 设置环境变量:
 
 复制 `.env.example` 文件为 `.env.local` 并填写必要的环境变量:
 
@@ -77,7 +77,7 @@ NEXT_PUBLIC_BUILD_DATE=2025-05-17T14:30:00.000Z
 OPENAI_API_KEY=your_openai_api_key
 \`\`\`
 
-4. 启动开发服务器:
+1. 启动开发服务器:
 
 \`\`\`bash
 npm run dev
@@ -506,14 +506,13 @@ toast({
 
 本项目使用以下测试工具:
 
-- Jest: 单元测试框架
+- Vitest: 单元测试框架（`tests/`，`pnpm test`）
 - React Testing Library: 组件测试
-- Cypress: 端到端测试
-- MSW (Mock Service Worker): API 模拟
+- jsdom: 浏览器环境模拟（vitest 配置内置）
 
 ### 单元测试
 
-单元测试位于与被测试文件相同的目录下，文件名以 `.test.ts` 或 `.test.tsx` 结尾:
+单元测试统一存放于 `tests/unit/`，文件名以 `.test.ts` 或 `.test.tsx` 结尾:
 
 \`\`\`tsx
 // utils/format-date.test.ts
@@ -541,6 +540,7 @@ describe("formatDate", () => {
 // components/ui/button.test.tsx
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
+import { vi } from "vitest"
 import { Button } from "./button"
 
 describe("Button", () => {
@@ -550,7 +550,7 @@ describe("Button", () => {
   })
 
   it("calls onClick handler when clicked", async () => {
-    const handleClick = jest.fn()
+    const handleClick = vi.fn()
     render(<Button onClick={handleClick}>点击我</Button>)
     await userEvent.click(screen.getByRole("button"))
     expect(handleClick).toHaveBeenCalledTimes(1)
@@ -601,39 +601,31 @@ npm run cypress:open
 
 ## 部署流程
 
-本项目使用 Vercel 进行部署。部署流程包括:
+本项目为纯静态导出站点（`next.config` 中 `output: 'export'`），构建产物 `out/` 由 GitHub Actions 自动发布到 GitHub Pages，无需任何外部部署平台。
 
 ### 环境变量
 
-部署时需要配置以下环境变量:
+构建期可配置以下环境变量:
 
 - `NEXT_PUBLIC_APP_VERSION`: 应用版本号
 - `NEXT_PUBLIC_BUILD_DATE`: 构建日期
-- `OPENAI_API_KEY`: OpenAI API 密钥
-- `DATABASE_URL`: 数据库连接 URL
-- `AUTH_SECRET`: 认证密钥
 
-这些环境变量可以在 Vercel 项目设置中配置。
+说明: `OPENAI_API_KEY`、`DATABASE_URL` 等仅在本地 `mock-api` 联调时使用，静态产物不会内嵌任何密钥。
 
 ### 部署命令
 
 \`\`\`bash
 
-# 本地构建
+# 本地构建（产出静态站点到 out/）
 
-npm run build
+pnpm build
 
-# 本地预览生产构建
+# 本地预览静态产物
 
-npm run start
+npx serve out
 
-# 部署到 Vercel
+# 发布: 推送 main 分支，GitHub Actions 自动构建并部署 Pages
 
-vercel
-
-# 部署到生产环境
-
-vercel --prod
 \`\`\`
 
 ### CI/CD 流程
@@ -641,9 +633,9 @@ vercel --prod
 本项目使用 GitHub Actions 进行 CI/CD:
 
 1. 代码推送到 GitHub 仓库
-2. GitHub Actions 运行测试
-3. 测试通过后，Vercel 自动构建和部署
-4. 部署完成后，Vercel 发送通知
+2. GitHub Actions 运行构建（`pnpm install` → `pnpm build`）
+3. 构建通过后，`out/` 自动发布到 GitHub Pages（自定义域名见 `public/CNAME`）
+4. 部署完成后，GitHub 发送 Pages 构建通知
 
 ## 贡献指南
 

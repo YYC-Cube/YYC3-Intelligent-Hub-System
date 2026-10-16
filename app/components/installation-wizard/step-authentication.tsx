@@ -9,8 +9,10 @@ import { Button } from "@/components/ui/button"
 import { Eye, EyeOff, HelpCircle } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { useI18n } from "@/app/hooks/use-i18n"
 
 export function StepAuthentication() {
+  const { t } = useI18n()
   const { formData, updateFormData } = useWizard()
   const [authType, setAuthType] = useState(formData.authType || "apiKey")
   const [apiKey, setApiKey] = useState(formData.apiKey || "")
@@ -35,12 +37,12 @@ export function StepAuthentication() {
     <div className="space-y-6">
       <div className="space-y-4">
         <div className="space-y-2">
-          <Label>认证方式</Label>
+          <Label>{t("install.认证方式")}</Label>
           <RadioGroup value={authType} onValueChange={setAuthType} className="flex flex-col space-y-2">
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="apiKey" id="apiKey" />
               <Label htmlFor="apiKey" className="cursor-pointer">
-                API密钥
+                {t("install.API密钥")}
               </Label>
             </div>
             <div className="flex items-center space-x-2">
@@ -56,7 +58,7 @@ export function StepAuthentication() {
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <Label htmlFor="apiKey">
-                API密钥 <span className="text-red-500">*</span>
+                {t("install.API密钥")} <span className="text-red-500">*</span>
               </Label>
               <TooltipProvider>
                 <Tooltip>
@@ -66,7 +68,7 @@ export function StepAuthentication() {
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p className="max-w-xs">API密钥可在集成应用提供商的开发者控制台中获取</p>
+                    <p className="max-w-xs">{t("install.API密钥可在集成应用提供商的开发者控制台中获取")}</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -75,7 +77,7 @@ export function StepAuthentication() {
               <Input
                 id="apiKey"
                 type={showSecret ? "text" : "password"}
-                placeholder="输入API密钥"
+                placeholder={t("install.输入API密钥")}
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
               />
@@ -89,17 +91,17 @@ export function StepAuthentication() {
                 {showSecret ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </Button>
             </div>
-            <p className="text-xs text-gray-500">输入您从集成应用提供商获取的API密钥</p>
+            <p className="text-xs text-gray-500">{t("install.输入您从集成应用提供商获取的API密钥")}</p>
           </div>
         ) : (
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="clientId">
-                客户端ID <span className="text-red-500">*</span>
+                {t("install.客户端ID")} <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="clientId"
-                placeholder="输入客户端ID"
+                placeholder={t("install.输入客户端ID")}
                 value={clientId}
                 onChange={(e) => setClientId(e.target.value)}
                 className="max-w-md"
@@ -108,13 +110,13 @@ export function StepAuthentication() {
 
             <div className="space-y-2">
               <Label htmlFor="clientSecret">
-                客户端密钥 <span className="text-red-500">*</span>
+                {t("install.客户端密钥")} <span className="text-red-500">*</span>
               </Label>
               <div className="relative max-w-md">
                 <Input
                   id="clientSecret"
                   type={showSecret ? "text" : "password"}
-                  placeholder="输入客户端密钥"
+                  placeholder={t("install.输入客户端密钥")}
                   value={clientSecret}
                   onChange={(e) => setClientSecret(e.target.value)}
                 />

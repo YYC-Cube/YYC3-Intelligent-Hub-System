@@ -1,0 +1,20 @@
+# YYC³ Intelligent Hub System · 安全响应头（M-11）
+#
+# 适用平台：Cloudflare Pages / Netlify / Vercel(自定义头) 等支持 `_headers`
+# 约定的静态托管层。当前主部署目标 GitHub Pages 不支持自定义响应头，
+# 浏览器会将其作为普通静态文件忽略（无害）；本站已在 app/layout.tsx 以
+# <meta name="referrer"> 提供等价的 Referrer-Policy 声明。
+#
+# 有意不设置 Content-Security-Policy：Next.js 静态导出依赖内联引导脚本
+# （self.__next_f.push）与 framer-motion 运行时内联样式，强制 CSP 需开放
+# 'unsafe-inline' 而显著削弱其价值，且有破坏 PWA/主题初始化的风险。
+# 如需启用 CSP，请配合 nonce 化改造并逐页验证后再上线。
+#
+# 语法参考：https://developers.cloudflare.com/pages/configuration/headers/
+
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+  Cross-Origin-Opener-Policy: same-origin

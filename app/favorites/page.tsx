@@ -1,19 +1,7 @@
 "use client"
 
-import { useState, useMemo } from "react"
-import { Navbar } from "@/components/ui/navbar"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { integrations } from "../data/integrations"
-import { FavoriteCard } from "../components/favorites/favorite-card"
-import { EmptyFavorites } from "../components/favorites/empty-favorites"
-import { useFavorites } from "../context/favorites-context"
-import { FavoritesProvider } from "../context/favorites-context"
-import { ArrowLeft, Search, SlidersHorizontal, Trash2, CheckSquare, Square, Share2 } from "lucide-react"
-import Link from "next/link"
-import { motion } from "framer-motion"
+import { SiteFooter } from "@/app/components/site-footer"
+import { useI18n } from "@/app/hooks/use-i18n"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,10 +12,25 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Navbar } from "@/components/ui/navbar"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
+import { dataCat, dataIntegrationName } from "@/lib/yyc3/i18n/data"
+import { motion } from "framer-motion"
+import { ArrowLeft, CheckSquare, Search, Share2, SlidersHorizontal, Square, Trash2 } from "lucide-react"
+import Link from "next/link"
+import { useMemo, useState } from "react"
+import { EmptyFavorites } from "../components/favorites/empty-favorites"
+import { FavoriteCard } from "../components/favorites/favorite-card"
+import { FavoritesProvider, useFavorites } from "../context/favorites-context"
+import { integrations } from "../data/integrations"
 
 function FavoritesPageContent() {
-  const { favoritesData, clearFavorites, loading } = useFavorites()
+  const { t } = useI18n()
+  const { favoritesData, clearFavorites, removeFavorite, loading } = useFavorites()
   const [searchQuery, setSearchQuery] = useState("")
   const [sortBy, setSortBy] = useState("recent")
   const [selectedCategory, setSelectedCategory] = useState("all")
@@ -97,12 +100,12 @@ function FavoritesPageContent() {
     setSelectedItems((prev) => (prev.includes(id) ? prev.filter((itemId) => itemId !== id) : [...prev, id]))
   }
 
-  // 处理删除选中项目
+  // 处理删除选中项目（B-1 修复：真实移除收藏，而非仅提示）
   const handleDeleteSelected = () => {
-    // 这里实际上会通过context中的removeFavorite方法逐个删除
+    selectedItems.forEach((id) => removeFavorite(id))
     toast({
-      title: "已删除选中的收藏",
-      description: `已从收藏列表中移除 ${selectedItems.length} 个集成应用`,
+      title: t("favorites.已删除选中的收藏"),
+      description: t("favorites.已从收藏列表中移除 {count} 个集成应用", { count: String(selectedItems.length) }),
     })
     setSelectedItems([])
     setIsSelectMode(false)
@@ -113,19 +116,19 @@ function FavoritesPageContent() {
     clearFavorites()
     setShowClearDialog(false)
     toast({
-      title: "收藏列表已清空",
-      description: "所有集成应用已从您的收藏列表中移除",
+      title: t("favorites.收藏列表已清空"),
+      description: t("favorites.所有集成应用已从您的收藏列表中移除"),
     })
   }
 
   // 处理分享收藏列表
   const handleShare = () => {
-    const shareText = `我在言语云³集成中心收藏了这些集成应用：\n${favoritesData.map((item) => item.name).join(", ")}`
+    const shareText = `${t("favorites.我在言语云³集成中心收藏了这些集成应用：")}\n${favoritesData.map((item) => dataIntegrationName(item.name)).join(", ")}`
 
     if (navigator.share) {
       navigator
         .share({
-          title: "我的收藏集成应用",
+          title: t("favorites.我的收藏集成应用"),
           text: shareText,
           url: window.location.href,
         })
@@ -133,8 +136,8 @@ function FavoritesPageContent() {
     } else {
       navigator.clipboard.writeText(shareText)
       toast({
-        title: "分享链接已复制",
-        description: "收藏列表链接已复制到剪贴板",
+        title: t("favorites.分享链接已复制"),
+        description: t("favorites.收藏列表链接已复制到剪贴板"),
       })
     }
   }
@@ -155,8 +158,8 @@ function FavoritesPageContent() {
     <>
       <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold mb-2">我的收藏</h1>
-          <p className="text-gray-500">管理您收藏的 {favoritesData.length} 个集成应用</p>
+          <h1 className="text-2xl font-bold mb-2">{t("favorites.我的收藏")}</h1>
+          <p className="text-gray-500">{t("favorites.管理您收藏的 {count} 个集成应用", { count: String(favoritesData.length) })}</p>
         </div>
 
         <div className="flex flex-wrap gap-2">
@@ -166,12 +169,12 @@ function FavoritesPageContent() {
                 {selectedItems.length === filteredFavorites.length ? (
                   <>
                     <CheckSquare className="h-4 w-4" />
-                    取消全选
+                    {t("favorites.取消全选")}
                   </>
                 ) : (
                   <>
                     <Square className="h-4 w-4" />
-                    全选
+                    {t("favorites.全选")}
                   </>
                 )}
               </Button>
@@ -183,25 +186,25 @@ function FavoritesPageContent() {
                 className="gap-2"
               >
                 <Trash2 className="h-4 w-4" />
-                删除所选 ({selectedItems.length})
+                {t("favorites.删除所选 ({count})", { count: String(selectedItems.length) })}
               </Button>
               <Button variant="outline" size="sm" onClick={() => setIsSelectMode(false)}>
-                取消
+                {t("favorites.取消")}
               </Button>
             </>
           ) : (
             <>
               <Button variant="outline" size="sm" onClick={() => setIsSelectMode(true)} className="gap-2">
                 <CheckSquare className="h-4 w-4" />
-                选择
+                {t("favorites.选择")}
               </Button>
               <Button variant="outline" size="sm" onClick={handleShare} className="gap-2">
                 <Share2 className="h-4 w-4" />
-                分享
+                {t("favorites.分享")}
               </Button>
               <Button variant="destructive" size="sm" onClick={() => setShowClearDialog(true)} className="gap-2">
                 <Trash2 className="h-4 w-4" />
-                清空
+                {t("favorites.清空")}
               </Button>
             </>
           )}
@@ -212,7 +215,7 @@ function FavoritesPageContent() {
         <div className="flex-1 relative">
           <Input
             type="text"
-            placeholder="搜索收藏的集成应用..."
+            placeholder={t("favorites.搜索收藏的集成应用...")}
             className="pl-10"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -224,13 +227,13 @@ function FavoritesPageContent() {
           <SlidersHorizontal className="h-4 w-4 text-gray-500" />
           <Select value={sortBy} onValueChange={setSortBy}>
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="排序方式" />
+              <SelectValue placeholder={t("favorites.排序方式")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="recent">最近添加</SelectItem>
-              <SelectItem value="name">名称</SelectItem>
-              <SelectItem value="rating">评分</SelectItem>
-              <SelectItem value="price">价格</SelectItem>
+              <SelectItem value="recent">{t("favorites.最近添加")}</SelectItem>
+              <SelectItem value="name">{t("favorites.名称")}</SelectItem>
+              <SelectItem value="rating">{t("favorites.评分")}</SelectItem>
+              <SelectItem value="price">{t("favorites.价格")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -239,12 +242,12 @@ function FavoritesPageContent() {
       {categories.length > 1 && (
         <Tabs defaultValue="all" value={selectedCategory} onValueChange={setSelectedCategory} className="mb-6">
           <TabsList className="mb-4">
-            <TabsTrigger value="all">全部</TabsTrigger>
+            <TabsTrigger value="all">{t("favorites.全部")}</TabsTrigger>
             {categories
               .filter((cat) => cat !== "all")
               .map((category) => (
                 <TabsTrigger key={category} value={category}>
-                  {category}
+                  {dataCat(category)}
                 </TabsTrigger>
               ))}
           </TabsList>
@@ -254,9 +257,9 @@ function FavoritesPageContent() {
       {filteredFavorites.length === 0 ? (
         <div className="text-center py-12">
           <div className="text-5xl mb-4">🔍</div>
-          <h2 className="text-2xl font-bold mb-2">未找到匹配的集成应用</h2>
-          <p className="text-gray-500 mb-6">尝试使用不同的搜索关键词或筛选条件</p>
-          <Button onClick={() => setSearchQuery("")}>清除搜索</Button>
+          <h2 className="text-2xl font-bold mb-2">{t("favorites.未找到匹配的集成应用")}</h2>
+          <p className="text-gray-500 mb-6">{t("favorites.尝试使用不同的搜索关键词或筛选条件")}</p>
+          <Button onClick={() => setSearchQuery("")}>{t("favorites.清除搜索")}</Button>
         </div>
       ) : (
         <motion.div
@@ -280,12 +283,12 @@ function FavoritesPageContent() {
       <AlertDialog open={showClearDialog} onOpenChange={setShowClearDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>确认清空收藏列表？</AlertDialogTitle>
-            <AlertDialogDescription>此操作将删除您收藏的所有集成应用。此操作无法撤销。</AlertDialogDescription>
+            <AlertDialogTitle>{t("favorites.确认清空收藏列表？")}</AlertDialogTitle>
+            <AlertDialogDescription>{t("favorites.此操作将删除您收藏的所有集成应用。此操作无法撤销。")}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>取消</AlertDialogCancel>
-            <AlertDialogAction onClick={handleClearAll}>确认</AlertDialogAction>
+            <AlertDialogCancel>{t("favorites.取消")}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleClearAll}>{t("favorites.确认")}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -294,6 +297,8 @@ function FavoritesPageContent() {
 }
 
 export default function FavoritesPage() {
+  const { t } = useI18n()
+
   return (
     <FavoritesProvider integrations={integrations}>
       <div className="flex flex-col min-h-screen bg-gray-50">
@@ -303,38 +308,15 @@ export default function FavoritesPage() {
           <div className="flex items-center mb-6">
             <Link href="/marketplace" className="text-blue-600 hover:underline mr-2">
               <ArrowLeft className="mr-2 h-4 w-4 inline" />
-              返回市场
+              {t("favorites.返回市场")}
             </Link>
           </div>
 
           <FavoritesPageContent />
         </main>
 
-        {/* 页脚 */}
-        <footer className="bg-gray-900 text-white py-10">
-          <div className="container mx-auto px-4">
-            <div className="flex flex-col md:flex-row justify-between items-center">
-              <div className="mb-6 md:mb-0">
-                <h2 className="text-xl font-bold">言语云³ 集成中心</h2>
-                <p className="text-gray-400 mt-2">© {new Date().getFullYear()} YY C³-IC. 保留所有权利。</p>
-              </div>
-              <div className="flex space-x-6">
-                <Link href="#" className="hover:text-blue-400 transition-colors">
-                  关于我们
-                </Link>
-                <Link href="#" className="hover:text-blue-400 transition-colors">
-                  联系我们
-                </Link>
-                <Link href="#" className="hover:text-blue-400 transition-colors">
-                  隐私政策
-                </Link>
-                <Link href="#" className="hover:text-blue-400 transition-colors">
-                  服务条款
-                </Link>
-              </div>
-            </div>
-          </div>
-        </footer>
+        {/* 页脚（L-3：统一组件，消灭空锚点假链接） */}
+        <SiteFooter />
       </div>
     </FavoritesProvider>
   )

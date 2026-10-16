@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
 import { useAuth } from "./auth-context"
 import { useToast } from "@/hooks/use-toast"
+import { useI18n } from "@/app/hooks/use-i18n"
 
 export type SubscriptionType = "category" | "developer" | "integration"
 
@@ -50,6 +51,7 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
   const [isLoading, setIsLoading] = useState(true)
   const { user, isAuthenticated } = useAuth()
   const { toast } = useToast()
+  const { t } = useI18n()
 
   // 加载订阅数据
   useEffect(() => {
@@ -92,8 +94,8 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
   const subscribe = async (type: SubscriptionType, targetId: string, targetName: string): Promise<boolean> => {
     if (!isAuthenticated || !user) {
       toast({
-        title: "需要登录",
-        description: "请先登录后再订阅",
+        title: t("common.需要登录"),
+        description: t("common.请先登录后再订阅"),
         variant: "destructive",
       })
       return false
@@ -103,8 +105,12 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
       // 检查是否已订阅
       if (isSubscribed(type, targetId)) {
         toast({
-          title: "已订阅",
-          description: `您已经订阅了该${type === "category" ? "分类" : type === "developer" ? "开发者" : "集成"}`,
+          title: t("common.已订阅"),
+          description: t("common.您已经订阅了该{type}", {
+            type: t(
+              type === "category" ? "common.分类" : type === "developer" ? "common.开发者" : "common.集成",
+            ),
+          }),
         })
         return false
       }
@@ -126,16 +132,16 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
       saveSubscriptions(newSubscriptions)
 
       toast({
-        title: "订阅成功",
-        description: `您已成功订阅${targetName}`,
+        title: t("common.订阅成功"),
+        description: t("common.您已成功订阅{name}", { name: targetName }),
       })
 
       return true
     } catch (error) {
       console.error("订阅失败:", error)
       toast({
-        title: "订阅失败",
-        description: "发生错误，请稍后重试",
+        title: t("common.订阅失败"),
+        description: t("common.发生错误，请稍后重试"),
         variant: "destructive",
       })
       return false

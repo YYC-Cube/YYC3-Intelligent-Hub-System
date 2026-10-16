@@ -7,6 +7,7 @@ import { Search, X, History, Clock } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { CategoryMemoryService } from "@/app/services/category-memory"
 import { useClientSnapshot } from "@/hooks/use-client-snapshot"
+import { useI18n } from "@/app/hooks/use-i18n"
 import { cn } from "@/lib/utils"
 
 interface SearchBarProps {
@@ -34,9 +35,12 @@ const getSearchHistory = (): string[] => CategoryMemoryService.getSearchHistory(
 export default function SearchBar({
   onSearch,
   initialValue = "",
-  placeholder = "搜索集成应用...",
+  placeholder,
   className,
 }: SearchBarProps) {
+  const { t } = useI18n()
+  // placeholder 默认值在组件体内兜底（签名默认值无法响应语言切换）。
+  const resolvedPlaceholder = placeholder ?? t("integrations.搜索集成应用...")
   // 用户输入为「覆盖值」；为空时回退到 props 或本地记忆中的搜索词，
   // 从而无需在 effect 中 setState 也能完成持久化恢复。
   const [userQuery, setUserQuery] = useState<string | null>(null)
@@ -135,7 +139,7 @@ export default function SearchBar({
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           onFocus={() => setShowHistory(searchHistory.length > 0)}
-          placeholder={placeholder}
+          placeholder={resolvedPlaceholder}
           className={cn(
             "w-full pl-10 pr-10 py-2 rounded-lg border border-blue-200/50",
             "bg-white/70 backdrop-blur-sm text-gray-700 placeholder-blue-400",
@@ -162,7 +166,7 @@ export default function SearchBar({
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center text-sm text-gray-500">
                 <History className="h-4 w-4 mr-1" />
-                搜索历史
+                {t("integrations.搜索历史")}
               </div>
               <Button
                 variant="ghost"
@@ -170,7 +174,7 @@ export default function SearchBar({
                 onClick={handleClearHistory}
                 className="text-xs text-gray-400 hover:text-gray-600"
               >
-                清除
+                {t("integrations.清除")}
               </Button>
             </div>
             <div className="space-y-1">

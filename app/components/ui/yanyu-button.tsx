@@ -53,8 +53,16 @@ export interface ButtonProps
 
 const YanyuButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, rounded, width, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? React.Fragment : "button"
-    return <Comp className={cn(buttonVariants({ variant, size, rounded, width, className }))} ref={ref} {...props} />
+    if (asChild) {
+      return <>{props.children}</>
+    }
+    return (
+      <button
+        ref={ref}
+        className={cn(buttonVariants({ variant, size, rounded, width, className }))}
+        {...props}
+      />
+    )
   },
 )
 YanyuButton.displayName = "YanyuButton"

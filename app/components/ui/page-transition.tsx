@@ -6,23 +6,25 @@ import { motion } from "framer-motion"
 import { useEffect, useState } from "react"
 import { Logo } from "./logo"
 import { Progress } from "@/components/ui/progress"
+import { useI18n } from "@/app/hooks/use-i18n"
 
 export function PageTransition({ children }: { children: React.ReactNode }) {
+  const { t } = useI18n()
   const [isLoading, setIsLoading] = useState(true)
   const [progress, setProgress] = useState(0)
-  const [loadingText, setLoadingText] = useState("初始化系统...")
+  const [loadingText, setLoadingText] = useState(t("ui.初始化系统..."))
 
   useEffect(() => {
     if (!isLoading) return
 
     // 模拟加载进度
     const loadingTexts = [
-      "初始化系统...",
-      "加载核心模块...",
-      "连接集成服务...",
-      "准备用户界面...",
-      "优化性能...",
-      "完成加载",
+      t("ui.初始化系统..."),
+      t("ui.加载核心模块..."),
+      t("ui.连接集成服务..."),
+      t("ui.准备用户界面..."),
+      t("ui.优化性能..."),
+      t("ui.完成加载"),
     ]
 
     let interval: NodeJS.Timeout
@@ -92,7 +94,7 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
           }}
           className="absolute bottom-8 text-blue-200 text-xs"
         >
-          言语云³集成中心系统 · YY C³-IC
+          {t("ui.言语云³集成中心系统 · YY C³-IC")}
         </motion.div>
       </div>
     )

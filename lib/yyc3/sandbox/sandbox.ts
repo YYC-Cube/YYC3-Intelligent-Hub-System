@@ -11,8 +11,9 @@
  */
 
 import { spawn, type ChildProcess } from "node:child_process"
-import { mkdtemp, rm, writeFile } from "node:fs/promises"
 import { randomBytes } from "node:crypto"
+import { realpathSync } from "node:fs"
+import { mkdtemp, rm, writeFile } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { join, resolve as resolvePath } from "node:path"
 
@@ -185,17 +186,22 @@ export class SkillSandbox {
 
     // 显式收敛为通用 ChildProcess：stdio 字面量会命中 @types/node 的
     // 条件返回重载并把返回类型折叠成 never；此处只需要可空的管道流。
-    const child = spawn(context.executable, [...flags, context.scriptPath, ...context.args], {
-      cwd: context.workingDirectory,
-      env: {
-        ...context.env,
-        // 新版 @types/node 将 ProcessEnv.NODE_ENV 定义为必填，沙箱内缺省视为生产
-        NODE_ENV: (context.env.NODE_ENV ?? "production") as NodeJS.ProcessEnv["NODE_ENV"],
-      },
-      // 禁用 shell：杜绝经由 shell 元字符的命令注入
-      shell: false,
-      stdio: ["ignore", "pipe", "pipe"],
-    }) as ChildProcess
+    // 入口脚本必须传 realpath：macOS 下 argv 为 /var/...（符号链接）时，
+    // 加载器解析符号链接本体即触发权限拒绝（ERR_ACCESS_DENIED: FileSystemRead /var）。
+    const child = spawn(
+      context.executable,
+      [...flags, realpathSync(context.scriptPath), ...context.args],
+      {
+        cwd: context.workingDirectory,
+        env: {
+          ...context.env,
+          // 新版 @types/node 将 ProcessEnv.NODE_ENV 定义为必填，沙箱内缺省视为生产
+          NODE_ENV: (context.env.NODE_ENV ?? "production") as NodeJS.ProcessEnv["NODE_ENV"],
+        },
+        // 禁用 shell：杜绝经由 shell 元字符的命令注入
+        shell: false,
+        stdio: ["ignore", "pipe", "pipe"],
+      }) as ChildProcess
 
     let stdout = ""
     let stderr = ""
@@ -292,8 +298,11 @@ export class SkillSandbox {
     }
 
     const permissionFlag = major >= 22 ? "--permission" : "--experimental-permission"
-    // 只读开放脚本目录：技能代码需能读取自身模块，但不应触达宿主其他路径
-    flags.push(permissionFlag, `--allow-fs-read=${resolvePath(workingDirectory)}`)
+    // 只读开放脚本目录：技能代码需能读取自身模块，但不应触达宿主其他路径。
+    // macOS 的 tmpdir 返回 /var/...（指向 /private/var 的符号链接），
+    // 权限模型按字面路径校验，模块加载器解析 /var 本体即被拒（ERR_ACCESS_DENIED），
+    // 因此必须放行 realpath 解析后的真实目录。
+    flags.push(permissionFlag, `--allow-fs-read=${resolvePath(realpathSync(workingDirectory))}`)
     return flags
   }
 }

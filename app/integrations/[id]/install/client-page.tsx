@@ -13,8 +13,11 @@ import {
 } from "@/components/ui/breadcrumb"
 import { Home } from "lucide-react"
 import Link from "next/link"
+import { useI18n } from "@/app/hooks/use-i18n"
+import { dataIntegrationName } from "@/lib/yyc3/i18n/data"
 
 export default function IntegrationInstallClient() {
+  const { t } = useI18n()
   const { id } = useParams()
   const integration = integrations.find((i) => i.id === id)
 
@@ -39,18 +42,18 @@ export default function IntegrationInstallClient() {
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link href="/integrations">集成应用</Link>
+                <Link href="/integrations">{t("install.集成应用")}</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link href={`/integrations/${id}`}>{integration.name}</Link>
+                <Link href={`/integrations/${id}`}>{dataIntegrationName(integration.name)}</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink>安装</BreadcrumbLink>
+              <BreadcrumbLink>{t("install.安装")}</BreadcrumbLink>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>

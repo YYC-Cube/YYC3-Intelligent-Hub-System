@@ -23,11 +23,14 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { useRouter } from "next/navigation"
+import { useI18n } from "@/app/hooks/use-i18n"
+import { tc } from "@/lib/yyc3/i18n"
 
 function SubscriptionsPageContent() {
   const { subscriptions, unsubscribe, updateSubscriptionSettings } = useSubscription()
   const { isAuthenticated, user } = useAuth()
   const router = useRouter()
+  const { t } = useI18n()
 
   if (!isAuthenticated) {
     return (
@@ -36,9 +39,9 @@ function SubscriptionsPageContent() {
           <CardContent className="pt-6">
             <div className="text-center space-y-4">
               <AlertTriangle className="h-12 w-12 mx-auto text-yellow-500" />
-              <h2 className="text-xl font-semibold">需要登录</h2>
-              <p className="text-muted-foreground">请登录以管理您的订阅</p>
-              <Button onClick={() => router.push("/login")}>前往登录</Button>
+              <h2 className="text-xl font-semibold">{t("account.需要登录")}</h2>
+              <p className="text-muted-foreground">{t("account.请登录以管理您的订阅")}</p>
+              <Button onClick={() => router.push("/login")}>{t("account.前往登录")}</Button>
             </div>
           </CardContent>
         </Card>
@@ -55,20 +58,20 @@ function SubscriptionsPageContent() {
       <main className="container py-8">
         <div className="max-w-4xl mx-auto space-y-6">
           <div>
-            <h1 className="text-3xl font-bold">订阅管理</h1>
-            <p className="text-muted-foreground">管理您的通知和更新订阅</p>
+            <h1 className="text-3xl font-bold">{t("account.订阅管理")}</h1>
+            <p className="text-muted-foreground">{t("account.管理您的通知和更新订阅")}</p>
           </div>
 
           <Tabs defaultValue="active" className="w-full">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="active">
-                活跃订阅 ({activeSubscriptions.length})
+                {t("account.活跃订阅 ({count})", { count: String(activeSubscriptions.length) })}
               </TabsTrigger>
               <TabsTrigger value="paused">
-                已暂停 ({pausedSubscriptions.length})
+                {t("account.已暂停 ({count})", { count: String(pausedSubscriptions.length) })}
               </TabsTrigger>
               <TabsTrigger value="settings">
-                设置
+                {t("account.设置")}
               </TabsTrigger>
             </TabsList>
 
@@ -76,7 +79,7 @@ function SubscriptionsPageContent() {
               {activeSubscriptions.length === 0 ? (
                 <Card>
                   <CardContent className="py-8 text-center text-muted-foreground">
-                    暂无活跃订阅
+                    {t("account.暂无活跃订阅")}
                   </CardContent>
                 </Card>
               ) : (
@@ -85,7 +88,7 @@ function SubscriptionsPageContent() {
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
                       <div className="space-y-1">
                         <CardTitle className="text-base">{sub.targetName}</CardTitle>
-                        <CardDescription>{sub.type} - {sub.frequency}</CardDescription>
+                        <CardDescription>{tc("account", sub.type)} - {tc("account", sub.frequency)}</CardDescription>
                       </div>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
@@ -95,15 +98,15 @@ function SubscriptionsPageContent() {
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>确认取消订阅？</AlertDialogTitle>
+                            <AlertDialogTitle>{t("account.确认取消订阅？")}</AlertDialogTitle>
                             <AlertDialogDescription>
-                              此操作将停止接收 &ldquo;{sub.targetName}&rdquo; 的所有通知。
+                              {t("account.此操作将停止接收 “{name}” 的所有通知。", { name: sub.targetName })}
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogCancel>取消</AlertDialogCancel>
+                            <AlertDialogCancel>{t("account.取消")}</AlertDialogCancel>
                             <AlertDialogAction onClick={() => unsubscribe(sub.id)}>
-                              确认
+                              {t("account.确认")}
                             </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
@@ -120,10 +123,10 @@ function SubscriptionsPageContent() {
                               })
                             }
                           />
-                          <Label>{sub.notificationEnabled ? "已启用" : "已禁用"}</Label>
+                          <Label>{sub.notificationEnabled ? t("account.已启用") : t("account.已禁用")}</Label>
                         </div>
                         <span className="text-sm text-muted-foreground">
-                          {sub.emailNotification ? "邮件通知已开启" : "仅应用内通知"}
+                          {sub.emailNotification ? t("account.邮件通知已开启") : t("account.仅应用内通知")}
                         </span>
                       </div>
                     </CardContent>
@@ -136,7 +139,7 @@ function SubscriptionsPageContent() {
               {pausedSubscriptions.length === 0 ? (
                 <Card>
                   <CardContent className="py-8 text-center text-muted-foreground">
-                    暂无已暂停的订阅
+                    {t("account.暂无已暂停的订阅")}
                   </CardContent>
                 </Card>
               ) : (
@@ -144,7 +147,7 @@ function SubscriptionsPageContent() {
                   <Card key={sub.id} className="opacity-60">
                     <CardHeader>
                       <CardTitle className="text-base">{sub.targetName}</CardTitle>
-                      <CardDescription>{sub.type}</CardDescription>
+                      <CardDescription>{tc("account", sub.type)}</CardDescription>
                     </CardHeader>
                     <CardContent>
                       <Button
@@ -155,7 +158,7 @@ function SubscriptionsPageContent() {
                           })
                         }
                       >
-                        重新启用
+                        {t("account.重新启用")}
                       </Button>
                     </CardContent>
                   </Card>
@@ -166,16 +169,16 @@ function SubscriptionsPageContent() {
             <TabsContent value="settings">
               <Card>
                 <CardHeader>
-                  <CardTitle>全局设置</CardTitle>
-                  <CardDescription>配置所有订阅的全局偏好设置</CardDescription>
+                  <CardTitle>{t("account.全局设置")}</CardTitle>
+                  <CardDescription>{t("account.配置所有订阅的全局偏好设置")}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
-                        <Label>启用邮件通知</Label>
+                        <Label>{t("account.启用邮件通知")}</Label>
                         <p className="text-sm text-muted-foreground">
-                          通过电子邮件接收重要更新
+                          {t("account.通过电子邮件接收重要更新")}
                         </p>
                       </div>
                       <Switch defaultChecked />
@@ -183,28 +186,28 @@ function SubscriptionsPageContent() {
 
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
-                        <Label>启用浏览器推送</Label>
+                        <Label>{t("account.启用浏览器推送")}</Label>
                         <p className="text-sm text-muted-foreground">
-                          在浏览器中接收实时通知
+                          {t("account.在浏览器中接收实时通知")}
                         </p>
                       </div>
                       <Switch />
                     </div>
 
                     <div className="space-y-2">
-                      <Label>通知频率</Label>
+                      <Label>{t("account.通知频率")}</Label>
                       <RadioGroup defaultValue="instant" className="flex flex-col space-y-1">
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem value="instant" id="instant" />
-                          <Label htmlFor="instant">实时</Label>
+                          <Label htmlFor="instant">{t("account.实时")}</Label>
                         </div>
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem value="daily" id="daily2" />
-                          <Label htmlFor="daily2">每日摘要</Label>
+                          <Label htmlFor="daily2">{t("account.每日摘要")}</Label>
                         </div>
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem value="weekly" id="weekly2" />
-                          <Label htmlFor="weekly2">每周摘要</Label>
+                          <Label htmlFor="weekly2">{t("account.每周摘要")}</Label>
                         </div>
                       </RadioGroup>
                     </div>

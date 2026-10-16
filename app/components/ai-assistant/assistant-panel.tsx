@@ -15,6 +15,7 @@ import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 import { IntegrationRecommendation } from "./integration-recommendation"
+import { useI18n } from "@/app/hooks/use-i18n"
 
 interface AssistantPanelProps {
   onClose: () => void
@@ -27,15 +28,18 @@ interface ChatMessage {
   content: string
 }
 
-/** 首次打开面板时展示的欢迎语。 */
-const WELCOME_MESSAGE: ChatMessage = {
-  id: "welcome",
-  role: "assistant",
-  content:
-    "您好！我是言语云³集成助手，可以帮助您了解各种集成应用、解决集成问题，并提供相关建议。请问有什么可以帮助您的？",
-}
-
 export function AssistantPanel({ onClose }: AssistantPanelProps) {
+  const { t } = useI18n()
+
+  /** 首次打开面板时展示的欢迎语。 */
+  const createWelcomeMessage = (): ChatMessage => ({
+    id: "welcome",
+    role: "assistant",
+    content: t(
+      "ai.您好！我是言语云³集成助手，可以帮助您了解各种集成应用、解决集成问题，并提供相关建议。请问有什么可以帮助您的？",
+    ),
+  })
+
   const [expanded, setExpanded] = useState(false)
   const [soundEnabled, setSoundEnabled] = useState(false)
   const [inputMode, setInputMode] = useState<"simple" | "advanced">("simple")
@@ -44,7 +48,7 @@ export function AssistantPanel({ onClose }: AssistantPanelProps) {
   const [isTyping, setIsTyping] = useState(false)
 
   // 临时模拟useChat的功能，因为'ai/react'路径不存在
-  const [messages, setMessages] = useState<ChatMessage[]>([WELCOME_MESSAGE])
+  const [messages, setMessages] = useState<ChatMessage[]>(() => [createWelcomeMessage()])
   const [input, setInput] = useState("")
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setInput(e.target.value)
@@ -56,7 +60,7 @@ export function AssistantPanel({ onClose }: AssistantPanelProps) {
       setInput("")
       // 模拟回复
       setTimeout(() => {
-        setMessages(prev => [...prev, { role: "assistant", content: "这是一个模拟回复。" }])
+        setMessages(prev => [...prev, { role: "assistant", content: t("ai.这是一个模拟回复。") }])
         setShowRecommendations(true)
       }, 1000)
     }
@@ -74,7 +78,7 @@ export function AssistantPanel({ onClose }: AssistantPanelProps) {
   }
 
   const clearChat = () => {
-    setMessages([WELCOME_MESSAGE])
+    setMessages([createWelcomeMessage()])
     setShowRecommendations(false)
   }
 
@@ -100,7 +104,7 @@ export function AssistantPanel({ onClose }: AssistantPanelProps) {
                 <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center">
                   <span className="text-primary text-xs">AI</span>
                 </div>
-                集成智能助手
+                {t("ai.集成智能助手")}
               </CardTitle>
               <div className="flex items-center gap-1">
                 <Button
@@ -123,8 +127,8 @@ export function AssistantPanel({ onClose }: AssistantPanelProps) {
 
           <Tabs defaultValue="chat" className="w-full">
             <TabsList className="w-full grid grid-cols-2">
-              <TabsTrigger value="chat">对话</TabsTrigger>
-              <TabsTrigger value="settings">设置</TabsTrigger>
+              <TabsTrigger value="chat">{t("ai.对话")}</TabsTrigger>
+              <TabsTrigger value="settings">{t("ai.设置")}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="chat" className="m-0">
@@ -154,7 +158,7 @@ export function AssistantPanel({ onClose }: AssistantPanelProps) {
                     <Input
                       value={input}
                       onChange={handleInputChange}
-                      placeholder="输入您的问题..."
+                      placeholder={t("ai.输入您的问题...")}
                       className="flex-grow"
                       disabled={isLoading}
                     />
@@ -167,16 +171,16 @@ export function AssistantPanel({ onClose }: AssistantPanelProps) {
                     <Textarea
                       value={input}
                       onChange={handleInputChange}
-                      placeholder="输入您的详细问题..."
+                      placeholder={t("ai.输入您的详细问题...")}
                       className="min-h-24 resize-none"
                       disabled={isLoading}
                     />
                     <div className="flex justify-between">
                       <Button type="button" variant="outline" size="sm" onClick={() => setInputMode("simple")}>
-                        简单模式
+                        {t("ai.简单模式")}
                       </Button>
                       <Button type="submit" size="sm" disabled={isLoading || !input.trim()}>
-                        发送
+                        {t("ai.发送")}
                       </Button>
                     </div>
                   </form>
@@ -187,10 +191,10 @@ export function AssistantPanel({ onClose }: AssistantPanelProps) {
                     onClick={() => setInputMode(inputMode === "simple" ? "advanced" : "simple")}
                     className="hover:underline"
                   >
-                    {inputMode === "simple" ? "高级模式" : "简单模式"}
+                    {inputMode === "simple" ? t("ai.高级模式") : t("ai.简单模式")}
                   </button>
                   <button onClick={clearChat} className="hover:underline flex items-center gap-1">
-                    <RefreshCw className="h-3 w-3" /> 清空对话
+                    <RefreshCw className="h-3 w-3" /> {t("ai.清空对话")}
                   </button>
                 </div>
               </CardFooter>
@@ -201,8 +205,8 @@ export function AssistantPanel({ onClose }: AssistantPanelProps) {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
-                      <Label htmlFor="sound">声音提示</Label>
-                      <p className="text-xs text-gray-500">收到新消息时播放提示音</p>
+                      <Label htmlFor="sound">{t("ai.声音提示")}</Label>
+                      <p className="text-xs text-gray-500">{t("ai.收到新消息时播放提示音")}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       {soundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
@@ -212,8 +216,8 @@ export function AssistantPanel({ onClose }: AssistantPanelProps) {
 
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
-                      <Label htmlFor="recommendations">智能推荐</Label>
-                      <p className="text-xs text-gray-500">根据对话内容推荐相关集成应用</p>
+                      <Label htmlFor="recommendations">{t("ai.智能推荐")}</Label>
+                      <p className="text-xs text-gray-500">{t("ai.根据对话内容推荐相关集成应用")}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <Lightbulb className="h-4 w-4" />
@@ -226,19 +230,21 @@ export function AssistantPanel({ onClose }: AssistantPanelProps) {
                   </div>
 
                   <div className="border-t pt-4">
-                    <h3 className="text-sm font-medium mb-2">关于助手</h3>
+                    <h3 className="text-sm font-medium mb-2">{t("ai.关于助手")}</h3>
                     <p className="text-xs text-gray-500">
-                      言语云³集成助手是一个智能AI助手，可以帮助您了解各种集成应用、解决集成问题，并提供相关建议。
+                      {t(
+                        "ai.言语云³集成助手是一个智能AI助手，可以帮助您了解各种集成应用、解决集成问题，并提供相关建议。",
+                      )}
                     </p>
                   </div>
 
                   <div className="border-t pt-4">
-                    <h3 className="text-sm font-medium mb-2">常见问题</h3>
+                    <h3 className="text-sm font-medium mb-2">{t("ai.常见问题")}</h3>
                     <ul className="text-xs text-gray-500 space-y-1 list-disc pl-4">
-                      <li>如何添加新的集成应用？</li>
-                      <li>如何连接数据库集成？</li>
-                      <li>如何解决集成同步问题？</li>
-                      <li>如何查看集成使用统计？</li>
+                      <li>{t("ai.如何添加新的集成应用？")}</li>
+                      <li>{t("ai.如何连接数据库集成？")}</li>
+                      <li>{t("ai.如何解决集成同步问题？")}</li>
+                      <li>{t("ai.如何查看集成使用统计？")}</li>
                     </ul>
                   </div>
                 </div>

@@ -1,8 +1,12 @@
+"use client"
+
 import Link from "next/link"
 
 import { Navbar } from "@/components/ui/navbar"
 import { Footer } from "@/components/ui/footer"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useI18n } from "@/app/hooks/use-i18n"
+import { tc } from "@/lib/yyc3/i18n/data"
 
 /** 隐私政策章节 */
 const SECTIONS = [
@@ -34,34 +38,36 @@ const SECTIONS = [
  * @returns 隐私政策静态内容视图
  */
 export default function PrivacyPage() {
+  const { t } = useI18n()
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       <Navbar />
 
       <main className="flex-1 container mx-auto px-4 py-12">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-3xl font-bold mb-2">隐私政策</h1>
-          <p className="text-gray-500 mb-8">最近更新：2026 年 10 月 16 日</p>
+          <h1 className="text-3xl font-bold mb-2">{t("pages.隐私政策")}</h1>
+          <p className="text-gray-500 mb-8">{t("pages.最近更新：2026 年 10 月 16 日")}</p>
 
           <Card>
             <CardHeader>
-              <CardTitle>言语云³集成中心隐私政策</CardTitle>
+              <CardTitle>{t("pages.言语云³集成中心隐私政策")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               {SECTIONS.map((section) => (
                 <section key={section.title}>
-                  <h2 className="text-lg font-semibold mb-2">{section.title}</h2>
-                  <p className="text-gray-600 leading-relaxed">{section.body}</p>
+                  <h2 className="text-lg font-semibold mb-2">{tc("pages", section.title)}</h2>
+                  <p className="text-gray-600 leading-relaxed">{tc("pages", section.body)}</p>
                 </section>
               ))}
 
               <div className="pt-4 border-t">
                 <p className="text-gray-600">
-                  如对本政策有疑问，请前往
+                  {t("pages.如对本政策有疑问，请前往")}
                   <Link href="/contact" className="text-blue-600 hover:underline mx-1">
-                    联系我们
+                    {t("pages.联系我们")}
                   </Link>
-                  。
+                  {t("pages.。")}
                 </p>
               </div>
             </CardContent>

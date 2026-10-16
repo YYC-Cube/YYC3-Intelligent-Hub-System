@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
 import { type VersionCheckResult, versionCheckService } from "../services/version-check"
 import { useToast } from "@/hooks/use-toast"
+import { useI18n } from "@/app/hooks/use-i18n"
 
 interface VersionCheckContextType {
   checking: boolean
@@ -48,6 +49,7 @@ export function VersionCheckProvider({ children }: VersionCheckProviderProps) {
   const [updateInfo, setUpdateInfo] = useState<VersionCheckResult | null>(null)
   const [settings, setSettings] = useState<VersionCheckSettings>(defaultSettings)
   const { toast } = useToast()
+  const { t } = useI18n()
 
   // 加载设置
   useEffect(() => {
@@ -108,11 +110,18 @@ export function VersionCheckProvider({ children }: VersionCheckProviderProps) {
         // 如果有更新且需要通知，显示toast
         if (shouldNotify) {
           const updateType =
-            result.updateType === "major" ? "重大更新" : result.updateType === "minor" ? "功能更新" : "补丁更新"
+            result.updateType === "major"
+              ? t("common.重大更新")
+              : result.updateType === "minor"
+                ? t("common.功能更新")
+                : t("common.补丁更新")
 
           toast({
-            title: `有新的${updateType}可用`,
-            description: `版本 ${result.latestVersion.version} 已发布，您当前的版本是 ${currentVersion}`,
+            title: t("common.有新的{type}可用", { type: updateType }),
+            description: t("common.版本 {latest} 已发布，您当前的版本是 {current}", {
+              latest: result.latestVersion.version,
+              current: currentVersion,
+            }),
             duration: 10000,
           })
         }

@@ -1,18 +1,22 @@
 "use client"
 
-import { useState, useMemo } from "react"
-import { useParams } from "next/navigation"
-import { Navbar } from "@/components/ui/navbar"
-import { Button } from "@/components/ui/button"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { IntegrationCard } from "@/app/components/integrations/integration-card"
+import { SiteFooter } from "@/app/components/site-footer"
 import { integrations, subcategories } from "@/app/data/integrations"
-import { IntegrationCard } from "../../components/integration-card"
+import { useI18n } from "@/app/hooks/use-i18n"
+import { Button } from "@/components/ui/button"
+import { Navbar } from "@/components/ui/navbar"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { dataCat, dataSub } from "@/lib/yyc3/i18n/data"
+import { motion } from "framer-motion"
 import { SlidersHorizontal } from "lucide-react"
 import Link from "next/link"
-import { motion } from "framer-motion"
+import { useParams } from "next/navigation"
+import { useMemo, useState } from "react"
 
 export default function CategoryClient() {
+  const { t } = useI18n()
   const { category } = useParams()
   const decodedCategory = decodeURIComponent(category as string)
   const [sortBy, setSortBy] = useState("relevance")
@@ -71,19 +75,19 @@ export default function CategoryClient() {
       <main className="flex-1 container mx-auto px-4 py-8">
         <div className="flex items-center mb-6">
           <Link href="/marketplace" className="text-blue-600 hover:underline mr-2">
-            市场首页
+            {t("marketplace.市场首页")}
           </Link>
           <span className="text-gray-400 mx-2">/</span>
           <Link href="/marketplace/categories" className="text-blue-600 hover:underline mr-2">
-            分类
+            {t("marketplace.分类")}
           </Link>
           <span className="text-gray-400 mx-2">/</span>
-          <span className="text-gray-600">{decodedCategory}</span>
+          <span className="text-gray-600">{dataCat(decodedCategory)}</span>
         </div>
 
         <div className="flex flex-col md:flex-row justify-between items-center mb-6">
           <h1 className="text-2xl font-bold mb-2 md:mb-0">
-            {decodedCategory}
+            {dataCat(decodedCategory)}
             <span className="text-gray-500 text-lg ml-2">({filteredIntegrations.length})</span>
           </h1>
 
@@ -91,15 +95,15 @@ export default function CategoryClient() {
             <SlidersHorizontal className="h-4 w-4 text-gray-500" />
             <Select value={sortBy} onValueChange={setSortBy}>
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="排序方式" />
+                <SelectValue placeholder={t("marketplace.排序方式")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="relevance">相关性</SelectItem>
-                <SelectItem value="rating">评分</SelectItem>
-                <SelectItem value="installs">安装量</SelectItem>
-                <SelectItem value="newest">最新更新</SelectItem>
-                <SelectItem value="price-low">价格 (低到高)</SelectItem>
-                <SelectItem value="price-high">价格 (高到低)</SelectItem>
+                <SelectItem value="relevance">{t("marketplace.相关性")}</SelectItem>
+                <SelectItem value="rating">{t("marketplace.评分")}</SelectItem>
+                <SelectItem value="installs">{t("marketplace.安装量")}</SelectItem>
+                <SelectItem value="newest">{t("marketplace.最新更新")}</SelectItem>
+                <SelectItem value="price-low">{t("marketplace.价格 (低到高)")}</SelectItem>
+                <SelectItem value="price-high">{t("marketplace.价格 (高到低)")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -109,10 +113,10 @@ export default function CategoryClient() {
           <div className="mb-6">
             <Tabs defaultValue="all" value={selectedSubcategory} onValueChange={setSelectedSubcategory}>
               <TabsList className="mb-4">
-                <TabsTrigger value="all">全部</TabsTrigger>
+                <TabsTrigger value="all">{t("marketplace.全部")}</TabsTrigger>
                 {subCategories.map((sub) => (
                   <TabsTrigger key={sub} value={sub}>
-                    {sub}
+                    {dataSub(sub)}
                   </TabsTrigger>
                 ))}
               </TabsList>
@@ -123,10 +127,10 @@ export default function CategoryClient() {
         {filteredIntegrations.length === 0 ? (
           <div className="text-center py-12">
             <div className="text-5xl mb-4">🔍</div>
-            <h2 className="text-2xl font-bold mb-2">未找到匹配的集成应用</h2>
-            <p className="text-gray-500 mb-6">该类别下暂无集成应用</p>
+            <h2 className="text-2xl font-bold mb-2">{t("marketplace.未找到匹配的集成应用")}</h2>
+            <p className="text-gray-500 mb-6">{t("marketplace.该类别下暂无集成应用")}</p>
             <Button asChild>
-              <Link href="/marketplace">返回市场首页</Link>
+              <Link href="/marketplace">{t("marketplace.返回市场首页")}</Link>
             </Button>
           </div>
         ) : (
@@ -151,7 +155,7 @@ export default function CategoryClient() {
                     onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                     disabled={safePage === 1}
                   >
-                    上一页
+                    {t("marketplace.上一页")}
                   </Button>
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                     <Button
@@ -169,7 +173,7 @@ export default function CategoryClient() {
                     onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                     disabled={safePage === totalPages}
                   >
-                    下一页
+                    {t("marketplace.下一页")}
                   </Button>
                 </div>
               </div>
@@ -178,22 +182,8 @@ export default function CategoryClient() {
         )}
       </main>
 
-      <footer className="bg-gray-900 text-white py-10">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="mb-6 md:mb-0">
-              <h2 className="text-xl font-bold">言语云³ 集成中心</h2>
-              <p className="text-gray-400 mt-2">© {new Date().getFullYear()} YY C³-IC. 保留所有权利。</p>
-            </div>
-            <div className="flex space-x-6">
-              <Link href="#" className="hover:text-blue-400 transition-colors">关于我们</Link>
-              <Link href="#" className="hover:text-blue-400 transition-colors">联系我们</Link>
-              <Link href="#" className="hover:text-blue-400 transition-colors">隐私政策</Link>
-              <Link href="#" className="hover:text-blue-400 transition-colors">服务条款</Link>
-            </div>
-          </div>
-        </div>
-      </footer>
+      {/* 页脚（L-3：统一组件，消灭空锚点假链接） */}
+      <SiteFooter />
     </div>
   )
 }

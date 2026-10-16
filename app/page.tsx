@@ -11,6 +11,9 @@ import { BackgroundPattern } from "./components/ui/background-pattern"
 import { PageTransition } from "./components/ui/page-transition"
 import { Card3D } from "./components/ui/3d-card"
 import { iconMap } from "./data/integrations"
+import { brandAssets } from "@/lib/yyc3/brand"
+import { useI18n } from "@/app/hooks/use-i18n"
+import { dataCat, dataIntegrationDesc, dataIntegrationName } from "@/lib/yyc3/i18n/data"
 
 const integrations = [
   {
@@ -89,6 +92,7 @@ const integrations = [
 
 export default function HomePage() {
   const [showChat, setShowChat] = useState(false)
+  const { t } = useI18n()
 
   return (
     <PageTransition>
@@ -99,7 +103,7 @@ export default function HomePage() {
         <section
           className="relative py-20 md:py-32 overflow-hidden min-h-[600px] flex items-center"
           style={{
-            backgroundImage: "url('/yyc3-desktop.png')",
+            backgroundImage: `url('${brandAssets.desktop}')`,
             backgroundSize: 'cover',
             backgroundPosition: 'center left',
             backgroundRepeat: 'no-repeat',
@@ -116,7 +120,7 @@ export default function HomePage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.1 }}
                 >
-                  YYC³ 集成中心
+                  {t("home.YYC³ 集成中心")}
                 </motion.h1>
                 <motion.p
                   className="text-lg md:text-xl text-blue-100 max-w-xl ml-auto mb-8 font-light text-right"
@@ -124,7 +128,7 @@ export default function HomePage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.2 }}
                 >
-                  万象归元于云枢 · 深栈智启新纪元
+                  {t("home.万象归元于云枢 · 深栈智启新纪元")}
                 </motion.p>
                 <motion.p
                   className="text-base text-blue-200/90 max-w-lg ml-auto mb-10 text-right"
@@ -132,7 +136,7 @@ export default function HomePage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.3 }}
                 >
-                  连接企业级应用生态，构建智能化集成平台
+                  {t("home.连接企业级应用生态，构建智能化集成平台")}
                 </motion.p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-end">
                   <Button
@@ -141,7 +145,7 @@ export default function HomePage() {
                     className="px-8 py-6 bg-white text-blue-700 hover:bg-blue-50 font-semibold shadow-xl shadow-blue-900/30 transition-all duration-300 transform hover:scale-105 border-0"
                   >
                     <Link href="/integrations" className="py-6">
-                      浏览集成应用
+                      {t("home.浏览集成应用")}
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </Link>
                   </Button>
@@ -151,7 +155,7 @@ export default function HomePage() {
                     className="px-8 py-6 bg-indigo-500/90 hover:bg-indigo-500 text-white font-semibold border-2 border-indigo-300/50 hover:border-indigo-200 shadow-lg shadow-indigo-500/25 backdrop-blur-sm transition-all duration-300 transform hover:scale-105"
                     onClick={() => setShowChat(!showChat)}
                   >
-                    {showChat ? "隐藏助手" : "AI 智能助手"}
+                    {showChat ? t("home.隐藏助手") : t("home.AI 智能助手")}
                   </Button>
                 </div>
               </motion.div>
@@ -209,29 +213,29 @@ export default function HomePage() {
               {[
                 {
                   icon: <Zap className="h-10 w-10 text-orange-500" />,
-                  title: "快速集成",
-                  description: "一键连接各类应用，无需复杂配置",
+                  title: t("home.快速集成"),
+                  description: t("home.一键连接各类应用，无需复杂配置"),
                   gradient: "from-orange-500 to-amber-500",
                   bgGradient: "from-orange-50 via-amber-50 to-white",
                 },
                 {
                   icon: <Shield className="h-10 w-10 text-green-500" />,
-                  title: "安全可靠",
-                  description: "企业级安全保障，数据传输加密处理",
+                  title: t("home.安全可靠"),
+                  description: t("home.企业级安全保障，数据传输加密处理"),
                   gradient: "from-green-500 to-emerald-500",
                   bgGradient: "from-green-50 via-emerald-50 to-white",
                 },
                 {
                   icon: <Globe className="h-10 w-10 text-blue-500" />,
-                  title: "全球连接",
-                  description: "支持全球各地区服务，无缝跨境协作",
+                  title: t("home.全球连接"),
+                  description: t("home.支持全球各地区服务，无缝跨境协作"),
                   gradient: "from-blue-500 to-cyan-500",
                   bgGradient: "from-blue-50 via-cyan-50 to-white",
                 },
                 {
                   icon: <Database className="h-10 w-10 text-purple-500" />,
-                  title: "数据同步",
-                  description: "实时数据同步，确保信息一致性",
+                  title: t("home.数据同步"),
+                  description: t("home.实时数据同步，确保信息一致性"),
                   gradient: "from-purple-500 to-fuchsia-500",
                   bgGradient: "from-purple-50 via-fuchsia-50 to-white",
                 },
@@ -291,7 +295,7 @@ export default function HomePage() {
           <div className="container mx-auto px-4 relative z-10">
             <div className="flex justify-between items-center mb-10">
               <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
-                集成引擎
+                {t("home.集成引擎")}
               </h2>
               <Button
                 asChild
@@ -299,7 +303,7 @@ export default function HomePage() {
                 className="border-2 border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50"
               >
                 <Link href="/integrations">
-                  查看全部
+                  {t("home.查看全部")}
                 </Link>
               </Button>
             </div>
@@ -381,7 +385,7 @@ export default function HomePage() {
                         </motion.div>
                         
                         {/* 增强的文字样式 */}
-                        <h3 className="font-semibold text-base mt-3 transition-all duration-300 group-hover:text-indigo-600 group-hover:font-bold">{integration.name}</h3>
+                        <h3 className="font-semibold text-base mt-3 transition-all duration-300 group-hover:text-indigo-600 group-hover:font-bold">{dataIntegrationName(integration.name)}</h3>
                         
                         {/* 增强的分类标签 */}
                         <motion.span 
@@ -393,14 +397,15 @@ export default function HomePage() {
                             fontWeight: 500
                           }}
                         >
-                          {integration.category}
+                          {dataCat(integration.category)}
                         </motion.span>
                         
                         {/* 增强的描述文本 */}
                         <p className="text-xs text-gray-500 flex-grow overflow-hidden group-hover:text-gray-700 transition-colors duration-300">
-                          {integration.description.length > 100
-                            ? `${integration.description.substring(0, 100)}...`
-                            : integration.description}
+                          {(() => {
+                            const desc = dataIntegrationDesc(integration.description)
+                            return desc.length > 100 ? `${desc.substring(0, 100)}...` : desc
+                          })()}
                         </p>
                       </div>
                     </Card3D>
@@ -419,20 +424,20 @@ export default function HomePage() {
                 <h2 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
                   YanYuCloud³ Integration Center
                 </h2>
-                <p className="text-gray-400 mt-2">© YanYu Cloud³ {new Date().getFullYear()}. 保留所有权利。</p>
+                <p className="text-gray-400 mt-2">{t("home.© YanYu Cloud³ {year}. 保留所有权利。", { year: String(new Date().getFullYear()) })}</p>
               </div>
               <div className="flex space-x-6">
-                <Link href="#" className="hover:text-blue-400 transition-colors">
-                  关于我们
+                <Link href="/about" className="hover:text-blue-400 transition-colors">
+                  {t("home.关于我们")}
                 </Link>
-                <Link href="#" className="hover:text-blue-400 transition-colors">
-                  联系我们
+                <Link href="/contact" className="hover:text-blue-400 transition-colors">
+                  {t("home.联系我们")}
                 </Link>
-                <Link href="#" className="hover:text-blue-400 transition-colors">
-                  隐私政策
+                <Link href="/privacy" className="hover:text-blue-400 transition-colors">
+                  {t("home.隐私政策")}
                 </Link>
-                <Link href="#" className="hover:text-blue-400 transition-colors">
-                  服务条款
+                <Link href="/terms" className="hover:text-blue-400 transition-colors">
+                  {t("home.服务条款")}
                 </Link>
               </div>
             </div>

@@ -26,6 +26,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import { useI18n } from "@/app/hooks/use-i18n"
+import { tc } from "@/lib/yyc3/i18n/data"
 
 // 定义学习路径类型
 interface LearningPath {
@@ -309,6 +311,7 @@ const learningPaths: LearningPath[] = [
 ]
 
 export default function ProgressiveGuidePage() {
+  const { t } = useI18n()
   const [activeTab, setActiveTab] = useState("overview")
   const [selectedPath, setSelectedPath] = useState<LearningPath | null>(null)
   const [progress, setProgress] = useState(0)
@@ -365,13 +368,13 @@ export default function ProgressiveGuidePage() {
       {/* 页面标题 */}
       <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-12 px-4">
         <div className="container mx-auto max-w-6xl">
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">递进式开发指南</h1>
-          <p className="text-xl opacity-90 max-w-3xl">从入门到精通，循序渐进地学习言语云³集成中心系统的开发</p>
+          <h1 className="text-3xl md:text-4xl font-bold mb-4">{t("developer.递进式开发指南")}</h1>
+          <p className="text-xl opacity-90 max-w-3xl">{t("developer.从入门到精通，循序渐进地学习言语云³集成中心系统的开发")}</p>
 
           {/* 总体进度 */}
           <div className="mt-8 bg-white/20 p-4 rounded-lg backdrop-blur-sm max-w-md">
             <div className="flex justify-between mb-2">
-              <span className="font-medium">总体学习进度</span>
+              <span className="font-medium">{t("developer.总体学习进度")}</span>
               <span>{progress}%</span>
             </div>
             <Progress value={progress} className="h-2" />
@@ -382,9 +385,9 @@ export default function ProgressiveGuidePage() {
       <div className="container mx-auto max-w-6xl px-4 mt-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
           <TabsList className="grid w-full grid-cols-2 md:w-auto md:inline-flex">
-            <TabsTrigger value="overview">学习路径概览</TabsTrigger>
+            <TabsTrigger value="overview">{t("developer.学习路径概览")}</TabsTrigger>
             <TabsTrigger value="path-details" disabled={!selectedPath}>
-              {selectedPath ? selectedPath.title : "路径详情"}
+              {selectedPath ? tc("developer", selectedPath.title) : t("developer.路径详情")}
             </TabsTrigger>
           </TabsList>
 
@@ -410,49 +413,51 @@ export default function ProgressiveGuidePage() {
                           <path.icon className={`h-6 w-6 ${path.color.replace("bg-", "text-")}`} />
                         </div>
                         <Badge variant="outline" className={`${getLevelColor(path.level)} text-white`}>
-                          {path.level}
+                          {tc("developer", path.level)}
                         </Badge>
                       </div>
 
-                      <h3 className="text-xl font-bold mb-2">{path.title}</h3>
-                      <p className="text-gray-600 mb-4">{path.description}</p>
+                      <h3 className="text-xl font-bold mb-2">{tc("developer", path.title)}</h3>
+                      <p className="text-gray-600 mb-4">{tc("developer", path.description)}</p>
 
                       <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
                         <div className="flex items-center">
                           <Clock className="h-4 w-4 mr-1" />
-                          <span>约 {path.estimatedHours} 小时</span>
+                          <span>{t("developer.约 {hours} 小时", { hours: String(path.estimatedHours) })}</span>
                         </div>
                         <div className="flex items-center">
                           <Layers className="h-4 w-4 mr-1" />
-                          <span>{path.modules.length} 个模块</span>
+                          <span>{t("developer.{count} 个模块", { count: String(path.modules.length) })}</span>
                         </div>
                       </div>
 
                       {isCompleted ? (
                         <div className="flex items-center text-green-600">
                           <CheckCircle className="h-5 w-5 mr-2" />
-                          <span>已完成</span>
+                          <span>{t("developer.已完成")}</span>
                         </div>
                       ) : isUnlocked ? (
                         <Button className="w-full">
-                          {userProgress.currentModule === path.modules[0].id ? "继续学习" : "开始学习"}
+                          {userProgress.currentModule === path.modules[0].id
+                            ? t("developer.继续学习")
+                            : t("developer.开始学习")}
                         </Button>
                       ) : (
                         <div className="flex items-center text-amber-600">
                           <Lock className="h-5 w-5 mr-2" />
-                          <span>需要完成前置路径</span>
+                          <span>{t("developer.需要完成前置路径")}</span>
                         </div>
                       )}
 
                       {path.prerequisites && path.prerequisites.length > 0 && (
                         <div className="mt-4 text-sm text-gray-500">
-                          <p>前置要求：</p>
+                          <p>{t("developer.前置要求：")}</p>
                           <div className="flex flex-wrap gap-2 mt-1">
                             {path.prerequisites.map((prereq) => {
                               const prereqPath = learningPaths.find((p) => p.id === prereq)
                               return (
                                 <Badge key={prereq} variant="outline" className="bg-gray-100">
-                                  {prereqPath?.title || prereq}
+                                  {prereqPath ? tc("developer", prereqPath.title) : prereq}
                                 </Badge>
                               )
                             })}
@@ -473,12 +478,12 @@ export default function ProgressiveGuidePage() {
                 <div className="flex items-center space-x-2 mb-6">
                   <Button variant="ghost" onClick={() => setActiveTab("overview")}>
                     <ChevronRight className="h-4 w-4 mr-1 rotate-180" />
-                    返回
+                    {t("developer.返回")}
                   </Button>
                   <Separator orientation="vertical" className="h-6" />
-                  <h2 className="text-2xl font-bold">{selectedPath.title}</h2>
+                  <h2 className="text-2xl font-bold">{tc("developer", selectedPath.title)}</h2>
                   <Badge variant="outline" className={`${getLevelColor(selectedPath.level)} text-white ml-2`}>
-                    {selectedPath.level}
+                    {tc("developer", selectedPath.level)}
                   </Badge>
                 </div>
 
@@ -491,50 +496,50 @@ export default function ProgressiveGuidePage() {
                           <selectedPath.icon className={`h-6 w-6 ${selectedPath.color.replace("bg-", "text-")}`} />
                         </div>
 
-                        <h3 className="text-xl font-bold mb-2">{selectedPath.title}</h3>
-                        <p className="text-gray-600 mb-6">{selectedPath.description}</p>
+                        <h3 className="text-xl font-bold mb-2">{tc("developer", selectedPath.title)}</h3>
+                        <p className="text-gray-600 mb-6">{tc("developer", selectedPath.description)}</p>
 
                         <div className="space-y-4">
                           <div className="flex items-center justify-between">
-                            <span className="text-gray-600">难度级别</span>
+                            <span className="text-gray-600">{t("developer.难度级别")}</span>
                             <Badge variant="outline" className={`${getLevelColor(selectedPath.level)} text-white`}>
-                              {selectedPath.level}
+                              {tc("developer", selectedPath.level)}
                             </Badge>
                           </div>
 
                           <div className="flex items-center justify-between">
-                            <span className="text-gray-600">预计学习时间</span>
-                            <span>{selectedPath.estimatedHours} 小时</span>
+                            <span className="text-gray-600">{t("developer.预计学习时间")}</span>
+                            <span>{t("developer.{hours} 小时", { hours: String(selectedPath.estimatedHours) })}</span>
                           </div>
 
                           <div className="flex items-center justify-between">
-                            <span className="text-gray-600">模块数量</span>
-                            <span>{selectedPath.modules.length} 个</span>
+                            <span className="text-gray-600">{t("developer.模块数量")}</span>
+                            <span>{t("developer.{count} 个", { count: String(selectedPath.modules.length) })}</span>
                           </div>
 
                           <div className="flex items-center justify-between">
-                            <span className="text-gray-600">完成状态</span>
+                            <span className="text-gray-600">{t("developer.完成状态")}</span>
                             {isPathCompleted(selectedPath.id) ? (
-                              <Badge className="bg-green-500">已完成</Badge>
+                              <Badge className="bg-green-500">{t("developer.已完成")}</Badge>
                             ) : (
-                              <Badge className="bg-blue-500">进行中</Badge>
+                              <Badge className="bg-blue-500">{t("developer.进行中")}</Badge>
                             )}
                           </div>
                         </div>
 
                         {selectedPath.prerequisites && selectedPath.prerequisites.length > 0 && (
                           <div className="mt-6 pt-6 border-t border-gray-200">
-                            <h4 className="font-medium mb-2">前置要求</h4>
+                            <h4 className="font-medium mb-2">{t("developer.前置要求")}</h4>
                             <div className="space-y-2">
                               {selectedPath.prerequisites.map((prereq) => {
                                 const prereqPath = learningPaths.find((p) => p.id === prereq)
                                 return (
                                   <div key={prereq} className="flex items-center justify-between">
-                                    <span>{prereqPath?.title || prereq}</span>
+                                    <span>{prereqPath ? tc("developer", prereqPath.title) : prereq}</span>
                                     {isPathCompleted(prereq) ? (
-                                      <Badge className="bg-green-500">已完成</Badge>
+                                      <Badge className="bg-green-500">{t("developer.已完成")}</Badge>
                                     ) : (
-                                      <Badge className="bg-amber-500">未完成</Badge>
+                                      <Badge className="bg-amber-500">{t("developer.未完成")}</Badge>
                                     )}
                                   </div>
                                 )
@@ -565,8 +570,8 @@ export default function ProgressiveGuidePage() {
                                 {index + 1}
                               </div>
                               <div>
-                                <h3 className="font-medium">{module.title}</h3>
-                                <p className="text-sm text-gray-500">{module.description}</p>
+                                <h3 className="font-medium">{tc("developer", module.title)}</h3>
+                                <p className="text-sm text-gray-500">{tc("developer", module.description)}</p>
                               </div>
                             </div>
                             <div className="flex items-center">
@@ -575,9 +580,11 @@ export default function ProgressiveGuidePage() {
                               ) : isCompleted ? (
                                 <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
                               ) : isCurrent ? (
-                                <Badge className="bg-blue-500 mr-2">当前</Badge>
+                                <Badge className="bg-blue-500 mr-2">{t("developer.当前")}</Badge>
                               ) : null}
-                              <span className="text-sm text-gray-500 mr-2">{module.duration} 分钟</span>
+                              <span className="text-sm text-gray-500 mr-2">
+                                {t("developer.{duration} 分钟", { duration: String(module.duration) })}
+                              </span>
                               <ChevronRight className="h-5 w-5 text-gray-400" />
                             </div>
                           </CollapsibleTrigger>
@@ -587,12 +594,12 @@ export default function ProgressiveGuidePage() {
                               {isLocked ? (
                                 <div className="flex flex-col items-center justify-center py-6">
                                   <Lock className="h-12 w-12 text-gray-400 mb-2" />
-                                  <p className="text-gray-500 mb-4">完成前面的模块以解锁此内容</p>
-                                  {index > 0 && <Button variant="outline">前往上一模块</Button>}
+                                  <p className="text-gray-500 mb-4">{t("developer.完成前面的模块以解锁此内容")}</p>
+                                  {index > 0 && <Button variant="outline">{t("developer.前往上一模块")}</Button>}
                                 </div>
                               ) : (
                                 <div className="space-y-4">
-                                  <h4 className="font-medium mb-2">学习步骤</h4>
+                                  <h4 className="font-medium mb-2">{t("developer.学习步骤")}</h4>
                                   <div className="space-y-2">
                                     {module.steps.map((step, stepIndex) => (
                                       <div
@@ -604,19 +611,19 @@ export default function ProgressiveGuidePage() {
                                             {stepIndex + 1}
                                           </div>
                                           <div>
-                                            <p className="font-medium">{step.title}</p>
+                                            <p className="font-medium">{tc("developer", step.title)}</p>
                                             <div className="flex items-center text-sm text-gray-500">
                                               <Badge variant="outline" className="mr-2">
-                                                {step.type}
+                                                {tc("developer", step.type)}
                                               </Badge>
-                                              <span>{step.duration} 分钟</span>
+                                              <span>{t("developer.{duration} 分钟", { duration: String(step.duration) })}</span>
                                             </div>
                                           </div>
                                         </div>
                                         {step.completed ? (
                                           <CheckCircle className="h-5 w-5 text-green-500" />
                                         ) : (
-                                          <Button size="sm">开始</Button>
+                                          <Button size="sm">{t("developer.开始")}</Button>
                                         )}
                                       </div>
                                     ))}
@@ -626,12 +633,12 @@ export default function ProgressiveGuidePage() {
                                     {index > 0 && (
                                       <Button variant="outline">
                                         <ChevronRight className="h-4 w-4 mr-1 rotate-180" />
-                                        上一模块
+                                        {t("developer.上一模块")}
                                       </Button>
                                     )}
                                     {index < selectedPath.modules.length - 1 && (
                                       <Button className="ml-auto">
-                                        下一模块
+                                        {t("developer.下一模块")}
                                         <ChevronRight className="h-4 w-4 ml-1" />
                                       </Button>
                                     )}
@@ -652,7 +659,7 @@ export default function ProgressiveGuidePage() {
 
         {/* 推荐资源 */}
         <div className="mt-12">
-          <h2 className="text-2xl font-bold mb-6">推荐学习资源</h2>
+          <h2 className="text-2xl font-bold mb-6">{t("developer.推荐学习资源")}</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Card>
               <CardContent className="p-6">
@@ -661,11 +668,11 @@ export default function ProgressiveGuidePage() {
                     <BookOpen className="h-6 w-6 text-blue-600" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-medium mb-2">API参考文档</h3>
-                    <p className="text-gray-500 mb-4">完整的API参考文档，包含所有端点和参数说明。</p>
+                    <h3 className="text-lg font-medium mb-2">{t("developer.API参考文档")}</h3>
+                    <p className="text-gray-500 mb-4">{t("developer.完整的API参考文档，包含所有端点和参数说明。")}</p>
                     <Button variant="outline" asChild className="w-full">
                       <Link href="/developer/api" className="flex items-center justify-between">
-                        <span>查看文档</span>
+                        <span>{t("developer.查看文档")}</span>
                         <ChevronRight className="h-4 w-4" />
                       </Link>
                     </Button>
@@ -681,11 +688,11 @@ export default function ProgressiveGuidePage() {
                     <Package className="h-6 w-6 text-purple-600" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-medium mb-2">组件示例</h3>
-                    <p className="text-gray-500 mb-4">浏览所有UI组件的示例和用法说明。</p>
+                    <h3 className="text-lg font-medium mb-2">{t("developer.组件示例")}</h3>
+                    <p className="text-gray-500 mb-4">{t("developer.浏览所有UI组件的示例和用法说明。")}</p>
                     <Button variant="outline" asChild className="w-full">
                       <Link href="/developer/components" className="flex items-center justify-between">
-                        <span>查看组件</span>
+                        <span>{t("developer.查看组件")}</span>
                         <ChevronRight className="h-4 w-4" />
                       </Link>
                     </Button>
@@ -701,15 +708,15 @@ export default function ProgressiveGuidePage() {
                     <Users className="h-6 w-6 text-green-600" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-medium mb-2">开发者社区</h3>
-                    <p className="text-gray-500 mb-4">加入我们的开发者社区，获取帮助和分享经验。</p>
+                    <h3 className="text-lg font-medium mb-2">{t("developer.开发者社区")}</h3>
+                    <p className="text-gray-500 mb-4">{t("developer.加入我们的开发者社区，获取帮助和分享经验。")}</p>
                     <Button variant="outline" asChild className="w-full">
                       <Link
                         href="https://community.yanyu.cloud"
                         target="_blank"
                         className="flex items-center justify-between"
                       >
-                        <span>加入社区</span>
+                        <span>{t("developer.加入社区")}</span>
                         <ChevronRight className="h-4 w-4" />
                       </Link>
                     </Button>

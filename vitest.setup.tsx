@@ -2,6 +2,24 @@ import "@testing-library/jest-dom/vitest"
 import { afterEach, vi } from "vitest"
 import { cleanup } from "@testing-library/react"
 
+// ---------------------------------------------------------------------------
+// i18n 确定性语言环境（zh-CN）
+//
+// `@yyc3/i18n-core` 的 I18nEngine 在构造期经 resolveInitialLocale() →
+// resolveNavigatorLocale() 读取 navigator.languages/language，
+// 会覆盖实例化时显式传入的 locale 配置。
+// jsdom 的 navigator 默认 en-US，导致测试渲染英文、与用例中文断言冲突。
+// setupFiles 先于测试文件的应用模块导入执行，此处钉死 navigator 语言。
+// ---------------------------------------------------------------------------
+Object.defineProperty(window.navigator, "languages", {
+  value: ["zh-CN", "zh"],
+  configurable: true,
+})
+Object.defineProperty(window.navigator, "language", {
+  value: "zh-CN",
+  configurable: true,
+})
+
 afterEach(() => {
   cleanup()
 })

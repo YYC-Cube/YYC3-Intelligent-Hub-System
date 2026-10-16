@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useAuth } from "@/app/context/auth-context"
+import { useI18n } from "@/app/hooks/use-i18n"
 import { Loader2 } from "lucide-react"
 
 interface LoginFormProps {
@@ -18,6 +19,7 @@ interface LoginFormProps {
 
 export function LoginForm({ onSuccess, onCancel }: LoginFormProps) {
   const { login, register, isLoading } = useAuth()
+  const { t } = useI18n()
   const [activeTab, setActiveTab] = useState<"login" | "register">("login")
 
   // 登录表单状态
@@ -38,7 +40,7 @@ export function LoginForm({ onSuccess, onCancel }: LoginFormProps) {
     setLoginError("")
 
     if (!loginEmail || !loginPassword) {
-      setLoginError("请填写所有字段")
+      setLoginError(t("auth.请填写所有字段"))
       return
     }
 
@@ -54,12 +56,12 @@ export function LoginForm({ onSuccess, onCancel }: LoginFormProps) {
     setRegisterError("")
 
     if (!registerName || !registerEmail || !registerPassword || !registerConfirmPassword) {
-      setRegisterError("请填写所有字段")
+      setRegisterError(t("auth.请填写所有字段"))
       return
     }
 
     if (registerPassword !== registerConfirmPassword) {
-      setRegisterError("两次输入的密码不一致")
+      setRegisterError(t("auth.两次输入的密码不一致"))
       return
     }
 
@@ -72,20 +74,20 @@ export function LoginForm({ onSuccess, onCancel }: LoginFormProps) {
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader>
-        <CardTitle className="text-2xl">账户登录</CardTitle>
-        <CardDescription>登录您的账户以同步收藏数据</CardDescription>
+        <CardTitle className="text-2xl">{t("auth.账户登录")}</CardTitle>
+        <CardDescription>{t("auth.登录您的账户以同步收藏数据")}</CardDescription>
       </CardHeader>
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "login" | "register")}>
         <TabsList className="grid grid-cols-2 w-full">
-          <TabsTrigger value="login">登录</TabsTrigger>
-          <TabsTrigger value="register">注册</TabsTrigger>
+          <TabsTrigger value="login">{t("auth.登录")}</TabsTrigger>
+          <TabsTrigger value="register">{t("auth.注册")}</TabsTrigger>
         </TabsList>
 
         <CardContent className="pt-6">
           <TabsContent value="login">
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">电子邮箱</Label>
+                <Label htmlFor="email">{t("auth.电子邮箱")}</Label>
                 <Input
                   id="email"
                   type="email"
@@ -97,7 +99,7 @@ export function LoginForm({ onSuccess, onCancel }: LoginFormProps) {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password">密码</Label>
+                <Label htmlFor="password">{t("auth.密码")}</Label>
                 <Input
                   id="password"
                   type="password"
@@ -113,10 +115,10 @@ export function LoginForm({ onSuccess, onCancel }: LoginFormProps) {
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    登录中...
+                    {t("auth.登录中...")}
                   </>
                 ) : (
-                  "登录"
+                  t("auth.登录")
                 )}
               </Button>
             </form>
@@ -125,17 +127,17 @@ export function LoginForm({ onSuccess, onCancel }: LoginFormProps) {
           <TabsContent value="register">
             <form onSubmit={handleRegister} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">姓名</Label>
+                <Label htmlFor="name">{t("auth.姓名")}</Label>
                 <Input
                   id="name"
-                  placeholder="您的姓名"
+                  placeholder={t("auth.您的姓名")}
                   value={registerName}
                   onChange={(e) => setRegisterName(e.target.value)}
                   disabled={isLoading}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="register-email">邮箱</Label>
+                <Label htmlFor="register-email">{t("auth.邮箱")}</Label>
                 <Input
                   id="register-email"
                   type="email"
@@ -146,7 +148,7 @@ export function LoginForm({ onSuccess, onCancel }: LoginFormProps) {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="register-password">密码</Label>
+                <Label htmlFor="register-password">{t("auth.密码")}</Label>
                 <Input
                   id="register-password"
                   type="password"
@@ -157,7 +159,7 @@ export function LoginForm({ onSuccess, onCancel }: LoginFormProps) {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="confirm-password">确认密码</Label>
+                <Label htmlFor="confirm-password">{t("auth.确认密码")}</Label>
                 <Input
                   id="confirm-password"
                   type="password"
@@ -172,10 +174,10 @@ export function LoginForm({ onSuccess, onCancel }: LoginFormProps) {
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    注册中...
+                    {t("auth.注册中...")}
                   </>
                 ) : (
-                  "注册"
+                  t("auth.注册")
                 )}
               </Button>
             </form>
@@ -185,16 +187,16 @@ export function LoginForm({ onSuccess, onCancel }: LoginFormProps) {
 
       <CardFooter className="flex justify-between">
         <Button variant="ghost" onClick={onCancel}>
-          取消
+          {t("auth.取消")}
         </Button>
         <p className="text-xs text-gray-500">
-          {activeTab === "login" ? "没有账户？" : "已有账户？"}
+          {activeTab === "login" ? t("auth.没有账户？") : t("auth.已有账户？")}
           <button
             type="button"
             className="text-blue-600 hover:underline ml-1"
             onClick={() => setActiveTab(activeTab === "login" ? "register" : "login")}
           >
-            {activeTab === "login" ? "注册" : "登录"}
+            {activeTab === "login" ? t("auth.注册") : t("auth.登录")}
           </button>
         </p>
       </CardFooter>

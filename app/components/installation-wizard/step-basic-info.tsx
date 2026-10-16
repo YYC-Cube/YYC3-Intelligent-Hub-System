@@ -6,8 +6,10 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useState } from "react"
 import { WizardNavigation } from "./wizard-navigation"
+import { useI18n } from "@/app/hooks/use-i18n"
 
 export function StepBasicInfo() {
+  const { t } = useI18n()
   const { formData, updateFormData } = useWizard()
   const [name, setName] = useState(formData.name || "")
   const [environment, setEnvironment] = useState(formData.environment || "production")
@@ -29,46 +31,46 @@ export function StepBasicInfo() {
       <div className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="name">
-            集成名称 <span className="text-red-500">*</span>
+            {t("install.集成名称")} <span className="text-red-500">*</span>
           </Label>
           <Input
             id="name"
-            placeholder="输入集成名称"
+            placeholder={t("install.输入集成名称")}
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="max-w-md"
           />
-          <p className="text-xs text-gray-500">为您的集成应用提供一个易于识别的名称</p>
+          <p className="text-xs text-gray-500">{t("install.为您的集成应用提供一个易于识别的名称")}</p>
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="environment">
-            环境 <span className="text-red-500">*</span>
+            {t("install.环境")} <span className="text-red-500">*</span>
           </Label>
           <Select value={environment} onValueChange={setEnvironment}>
             <SelectTrigger className="max-w-md">
-              <SelectValue placeholder="选择环境" />
+              <SelectValue placeholder={t("install.选择环境")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="development">开发环境</SelectItem>
-              <SelectItem value="testing">测试环境</SelectItem>
-              <SelectItem value="staging">预发布环境</SelectItem>
-              <SelectItem value="production">生产环境</SelectItem>
+              <SelectItem value="development">{t("install.开发环境")}</SelectItem>
+              <SelectItem value="testing">{t("install.测试环境")}</SelectItem>
+              <SelectItem value="staging">{t("install.预发布环境")}</SelectItem>
+              <SelectItem value="production">{t("install.生产环境")}</SelectItem>
             </SelectContent>
           </Select>
-          <p className="text-xs text-gray-500">选择此集成将运行的环境</p>
+          <p className="text-xs text-gray-500">{t("install.选择此集成将运行的环境")}</p>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="description">描述</Label>
+          <Label htmlFor="description">{t("install.描述")}</Label>
           <Input
             id="description"
-            placeholder="输入集成描述（可选）"
+            placeholder={t("install.输入集成描述（可选）")}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             className="max-w-md"
           />
-          <p className="text-xs text-gray-500">添加描述以便于团队成员理解此集成的用途</p>
+          <p className="text-xs text-gray-500">{t("install.添加描述以便于团队成员理解此集成的用途")}</p>
         </div>
       </div>
 

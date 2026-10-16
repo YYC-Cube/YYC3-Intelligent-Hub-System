@@ -3,6 +3,7 @@
 import { integrations } from "@/app/data/integrations"
 
 import { IntegrationBrowser } from "../components/integration-browser"
+import { useI18n } from "@/app/hooks/use-i18n"
 
 /**
  * 应用市场「浏览全部」页面。
@@ -13,13 +14,15 @@ import { IntegrationBrowser } from "../components/integration-browser"
  * @returns 分页浏览视图
  */
 export default function BrowseIntegrationsPage() {
+  const { t } = useI18n()
+
   return (
     <IntegrationBrowser
-      title="浏览全部应用"
-      description="按分类、评分与安装量浏览集成中心上架的全部连接器。"
+      title={t("marketplace.浏览全部应用")}
+      description={t("marketplace.按分类、评分与安装量浏览集成中心上架的全部连接器。")}
       source={integrations}
       showCategoryFilter
-      emptyHint="没有符合条件的应用，试试调整分类或关键字。"
+      emptyHint={t("marketplace.没有符合条件的应用，试试调整分类或关键字。")}
     />
   )
 }

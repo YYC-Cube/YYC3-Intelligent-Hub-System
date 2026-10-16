@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from "vitest"
-import { render, screen, fireEvent } from "@testing-library/react"
-import { IntegrationCard } from "@/app/marketplace/components/integration-card"
+import { IntegrationCard } from "@/app/components/integrations/integration-card"
+import { fireEvent, render, screen } from "@testing-library/react"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 import { makeIntegration } from "../fixtures/integrations"
 
 const mocks = vi.hoisted(() => ({
@@ -95,12 +95,21 @@ describe("组件测试 · 应用卡片渲染", () => {
     expect(screen.queryByText("新上线")).not.toBeInTheDocument()
   })
 
-  it("TC-C-006 未悬停时不渲染收藏按钮，悬停后渲染", () => {
-    const { container } = render(<IntegrationCard integration={makeIntegration({ id: "5" })} />)
-    expect(screen.queryByRole("button")).not.toBeInTheDocument()
+  it("TC-C-006 收藏按钮常驻可达（不依赖 hover，H-2 修复），点击触发 toggleFavorite", () => {
+    render(<IntegrationCard integration={makeIntegration({ id: "5" })} />)
+    // 未悬停即可达（原缺陷：仅 hover 渲染，触屏/键盘不可用）
+    const button = screen.getByRole("button")
+    expect(button).toBeInTheDocument()
 
-    fireEvent.mouseEnter(container.firstElementChild as Element)
-    expect(screen.getByRole("button")).toBeInTheDocument()
+    // 点击按钮触发 toggleFavorite("5")，且不冒泡触发链接导航（stopPropagation）
+    fireEvent.click(button)
+    expect(mocks.toggleFavorite).toHaveBeenCalledWith("5")
+  })
+
+  it("TC-C-009 detailHref 自定义详情路由基路径（/integrations 复用同一卡片）", () => {
+    render(<IntegrationCard integration={makeIntegration({ id: "77" })} detailHref="/integrations" />)
+    const link = screen.getByRole("link")
+    expect(link).toHaveAttribute("href", "/integrations/77")
   })
 
   it("TC-C-007 未知图标回退到默认图标而不崩溃", () => {

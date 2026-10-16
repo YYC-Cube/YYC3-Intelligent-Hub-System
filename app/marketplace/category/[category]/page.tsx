@@ -1,20 +1,16 @@
-import dynamic from "next/dynamic"
+import ClientLoader from "./client-loader"
 
-const STATIC_CATEGORIES = [
-  "数据分析", "营销推广", "效率工具", "销售管理", "财务管理",
-  "通信工具", "云端服务", "安全防护", "设计创意", "开发工具",
-  "人力资源", "客户支持", "电子商务", "社交媒体", "内容管理",
-  "教育培训", "医疗健康", "物联网", "区块链", "人工智能",
-  "虚拟现实", "增强现实", "游戏开发", "移动应用", "办公自动化",
-  "视频处理", "音频处理", "3D建模", "地理信息",
-]
+// 分类清单由 `app/data/integrations.ts` 单一数据源派生，
+// 消除硬编码副本与数据源漂移（原 STATIC_CATEGORIES 曾与 29 大类不一致：物联网/区块链）。
+import { categories } from "@/app/data/integrations"
 
 export function generateStaticParams() {
-  return STATIC_CATEGORIES.map((c) => ({ category: encodeURIComponent(c) }))
+  // 跳过「全部分类」聚合项，仅对真实业务分类生成静态路由
+  return categories
+    .filter((c) => c !== "全部分类")
+    .map((c) => ({ category: encodeURIComponent(c) }))
 }
 
-const CategoryClient = dynamic(() => import("./client-page"), { ssr: false })
-
 export default function CategoryPage() {
-  return <CategoryClient />
+  return <ClientLoader />
 }

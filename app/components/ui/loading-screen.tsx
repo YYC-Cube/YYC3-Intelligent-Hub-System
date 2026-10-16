@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import Image from "next/image"
 import { Progress } from "@/components/ui/progress"
 import { BRAND, brandAssets } from "@/lib/yyc3/brand"
+import { useI18n } from "@/app/hooks/use-i18n"
 
 interface LoadingScreenProps {
   message?: string
@@ -14,13 +15,17 @@ interface LoadingScreenProps {
 }
 
 export function LoadingScreen({
-  message = "正在加载中...",
+  message,
   progress,
   showProgress = true,
   duration = 3000,
   onComplete,
 }: LoadingScreenProps) {
   const [animatedProgress, setAnimatedProgress] = useState(0)
+  const { t } = useI18n()
+
+  // 参数未传 message 时在组件内兜底（跟随当前语言）
+  const displayMessage = message ?? t("ui.正在加载中...")
 
   // 受控进度（传入 progress）优先级高于内部动画，派生而非同步写入 state。
   const currentProgress = progress !== undefined ? progress : animatedProgress
@@ -80,14 +85,14 @@ export function LoadingScreen({
         {/* 标题 */}
         <div className="text-center space-y-2">
           <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-500 bg-clip-text text-transparent">
-            言语云³集成中心系统
+            {t("ui.言语云³集成中心系统")}
           </h1>
           <p className="text-sm text-muted-foreground font-medium">YanYu Cloud³ Integration Center</p>
         </div>
 
         {/* 加载消息 */}
         <div className="text-center">
-          <p className="text-lg font-medium text-gray-700 mb-2">{message}</p>
+          <p className="text-lg font-medium text-gray-700 mb-2">{displayMessage}</p>
           {showProgress && (
             <div className="w-64 space-y-2">
               <Progress value={currentProgress} className="h-2 bg-gray-200" />
