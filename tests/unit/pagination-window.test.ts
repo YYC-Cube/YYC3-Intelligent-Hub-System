@@ -4,8 +4,8 @@
  * buildPageWindow 是市场浏览页与搜索结果页共用的窗口化分页逻辑，
  * 边界覆盖：小页数全量、居中窗口、贴首/贴末收敛、越界收敛、自定义窗口尺寸。
  */
-import { describe, it, expect } from "vitest"
 import { buildPageWindow } from "@/app/utils/pagination"
+import { describe, expect, it } from "vitest"
 
 describe("单元测试 · 分页页码窗口（buildPageWindow）", () => {
   it("TC-U-040 总页数不超过窗口尺寸时全量返回页码", () => {
@@ -38,5 +38,27 @@ describe("单元测试 · 分页页码窗口（buildPageWindow）", () => {
   it("TC-U-045 自定义窗口尺寸（size=3）", () => {
     expect(buildPageWindow(10, 84, 3)).toEqual([9, 10, 11])
     expect(buildPageWindow(1, 84, 3)).toEqual([1, 2, 3])
+  })
+})
+
+describe("阶段 2 · 分页对抗输入（退化安全）", () => {
+  it("TC-U-088 总页数为 0 或负数时返回空窗口", () => {
+    expect(buildPageWindow(1, 0)).toEqual([])
+    expect(buildPageWindow(1, -5)).toEqual([])
+  })
+
+  it("TC-U-089 窗口尺寸为 1 时收敛为单页（含越界收敛）", () => {
+    expect(buildPageWindow(5, 84, 1)).toEqual([5])
+    expect(buildPageWindow(1, 84, 1)).toEqual([1])
+    expect(buildPageWindow(84, 84, 1)).toEqual([84])
+  })
+
+  it("TC-U-090 窗口尺寸大于总页数时全量返回", () => {
+    expect(buildPageWindow(2, 3, 10)).toEqual([1, 2, 3])
+  })
+
+  it("TC-U-091 窗口尺寸为 0 与 NaN 当前页均安全退化（不崩溃）", () => {
+    expect(buildPageWindow(5, 84, 0)).toEqual([])
+    expect(buildPageWindow(Number.NaN, 84)).toEqual([])
   })
 })

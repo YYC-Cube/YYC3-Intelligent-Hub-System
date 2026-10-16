@@ -6,6 +6,7 @@ import type { Integration } from "../data/integrations"
 import { useAuth } from "./auth-context"
 import { useEncryption } from "./encryption-context"
 // B-3：契约与键名取自 @/lib/yyc3/store；B-2：存储实例统一经 hub 组合根获取
+import { parseStoredFavorites } from "@/app/utils/favorites-storage"
 import { getHubStore } from "@/lib/yyc3/hub"
 import { putJson, scopedKeys, staticKeys } from "@/lib/yyc3/store"
 import {
@@ -102,8 +103,11 @@ export function FavoritesProvider({ children, integrations }: FavoritesProviderP
             }
           }
 
-          setFavorites(parsedFavorites)
-          setLastSavedFavorites(parsedFavorites)
+          // 阶段 2 对抗守卫：持久化数据可能为「合法 JSON 但非字符串数组」，
+          // 必须在进入 React 状态前规整，否则渲染路径 favorites.includes 会崩溃
+          const normalizedFavorites = parseStoredFavorites(parsedFavorites)
+          setFavorites(normalizedFavorites)
+          setLastSavedFavorites(normalizedFavorites)
         }
 
         // 如果用户已登录，加载同步选项
