@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { ChevronDown, ChevronRight, Link } from "lucide-react"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
@@ -76,17 +76,15 @@ export default function CategoryFilter({
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({
     [selectedCategory]: true,
   })
-  const [categoryHeats, setCategoryHeats] = useState<Record<string, ReturnType<typeof calculateCategoryHeat>>>({})
-
-  useEffect(() => {
-    // 计算所有分类的热度
+  // 分类热度完全由 `categories` 派生（纯计算），渲染期直接得出。
+  const categoryHeats = useMemo<Record<string, ReturnType<typeof calculateCategoryHeat>>>(() => {
     const heats: Record<string, ReturnType<typeof calculateCategoryHeat>> = {}
     categories.forEach((category) => {
       if (category !== "全部分类") {
         heats[category] = calculateCategoryHeat(category)
       }
     })
-    setCategoryHeats(heats)
+    return heats
   }, [categories])
 
   const toggleCategory = (category: string) => {

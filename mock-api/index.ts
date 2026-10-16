@@ -332,7 +332,7 @@ app.post('/api/favorites/:id', (req: Request, res: Response) => {
   // 添加收藏
   const newFavorite = {
     userId,
-    integrationId: id,
+    integrationId: String(id),
     createdAt: new Date().toISOString(),
   };
   favorites.push(newFavorite);

@@ -62,15 +62,7 @@ const CustomTabs: React.FC<CustomTabsProps> = ({
   return (
     <div className={cn("w-full", className)}>
       {/* 横向滚动的标签列表 */}
-      <div 
-        className="overflow-x-auto whitespace-nowrap h-[50px] flex items-center px-4" 
-        style={{ scrollbarWidth: 'none' }} // Firefox
-      >
-        <style jsx>{`
-          .overflow-x-auto::-webkit-scrollbar {
-            display: none;
-          }
-        `}</style>
+      <div className="overflow-x-auto whitespace-nowrap h-[50px] flex items-center px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <div className="flex space-x-[8px]">
           {tabs.map((tab) => (
             <button

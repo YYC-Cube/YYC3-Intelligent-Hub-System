@@ -374,12 +374,12 @@ export default function DesignSystemExamples() {
               </YanyuCardHeader>
               <YanyuCardContent className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium mb-2 block">邮箱地址</label>
-                  <YanyuInput placeholder="请输入您的邮箱地址" type="email" />
+                  <label htmlFor="ds-login-email" className="text-sm font-medium mb-2 block">邮箱地址</label>
+                  <YanyuInput id="ds-login-email" placeholder="请输入您的邮箱地址" type="email" />
                 </div>
                 <div>
-                  <label className="text-sm font-medium mb-2 block">密码</label>
-                  <YanyuInput placeholder="请输入密码" type="password" />
+                  <label htmlFor="ds-login-password" className="text-sm font-medium mb-2 block">密码</label>
+                  <YanyuInput id="ds-login-password" placeholder="请输入密码" type="password" />
                 </div>
                 <div className="flex items-center space-x-2">
                   <input type="checkbox" id="remember" className="rounded" />
@@ -403,20 +403,20 @@ export default function DesignSystemExamples() {
               </YanyuCardHeader>
               <YanyuCardContent className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium mb-2 block">默认样式</label>
-                  <YanyuInput placeholder="搜索集成应用..." />
+                  <label htmlFor="ds-input-default" className="text-sm font-medium mb-2 block">默认样式</label>
+                  <YanyuInput id="ds-input-default" placeholder="搜索集成应用..." />
                 </div>
                 <div>
-                  <label className="text-sm font-medium mb-2 block">填充样式</label>
-                  <YanyuInput variant="filled" placeholder="搜索集成应用..." />
+                  <label htmlFor="ds-input-filled" className="text-sm font-medium mb-2 block">填充样式</label>
+                  <YanyuInput id="ds-input-filled" variant="filled" placeholder="搜索集成应用..." />
                 </div>
                 <div>
-                  <label className="text-sm font-medium mb-2 block">下划线样式</label>
-                  <YanyuInput variant="underlined" placeholder="搜索集成应用..." />
+                  <label htmlFor="ds-input-underlined" className="text-sm font-medium mb-2 block">下划线样式</label>
+                  <YanyuInput id="ds-input-underlined" variant="underlined" placeholder="搜索集成应用..." />
                 </div>
                 <div>
-                  <label className="text-sm font-medium mb-2 block">圆角样式</label>
-                  <YanyuInput rounded="full" placeholder="搜索集成应用..." />
+                  <label htmlFor="ds-input-rounded" className="text-sm font-medium mb-2 block">圆角样式</label>
+                  <YanyuInput id="ds-input-rounded" rounded="full" placeholder="搜索集成应用..." />
                 </div>
               </YanyuCardContent>
               <YanyuCardFooter>

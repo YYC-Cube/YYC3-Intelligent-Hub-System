@@ -357,16 +357,11 @@ export default function ModuleDetailClient() {
   const params = useParams()
   const moduleId = params.id as string
   const [module, setModule] = useState(moduleData)
-  const [activeStep, setActiveStep] = useState(module.steps[0])
+  const [activeStep, setActiveStep] = useState(moduleData.steps[0])
   const [progress, setProgress] = useState(0)
 
   useEffect(() => {
-    // 模拟加载模块数据
-    // 实际应用中，这里会根据moduleId从API获取数据
-    setModule(moduleData)
-    setActiveStep(moduleData.steps[0])
-
-    // 模拟进度加载动画
+    // 模拟进度加载动画（延时回调中的 setState 不属于 effect 同步更新）
     const timer = setTimeout(() => {
       setProgress(moduleData.progress)
     }, 500)

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { categories } from "@/app/data/integrations"
 import { getHotCategories, getTrendingCategories, type CategoryHeat } from "@/app/services/category-trends"
@@ -10,20 +10,13 @@ import { useRouter } from "next/navigation"
 import CategorySubscribeButton from "./category-subscribe-button"
 
 export default function HotCategories() {
-  const [hotCategories, setHotCategories] = useState<CategoryHeat[]>([])
-  const [trendingCategories, setTrendingCategories] = useState<CategoryHeat[]>([])
   const [activeTab, setActiveTab] = useState("hot")
   const router = useRouter()
 
-  useEffect(() => {
-    // 获取热门分类
-    const hot = getHotCategories(categories, 5)
-    setHotCategories(hot)
-
-    // 获取上升趋势分类
-    const trending = getTrendingCategories(categories, 5)
-    setTrendingCategories(trending)
-  }, [])
+  // 热度数据完全由静态 `categories` 派生，直接在渲染期计算，
+  // 无需借助 state + effect（避免 react-hooks/set-state-in-effect）。
+  const hotCategories: CategoryHeat[] = getHotCategories(categories, 5)
+  const trendingCategories: CategoryHeat[] = getTrendingCategories(categories, 5)
 
   const handleCategoryClick = (category: string) => {
     router.push(`/integrations?category=${encodeURIComponent(category)}`)

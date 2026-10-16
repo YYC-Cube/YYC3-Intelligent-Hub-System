@@ -97,7 +97,7 @@ function SubscriptionsPageContent() {
                           <AlertDialogHeader>
                             <AlertDialogTitle>确认取消订阅？</AlertDialogTitle>
                             <AlertDialogDescription>
-                              此操作将停止接收 "{sub.targetName}" 的所有通知。
+                              此操作将停止接收 &ldquo;{sub.targetName}&rdquo; 的所有通知。
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>

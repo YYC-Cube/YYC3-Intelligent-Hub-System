@@ -8,11 +8,12 @@ import ReactMarkdown from "react-markdown"
 
 interface AssistantMessageProps {
   content: string
-  role: "user" | "assistant"
+  /** 消息发送方。命名为 `sender` 以避免与 DOM 的 ARIA `role` 属性语义冲突。 */
+  sender: "user" | "assistant"
   isLoading?: boolean
 }
 
-export function AssistantMessage({ content, role, isLoading = false }: AssistantMessageProps) {
+export function AssistantMessage({ content, sender, isLoading = false }: AssistantMessageProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -28,7 +29,7 @@ export function AssistantMessage({ content, role, isLoading = false }: Assistant
       transition={{ duration: 0.3 }}
       className={cn(
         "flex gap-3 p-4 rounded-lg",
-        role === "user" ? "bg-blue-50 ml-8" : "bg-gray-50 mr-8",
+        sender === "user" ? "bg-blue-50 ml-8" : "bg-gray-50 mr-8",
         isLoading && "animate-pulse",
       )}
       ref={scrollRef}
@@ -37,10 +38,10 @@ export function AssistantMessage({ content, role, isLoading = false }: Assistant
         <div
           className={cn(
             "w-8 h-8 rounded-full flex items-center justify-center",
-            role === "user" ? "bg-blue-100" : "bg-gray-200",
+            sender === "user" ? "bg-blue-100" : "bg-gray-200",
           )}
         >
-          {role === "user" ? <User className="w-4 h-4 text-blue-600" /> : <Bot className="w-4 h-4 text-gray-600" />}
+          {sender === "user" ? <User className="w-4 h-4 text-blue-600" /> : <Bot className="w-4 h-4 text-gray-600" />}
         </div>
       </div>
       <div className="flex-1 overflow-hidden">

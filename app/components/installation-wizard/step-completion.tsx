@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { CheckCircle2, Copy, ExternalLink } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useState, useId } from "react"
 import { motion } from "framer-motion"
 
 export function StepCompletion() {
@@ -15,7 +15,10 @@ export function StepCompletion() {
   const router = useRouter()
   const [copied, setCopied] = useState(false)
 
-  const integrationId = "int_" + Math.random().toString(36).substring(2, 10)
+  // 使用 React 提供的稳定标识符替代渲染期 Math.random()，
+  // 既保证 SSR/CSR 水合一致，也满足 react-hooks/purity 的纯函数约束。
+  const reactId = useId()
+  const integrationId = `int_${reactId.replace(/[^a-zA-Z0-9]/g, "")}`
 
   const handleCopyId = () => {
     navigator.clipboard.writeText(integrationId)

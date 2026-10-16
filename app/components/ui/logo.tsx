@@ -1,13 +1,15 @@
 import Image from "next/image"
 import Link from "next/link"
 
+import { BRAND, brandAssets } from "@/lib/yyc3/brand"
+
 export function Logo() {
   return (
     <Link href="/" className="flex items-center space-x-3 group">
       <div className="relative w-12 h-12 overflow-hidden transition-transform duration-300 group-hover:scale-110">
         <Image
-          src="/images/yanyu-shield-logo.png"
-          alt="言语云³集成中心系统"
+          src={brandAssets.logoPng}
+          alt={BRAND.name}
           width={48}
           height={48}
           className="object-contain drop-shadow-lg"

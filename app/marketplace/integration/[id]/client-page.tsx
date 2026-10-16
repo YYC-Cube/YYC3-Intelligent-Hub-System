@@ -26,6 +26,25 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 
+/**
+ * 依据平均评分与评价总数推导各星级评价占比（百分比）。
+ *
+ * 该分布为确定性计算，仅依赖传入的集成元数据，避免渲染期使用
+ * `Math.random()` 造成 SSR/CSR 水合不一致（与 P0-3 修复保持一致）。
+ */
+function getRatingDistribution(rating: number, reviewCount: number): Record<number, number> {
+  const stars = [5, 4, 3, 2, 1]
+  if (reviewCount <= 0) {
+    return Object.fromEntries(stars.map((star) => [star, 0]))
+  }
+
+  // 与平均分越接近的星级权重越高，形成围绕平均分的钟形分布
+  const weights = stars.map((star) => Math.max(0, 1 - Math.abs(star - rating) * 0.45) ** 2)
+  const total = weights.reduce((sum, weight) => sum + weight, 0) || 1
+
+  return Object.fromEntries(stars.map((star, index) => [star, (weights[index] / total) * 100]))
+}
+
 export default function IntegrationDetailClient() {
   const { id } = useParams()
   const integration = integrations.find((i) => i.id === id)
@@ -36,6 +55,7 @@ export default function IntegrationDetailClient() {
   }
 
   const Icon = iconMap[integration.icon as keyof typeof iconMap] || Calendar
+  const ratingDistribution = getRatingDistribution(integration.rating, integration.reviewCount)
 
   // 查找相同类别的其他集成
   const relatedIntegrations = integrations
@@ -308,9 +328,7 @@ export default function IntegrationDetailClient() {
                       <div className="md:w-2/3">
                         <div className="space-y-2">
                           {[5, 4, 3, 2, 1].map((rating) => {
-                            const percent =
-                              (integration.reviewCount > 0 ? Math.random() * (rating === 5 ? 0.6 : 0.4) * 100 : 0) /
-                              (6 - rating)
+                            const percent = ratingDistribution[rating] ?? 0
                             return (
                               <div key={rating} className="flex items-center gap-2">
                                 <div className="flex items-center w-16">
@@ -412,7 +430,7 @@ export default function IntegrationDetailClient() {
                           <div>
                             <h4 className="font-medium">如何安装此集成应用？</h4>
                             <p className="text-gray-600">
-                              点击"安装集成"按钮，按照向导步骤完成配置即可。整个过程通常只需要几分钟。
+                              点击 &ldquo;安装集成&rdquo; 按钮，按照向导步骤完成配置即可。整个过程通常只需要几分钟。
                             </p>
                           </div>
                           <div>
@@ -446,11 +464,14 @@ export default function IntegrationDetailClient() {
                     <p className="text-sm">{integration.developer}</p>
                   </div>
                   <div>
-                    <h3 className="text-sm font-medium text-gray-500">官方网站</h3>
-                    <a href="#" className="text-sm text-blue-600 hover:underline flex items-center gap-1">
-                      访问网站
+                    <h3 className="text-sm font-medium text-gray-500">开发者支持</h3>
+                    <Link
+                      href="/contact"
+                      className="text-sm text-blue-600 hover:underline flex items-center gap-1"
+                    >
+                      联系开发者
                       <ExternalLink className="h-3 w-3" />
-                    </a>
+                    </Link>
                   </div>
                   <div>
                     <h3 className="text-sm font-medium text-gray-500">支持邮箱</h3>
@@ -458,9 +479,9 @@ export default function IntegrationDetailClient() {
                   </div>
                   <div>
                     <h3 className="text-sm font-medium text-gray-500">隐私政策</h3>
-                    <a href="#" className="text-sm text-blue-600 hover:underline">
+                    <Link href="/privacy" className="text-sm text-blue-600 hover:underline">
                       查看
-                    </a>
+                    </Link>
                   </div>
                 </div>
               </CardContent>

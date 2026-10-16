@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useMemo } from "react"
 import { useParams } from "next/navigation"
 import { Navbar } from "@/components/ui/navbar"
 import { Button } from "@/components/ui/button"
@@ -17,13 +17,13 @@ export default function CategoryClient() {
   const decodedCategory = decodeURIComponent(category as string)
   const [sortBy, setSortBy] = useState("relevance")
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>("all")
-  const [filteredIntegrations, setFilteredIntegrations] = useState(integrations)
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 12
 
   const subCategories = subcategories[decodedCategory as keyof typeof subcategories] || []
 
-  useEffect(() => {
+  // 结果列表由分类 / 子分类 / 排序条件纯派生，无需 effect + setState。
+  const filteredIntegrations = useMemo(() => {
     let filtered = [...integrations].filter((integration) => integration.category === decodedCategory)
 
     if (selectedSubcategory !== "all") {
@@ -56,12 +56,13 @@ export default function CategoryClient() {
         break
     }
 
-    setFilteredIntegrations(filtered)
-    setCurrentPage(1)
+    return filtered
   }, [decodedCategory, selectedSubcategory, sortBy])
 
   const totalPages = Math.ceil(filteredIntegrations.length / itemsPerPage)
-  const paginatedIntegrations = filteredIntegrations.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+  // 筛选条件变化导致页数减少时收敛页码，替代原先的 setCurrentPage(1) 副作用。
+  const safePage = Math.min(currentPage, Math.max(1, totalPages))
+  const paginatedIntegrations = filteredIntegrations.slice((safePage - 1) * itemsPerPage, safePage * itemsPerPage)
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
@@ -148,14 +149,14 @@ export default function CategoryClient() {
                     variant="outline"
                     size="sm"
                     onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                    disabled={currentPage === 1}
+                    disabled={safePage === 1}
                   >
                     上一页
                   </Button>
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                     <Button
                       key={page}
-                      variant={currentPage === page ? "default" : "outline"}
+                      variant={safePage === page ? "default" : "outline"}
                       size="sm"
                       onClick={() => setCurrentPage(page)}
                     >
@@ -166,7 +167,7 @@ export default function CategoryClient() {
                     variant="outline"
                     size="sm"
                     onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                    disabled={currentPage === totalPages}
+                    disabled={safePage === totalPages}
                   >
                     下一页
                   </Button>

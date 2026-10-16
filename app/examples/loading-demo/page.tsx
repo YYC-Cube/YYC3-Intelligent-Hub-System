@@ -42,8 +42,9 @@ function LoadingDemoContent() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium">加载消息</label>
+              <label htmlFor="loading-message" className="text-sm font-medium">加载消息</label>
               <Input
+                id="loading-message"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="输入加载消息..."

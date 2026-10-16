@@ -55,12 +55,15 @@ export function FavoriteCard({
       className={cn("relative", isSelected && "ring-2 ring-primary ring-offset-2")}
     >
       {showSelectCheckbox && (
-        <div
+        <button
+          type="button"
+          aria-label={isSelected ? "取消选择" : "选择"}
+          aria-pressed={isSelected}
           className="absolute left-2 top-2 z-10 w-5 h-5 rounded-full border-2 flex items-center justify-center cursor-pointer"
           onClick={handleSelect}
         >
-          {isSelected && <div className="w-3 h-3 rounded-full bg-primary"></div>}
-        </div>
+          {isSelected && <span className="w-3 h-3 rounded-full bg-primary" />}
+        </button>
       )}
 
       <Link href={`/marketplace/integration/${integration.id}`}>

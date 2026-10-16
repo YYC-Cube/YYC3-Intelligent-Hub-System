@@ -72,7 +72,17 @@ describe('DatabaseService', () => {
   });
 });
 
-describe('数据库集成测试（需要真实的PostgreSQL连接）', () => {
+/**
+ * 集成测试依赖外部 PostgreSQL（127.0.0.1:5434），默认不执行。
+ *
+ * 通过 `DB_INTEGRATION_TEST=1 npx jest` 显式开启，避免默认测试套件
+ * 因为本地/CI 没有数据库而长期处于红灯状态（原先仅在 beforeAll 中
+ * 打印一行警告但并不真正跳过，7 个用例必然失败）。
+ */
+const describeIntegration: jest.Describe =
+  process.env.DB_INTEGRATION_TEST === '1' ? describe : describe.skip;
+
+describeIntegration('数据库集成测试（需要真实的PostgreSQL连接）', () => {
   let db: DatabaseService;
 
   beforeAll(async () => {

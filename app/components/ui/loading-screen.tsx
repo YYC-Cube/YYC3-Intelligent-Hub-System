@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import { Progress } from "@/components/ui/progress"
+import { BRAND, brandAssets } from "@/lib/yyc3/brand"
 
 interface LoadingScreenProps {
   message?: string
@@ -19,16 +20,18 @@ export function LoadingScreen({
   duration = 3000,
   onComplete,
 }: LoadingScreenProps) {
-  const [currentProgress, setCurrentProgress] = useState(0)
+  const [animatedProgress, setAnimatedProgress] = useState(0)
+
+  // 受控进度（传入 progress）优先级高于内部动画，派生而非同步写入 state。
+  const currentProgress = progress !== undefined ? progress : animatedProgress
 
   useEffect(() => {
     if (progress !== undefined) {
-      setCurrentProgress(progress)
       return
     }
 
     const interval = setInterval(() => {
-      setCurrentProgress((prev) => {
+      setAnimatedProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval)
           onComplete?.()
@@ -61,8 +64,8 @@ export function LoadingScreen({
         <div className="relative">
           <div className="w-24 h-24 relative animate-float">
             <Image
-              src="/images/yanyu-shield-logo.png"
-              alt="言语云³集成中心系统"
+              src={brandAssets.logoPng}
+              alt={BRAND.name}
               width={96}
               height={96}
               className="object-contain drop-shadow-2xl"

@@ -1,28 +1,24 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import { categories, integrations } from "@/app/data/integrations"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 
+/** 依据静态 `categories` / `integrations` 计算各分类集成数量（纯函数，渲染期直接派生）。 */
+function buildCategoryStats(): { category: string; count: number }[] {
+  return categories
+    .filter((category) => category !== "全部分类")
+    .map((category) => {
+      const count = integrations.filter((integration) => integration.category === category).length
+      return { category, count }
+    })
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10) // 只显示前10个分类
+}
+
 export default function CategoryStats() {
-  const [categoryStats, setCategoryStats] = useState<{ category: string; count: number }[]>([])
-  const [totalCount, setTotalCount] = useState(0)
-
-  useEffect(() => {
-    // 计算每个分类的集成数量
-    const stats = categories
-      .filter((category) => category !== "全部分类")
-      .map((category) => {
-        const count = integrations.filter((integration) => integration.category === category).length
-        return { category, count }
-      })
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 10) // 只显示前10个分类
-
-    setCategoryStats(stats)
-    setTotalCount(integrations.length)
-  }, [])
+  const categoryStats = buildCategoryStats()
+  const totalCount = integrations.length
 
   return (
     <Card className="w-full">

@@ -3,7 +3,7 @@
 import { useWizard } from "./wizard-context"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { WizardNavigation } from "./wizard-navigation"
 import { Button } from "@/components/ui/button"
 import { Eye, EyeOff, HelpCircle } from "lucide-react"
@@ -17,15 +17,10 @@ export function StepAuthentication() {
   const [clientId, setClientId] = useState(formData.clientId || "")
   const [clientSecret, setClientSecret] = useState(formData.clientSecret || "")
   const [showSecret, setShowSecret] = useState(false)
-  const [isValid, setIsValid] = useState(false)
 
-  useEffect(() => {
-    if (authType === "apiKey") {
-      setIsValid(!!apiKey.trim())
-    } else if (authType === "oauth") {
-      setIsValid(!!clientId.trim() && !!clientSecret.trim())
-    }
-  }, [authType, apiKey, clientId, clientSecret])
+  // 表单校验结果由当前认证方式与输入直接派生。
+  const isValid =
+    authType === "apiKey" ? !!apiKey.trim() : authType === "oauth" ? !!clientId.trim() && !!clientSecret.trim() : false
 
   const handleNext = () => {
     updateFormData({

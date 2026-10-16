@@ -15,13 +15,25 @@ export class EnsembleEngine extends BasePredictor {
   private modelPerformance: Map<string, number> = new Map();
   private isInitialized = false;
   private storage: { save: (path: string, data: any) => Promise<void>, load: (path: string) => Promise<any> } | null = null;
+  /** 构造函数中启动的异步初始化任务；后续异步方法统一等待它，避免竞态。 */
+  private initPromise: Promise<void> | null = null;
 	  constructor(config: EnsembleConfig) {
     super(config);
     this.config = config;
-    this.initializeBasePredictors();
+    // 构造函数不能声明为 async：保存初始化 Promise 供后续方法等待。
+    // 否则初始化会与 train() 并发执行，用未训练实例覆盖已训练实例。
+    this.initPromise = this.initializeBasePredictors();
+  }
+
+  /** 等待基础预测器初始化完成（幂等）。 */
+  private async ensureInitialized(): Promise<void> {
+    if (this.initPromise) {
+      await this.initPromise;
+    }
   }
 	  // 初始化基础预测器
 	  private async initializeBasePredictors(): Promise<void> {
+	    if (this.isInitialized) return;
 	    const modelTypes: ModelType[] = ['arima', 'lstm', 'prophet', 'transformer'];
 	    for (const type of modelTypes) {
 	      try {
@@ -133,6 +145,10 @@ export class EnsembleEngine extends BasePredictor {
 	      if (result.success) {
 	        trainedModels.push(predictor);
 	        this.modelPerformance.set(config.type, result.accuracy);
+	        // 关键：将训练后的实例回填到 basePredictors。
+	        // 否则 predict() 仍会使用构造函数创建的未训练实例，
+	        // 导致 "Model must be trained before prediction"。
+	        this.basePredictors.set(config.type, predictor);
 	      }
 	    }
 	    return trainedModels;
@@ -142,9 +158,7 @@ export class EnsembleEngine extends BasePredictor {
 	    data: PredictionData, 
 	    horizon: number
 	  ): Promise<PredictionResult> {
-	    if (!this.isInitialized) {
-	      await this.initializeBasePredictors();
-	    }
+	    await this.ensureInitialized();
 	    const basePredictions = await this.getBasePredictions(data, horizon);
 	    const combinedPrediction = await this.combinePredictions(basePredictions, data);
 	    return {
@@ -159,6 +173,7 @@ export class EnsembleEngine extends BasePredictor {
 	  }
 	  // 训练集成模型
 	  protected async trainModel(data: PredictionData): Promise<TrainingResult> {
+	    await this.ensureInitialized();
 	    const modelConfigs = await this.selectOptimalModels(data);
 	    const baseModels = await this.trainBaseModels(modelConfigs, data);
 	    let ensembleModel: EnsembleModel;
@@ -287,21 +302,28 @@ export class EnsembleEngine extends BasePredictor {
 	    data: PredictionData, 
 	    horizon: number
 	  ): Promise<any[]> {
-	    const predictions: any[] = [];
-	    this.basePredictors.forEach(async (predictor, type) => {
-	      try {
-	        const result = await predictor.predict(data, horizon);
-	        predictions.push({
-	          type,
-	          predictions: result.predictions,
-	          confidence: result.confidence,
-	          weight: this.modelPerformance.get(type) || 1.0
-	        });
-	      } catch (error) {
-	        console.warn(`Prediction failed for ${type}:`, error);
-	      }
-	    });
-	    return predictions;
+	    // 注意：必须显式等待全部基础预测完成。
+	    // 若沿用 forEach(async () => ...)，回调返回的 Promise 会被丢弃，
+	    // 方法会立即返回空数组，导致 combinePredictions 抛出
+	    // "No valid base predictions available"。
+	    const entries = Array.from(this.basePredictors.entries());
+	    const settled = await Promise.all(
+	      entries.map(async ([type, predictor]) => {
+	        try {
+	          const result = await predictor.predict(data, horizon);
+	          return {
+	            type,
+	            predictions: result.predictions,
+	            confidence: result.confidence,
+	            weight: this.modelPerformance.get(type) || 1.0
+	          };
+	        } catch (error) {
+	          console.warn(`Prediction failed for ${type}:`, error);
+	          return null;
+	        }
+	      })
+	    );
+	    return settled.filter((item): item is NonNullable<typeof item> => item !== null);
 	  }
 	  // 组合预测结果
 	  private async combinePredictions(

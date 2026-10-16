@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useMemo } from "react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -28,65 +28,72 @@ interface EnvVariable {
   description?: string
 }
 
+/** 预期的环境变量清单（构建期由脚本注入） */
+const EXPECTED_VARIABLES: ReadonlyArray<Pick<EnvVariable, "key" | "type" | "description">> = [
+  {
+    key: "NEXT_PUBLIC_APP_VERSION",
+    type: "public",
+    description: "应用版本号，由构建脚本自动生成",
+  },
+  {
+    key: "NEXT_PUBLIC_BUILD_DATE",
+    type: "public",
+    description: "应用构建日期，由构建脚本自动生成",
+  },
+]
+
+/**
+ * 采集并校验环境变量。
+ *
+ * `process.env` 在构建期即被内联为静态值，整个采集过程是纯函数，
+ * 因此直接以惰性初始化 / 渲染期派生方式获取，无需 state + effect。
+ */
+function collectEnvironmentVariables(): EnvVariable[] {
+  const variables: EnvVariable[] = []
+
+  // 检查预期的环境变量
+  EXPECTED_VARIABLES.forEach((expected) => {
+    const value = process.env[expected.key] || ""
+
+    variables.push({
+      key: expected.key,
+      value: value,
+      type: expected.type as "public" | "server",
+      status: value ? "ok" : "error",
+      description: expected.description,
+    })
+  })
+
+  // 检查其他可用的公共环境变量
+  Object.keys(process.env).forEach((key) => {
+    if (key.startsWith("NEXT_PUBLIC_") && !variables.some((v) => v.key === key)) {
+      variables.push({
+        key,
+        value: process.env[key] || "",
+        type: "public",
+        status: "ok",
+      })
+    }
+  })
+
+  return variables
+}
+
 export default function EnvironmentVariablesCheck() {
-  const [envVariables, setEnvVariables] = useState<EnvVariable[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [detectedVariables, setDetectedVariables] = useState<EnvVariable[]>(collectEnvironmentVariables)
+  const [customVariables, setCustomVariables] = useState<EnvVariable[]>([])
   const [newEnvKey, setNewEnvKey] = useState("")
   const [newEnvValue, setNewEnvValue] = useState("")
   const { toast } = useToast()
 
-  // 预期的环境变量列表
-  const expectedVariables = [
-    {
-      key: "NEXT_PUBLIC_APP_VERSION",
-      type: "public",
-      description: "应用版本号，由构建脚本自动生成",
-    },
-    {
-      key: "NEXT_PUBLIC_BUILD_DATE",
-      type: "public",
-      description: "应用构建日期，由构建脚本自动生成",
-    },
-    // 可以添加更多预期的环境变量
-  ]
+  // 检测结果与自定义变量合并后即为最终展示列表。
+  const envVariables = useMemo(
+    () => [...detectedVariables, ...customVariables],
+    [detectedVariables, customVariables],
+  )
 
-  useEffect(() => {
-    checkEnvironmentVariables()
-  }, [])
-
-  const checkEnvironmentVariables = () => {
-    setIsLoading(true)
-
-    // 收集所有可用的环境变量
-    const variables: EnvVariable[] = []
-
-    // 检查预期的环境变量
-    expectedVariables.forEach((expected) => {
-      const value = process.env[expected.key] || ""
-
-      variables.push({
-        key: expected.key,
-        value: value,
-        type: expected.type as "public" | "server",
-        status: value ? "ok" : "error",
-        description: expected.description,
-      })
-    })
-
-    // 检查其他可用的公共环境变量
-    Object.keys(process.env).forEach((key) => {
-      if (key.startsWith("NEXT_PUBLIC_") && !variables.some((v) => v.key === key)) {
-        variables.push({
-          key,
-          value: process.env[key] || "",
-          type: "public",
-          status: "ok",
-        })
-      }
-    })
-
-    setEnvVariables(variables)
-    setIsLoading(false)
+  const refreshEnvironmentVariables = () => {
+    setDetectedVariables(collectEnvironmentVariables())
   }
 
   const copyToClipboard = (text: string) => {
@@ -108,8 +115,8 @@ export default function EnvironmentVariablesCheck() {
     }
 
     // 在客户端，我们不能真正添加环境变量，但可以模拟添加
-    setEnvVariables([
-      ...envVariables,
+    setCustomVariables((prev) => [
+      ...prev,
       {
         key: newEnvKey,
         value: newEnvValue,
@@ -185,10 +192,9 @@ export default function EnvironmentVariablesCheck() {
               variant="outline"
               size="icon"
               className="bg-white/20 hover:bg-white/30 text-white border-white/30"
-              onClick={checkEnvironmentVariables}
-              disabled={isLoading}
+              onClick={refreshEnvironmentVariables}
             >
-              <RefreshCwIcon className={`h-5 w-5 ${isLoading ? "animate-spin" : ""}`} />
+              <RefreshCwIcon className="h-5 w-5" />
             </Button>
           </div>
         </CardHeader>

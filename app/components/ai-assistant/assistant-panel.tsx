@@ -20,6 +20,21 @@ interface AssistantPanelProps {
   onClose: () => void
 }
 
+/** 面板内单条对话消息。 */
+interface ChatMessage {
+  id?: string
+  role: "user" | "assistant"
+  content: string
+}
+
+/** 首次打开面板时展示的欢迎语。 */
+const WELCOME_MESSAGE: ChatMessage = {
+  id: "welcome",
+  role: "assistant",
+  content:
+    "您好！我是言语云³集成助手，可以帮助您了解各种集成应用、解决集成问题，并提供相关建议。请问有什么可以帮助您的？",
+}
+
 export function AssistantPanel({ onClose }: AssistantPanelProps) {
   const [expanded, setExpanded] = useState(false)
   const [soundEnabled, setSoundEnabled] = useState(false)
@@ -29,7 +44,7 @@ export function AssistantPanel({ onClose }: AssistantPanelProps) {
   const [isTyping, setIsTyping] = useState(false)
 
   // 临时模拟useChat的功能，因为'ai/react'路径不存在
-  const [messages, setMessages] = useState<any[]>([])
+  const [messages, setMessages] = useState<ChatMessage[]>([WELCOME_MESSAGE])
   const [input, setInput] = useState("")
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setInput(e.target.value)
@@ -47,7 +62,7 @@ export function AssistantPanel({ onClose }: AssistantPanelProps) {
     }
   }
   const isLoading = false
-  const append = (message: any) => {
+  const append = (message: ChatMessage) => {
     setMessages([...messages, message])
   }
   const reload = () => {}
@@ -59,7 +74,7 @@ export function AssistantPanel({ onClose }: AssistantPanelProps) {
   }
 
   const clearChat = () => {
-    setMessages([])
+    setMessages([WELCOME_MESSAGE])
     setShowRecommendations(false)
   }
 
@@ -68,20 +83,6 @@ export function AssistantPanel({ onClose }: AssistantPanelProps) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
     }
   }, [messages])
-
-  // 初始欢迎消息
-  useEffect(() => {
-    if (messages.length === 0) {
-      setMessages([
-        {
-          id: "welcome",
-          role: "assistant",
-          content:
-            "您好！我是言语云³集成助手，可以帮助您了解各种集成应用、解决集成问题，并提供相关建议。请问有什么可以帮助您的？",
-        },
-      ])
-    }
-  }, [messages.length, setMessages])
 
   return (
     <AnimatePresence>
@@ -139,13 +140,9 @@ export function AssistantPanel({ onClose }: AssistantPanelProps) {
                 className={cn("overflow-y-auto p-4 space-y-4 bg-white", expanded ? "h-[calc(100vh-280px)]" : "h-80")}
               >
                 {messages.map((message) => (
-                  <AssistantMessage
-                    key={message.id}
-                    content={message.content}
-                    role={message.role as "user" | "assistant"}
-                  />
+                  <AssistantMessage key={message.id} content={message.content} sender={message.role} />
                 ))}
-                {isLoading && <AssistantMessage content="" role="assistant" isLoading />}
+                {isLoading && <AssistantMessage content="" sender="assistant" isLoading />}
                 <div ref={messagesEndRef} />
               </div>
 

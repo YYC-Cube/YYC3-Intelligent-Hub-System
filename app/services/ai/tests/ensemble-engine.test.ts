@@ -1,5 +1,5 @@
-import { EnsembleEngine } from '@/AI/core/ensemble-engine';
-import { EnsembleConfig, PredictionData } from '@/AI/types/ai-types';
+import { EnsembleEngine } from '@/app/services/ai/core/ensemble-engine';
+import { EnsembleConfig, PredictionData } from '@/app/services/ai/types/ai-types';
 
 describe('EnsembleEngine', () => {
   let engine: EnsembleEngine;

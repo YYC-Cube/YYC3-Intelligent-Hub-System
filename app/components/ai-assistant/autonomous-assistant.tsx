@@ -130,10 +130,19 @@ function SessionListItem({
 
   return (
     <div
+      role="button"
+      tabIndex={0}
+      aria-pressed={isActive}
       className={`flex items-center justify-between p-2 rounded-md cursor-pointer hover:bg-gray-100 ${
         isActive ? "bg-blue-50 border-l-4 border-blue-500" : ""
       }`}
       onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault()
+          onClick()
+        }
+      }}
     >
       <div className="flex items-center flex-1 min-w-0">
         <MessageSquare className="h-4 w-4 mr-2 text-gray-500" />

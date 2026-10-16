@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Bell, BellOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useSubscription } from "@/app/context/subscription-context"
@@ -38,22 +38,13 @@ export default function CategorySubscribeButton({
   const [notificationEnabled, setNotificationEnabled] = useState(true)
   const [emailNotification, setEmailNotification] = useState(true)
   const [frequency, setFrequency] = useState<"instant" | "daily" | "weekly">("instant")
-  const [subscriptionId, setSubscriptionId] = useState<string | null>(null)
 
   const subscribed = isSubscribed("category", categoryName)
 
-  useEffect(() => {
-    if (subscribed) {
-      const sub = subscriptions.find((s) => s.type === "category" && s.targetId === categoryName)
-      if (sub) {
-        setSubscriptionId(sub.id)
-      } else {
-        setSubscriptionId(null)
-      }
-    } else {
-      setSubscriptionId(null)
-    }
-  }, [subscribed, subscriptions, categoryName])
+  // 订阅 ID 由订阅列表派生，避免在 effect 中同步写入 state。
+  const subscriptionId = subscribed
+    ? (subscriptions.find((s) => s.type === "category" && s.targetId === categoryName)?.id ?? null)
+    : null
 
   const handleSubscribe = async () => {
     if (!isAuthenticated) {

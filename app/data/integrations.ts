@@ -144,6 +144,14 @@ export const categories = [
   "地理信息",
 ]
 
+/**
+ * 主分类联合类型。
+ *
+ * 由 `categories` 单一数据源派生，禁止另行硬编码枚举，
+ * 以消除分类体系「双源冲突」导致的类型安全失效。
+ */
+export type IntegrationCategory = (typeof categories)[number]
+
 // 扩展子分类
 export const subcategories = {
   数据分析: [
@@ -976,59 +984,113 @@ const tags = [
   "合规认证",
 ]
 
-function generateRandomDate(start: Date, end: Date) {
-  return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime())).toISOString().split("T")[0]
+/** 确定性随机数生成函数签名 */
+export type RandomFn = () => number
+
+/** 集成应用数据集的固定随机种子 */
+export const INTEGRATIONS_SEED = 20261016
+
+/**
+ * 集成应用数据集的时间基准点。
+ *
+ * 生成器中涉及时间差的字段（`lastUpdate`、`new` 标记）必须以此常量而非
+ * `Date.now()` 为基准，否则同一份数据在服务端预渲染与客户端水合时会得到
+ * 不同结果。
+ */
+export const INTEGRATIONS_REFERENCE_DATE = new Date("2026-10-16T00:00:00.000Z")
+
+/**
+ * 创建确定性伪随机数生成器（mulberry32 算法）。
+ *
+ * 用于替代 `Math.random()`，使 1000 条集成数据在任意环境下完全可复现，
+ * 保证 Next.js 静态预渲染与客户端水合结果一致，并支持快照测试。
+ *
+ * @param seed - 32 位无符号整数种子
+ * @returns 每次调用返回 [0, 1) 区间内确定性浮点数的函数
+ */
+export function createSeededRandom(seed: number): RandomFn {
+  let state = seed >>> 0
+  return function random(): number {
+    state = (state + 0x6d2b79f5) >>> 0
+    let t = state
+    t = Math.imul(t ^ (t >>> 15), t | 1)
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+  }
 }
 
-function generateRandomVersion() {
-  const major = Math.floor(Math.random() * 5) + 1
-  const minor = Math.floor(Math.random() * 10)
-  const patch = Math.floor(Math.random() * 10)
+function generateRandomDate(random: RandomFn, start: Date, end: Date) {
+  return new Date(start.getTime() + random() * (end.getTime() - start.getTime())).toISOString().split("T")[0]
+}
+
+function generateRandomVersion(random: RandomFn) {
+  const major = Math.floor(random() * 5) + 1
+  const minor = Math.floor(random() * 10)
+  const patch = Math.floor(random() * 10)
   return `${major}.${minor}.${patch}`
 }
 
-function getRandomSubcategory(category: string) {
+function getRandomSubcategory(random: RandomFn, category: string) {
   if (category === "全部分类") return undefined
   const subs = subcategories[category as keyof typeof subcategories] || []
-  return subs.length > 0 ? subs[Math.floor(Math.random() * subs.length)] : undefined
+  return subs.length > 0 ? subs[Math.floor(random() * subs.length)] : undefined
 }
 
-function getRandomTags() {
-  const numTags = Math.floor(Math.random() * 5) + 1
-  const shuffled = [...tags].sort(() => 0.5 - Math.random())
-  return shuffled.slice(0, numTags)
+/**
+ * 使用确定性随机源做 Fisher–Yates 洗牌。
+ *
+ * 不可使用 `arr.sort(() => 0.5 - random())`：`Array.prototype.sort` 对比较器的
+ * 调用次数取决于 JS 引擎的排序算法实现，而本随机源是有状态的，因此同一份种子
+ * 在 Node（预渲染）与浏览器（水合）中会得到不同顺序，进而使后续所有随机值整体
+ * 偏移，造成 SSG/CSR 数据不一致。
+ */
+function shuffleWithRandom<T>(items: readonly T[], random: RandomFn): T[] {
+  const result = [...items]
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1))
+    const tmp = result[i]
+    result[i] = result[j]
+    result[j] = tmp
+  }
+  return result
 }
 
-function getRandomIndustries() {
-  const numIndustries = Math.floor(Math.random() * 3) + 1
-  const shuffled = [...industries].slice(1).sort(() => 0.5 - Math.random()) // 排除"全部行业"
-  return shuffled.slice(0, numIndustries)
+function getRandomTags(random: RandomFn) {
+  const numTags = Math.floor(random() * 5) + 1
+  return shuffleWithRandom(tags, random).slice(0, numTags)
 }
 
-function generateIntegrations(count: number): Integration[] {
+function getRandomIndustries(random: RandomFn) {
+  const numIndustries = Math.floor(random() * 3) + 1
+  return shuffleWithRandom(industries.slice(1), random).slice(0, numIndustries) // 排除"全部行业"
+}
+
+function generateIntegrations(count: number, seed: number = INTEGRATIONS_SEED): Integration[] {
+  const random = createSeededRandom(seed)
   const integrations: Integration[] = []
   const iconKeys = Object.keys(iconMap)
+  const newThreshold = INTEGRATIONS_REFERENCE_DATE.getTime() - 30 * 24 * 60 * 60 * 1000 // 30天内更新的为新
 
   for (let i = 0; i < count; i++) {
-    const iconKey = iconKeys[Math.floor(Math.random() * iconKeys.length)]
-    const category = categories[Math.floor(Math.random() * (categories.length - 1)) + 1] // 排除 '全部分类'
-    const color = colorPalette[Math.floor(Math.random() * colorPalette.length)]
+    const iconKey = iconKeys[Math.floor(random() * iconKeys.length)]
+    const category = categories[Math.floor(random() * (categories.length - 1)) + 1] // 排除 '全部分类'
+    const color = colorPalette[Math.floor(random() * colorPalette.length)]
     const nameIndex = i % chineseNames.length
     const descIndex = i % chineseDescriptions.length
-    const developer = developers[Math.floor(Math.random() * developers.length)]
-    const rating = (Math.random() * 2 + 3).toFixed(1) // 3.0-5.0
-    const reviewCount = Math.floor(Math.random() * 1000)
-    const installCount = Math.floor(Math.random() * 10000)
-    const releaseDate = generateRandomDate(new Date(2020, 0, 1), new Date(2022, 0, 1))
-    const lastUpdate = generateRandomDate(new Date(2022, 0, 1), new Date())
-    const version = generateRandomVersion()
-    const priceType = ["free", "paid", "freemium"][Math.floor(Math.random() * 3)] as "free" | "paid" | "freemium"
-    const priceValue = priceType === "free" ? 0 : Math.floor(Math.random() * 100) + 10
-    const subcategory = getRandomSubcategory(category)
-    const featured = Math.random() < 0.1 // 10%的几率被推荐
-    const isNew = new Date(lastUpdate) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // 30天内更新的为新
+    const developer = developers[Math.floor(random() * developers.length)]
+    const rating = (random() * 2 + 3).toFixed(1) // 3.0-5.0
+    const reviewCount = Math.floor(random() * 1000)
+    const installCount = Math.floor(random() * 10000)
+    const releaseDate = generateRandomDate(random, new Date(2020, 0, 1), new Date(2022, 0, 1))
+    const lastUpdate = generateRandomDate(random, new Date(2022, 0, 1), INTEGRATIONS_REFERENCE_DATE)
+    const version = generateRandomVersion(random)
+    const priceType = ["free", "paid", "freemium"][Math.floor(random() * 3)] as "free" | "paid" | "freemium"
+    const priceValue = priceType === "free" ? 0 : Math.floor(random() * 100) + 10
+    const subcategory = getRandomSubcategory(random, category)
+    const featured = random() < 0.1 // 10%的几率被推荐
+    const isNew = new Date(lastUpdate).getTime() > newThreshold // 基准时间前30天内更新的为新
     const popular = installCount > 5000 // 安装量超过5000为热门
-    const industryFocus = getRandomIndustries()
+    const industryFocus = getRandomIndustries(random)
 
     integrations.push({
       id: `${i + 1}`,
@@ -1049,7 +1111,7 @@ function generateIntegrations(count: number): Integration[] {
       releaseDate,
       lastUpdate,
       version,
-      tags: getRandomTags(),
+      tags: getRandomTags(random),
       featured,
       new: isNew,
       popular,

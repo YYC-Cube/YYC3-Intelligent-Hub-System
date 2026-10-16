@@ -650,10 +650,8 @@ const SidebarMenuSkeleton = React.forwardRef<
     showIcon?: boolean
   }
 >(({ className, showIcon = false, ...props }, ref) => {
-  // Random width between 50 to 90%.
-  const width = React.useMemo(() => {
-    return `${Math.floor(Math.random() * 40) + 50}%`
-  }, [])
+  // 固定占位宽度：骨架屏无需随机，随机值会导致服务端与客户端渲染结果不一致。
+  const width = "70%"
 
   return (
     <div

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useMemo } from "react"
 import { Navbar } from "@/components/ui/navbar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -31,7 +31,6 @@ function FavoritesPageContent() {
   const [searchQuery, setSearchQuery] = useState("")
   const [sortBy, setSortBy] = useState("recent")
   const [selectedCategory, setSelectedCategory] = useState("all")
-  const [filteredFavorites, setFilteredFavorites] = useState(favoritesData)
   const [selectedItems, setSelectedItems] = useState<string[]>([])
   const [isSelectMode, setIsSelectMode] = useState(false)
   const [showClearDialog, setShowClearDialog] = useState(false)
@@ -40,8 +39,8 @@ function FavoritesPageContent() {
   // 获取所有收藏的集成应用的类别
   const categories = ["all", ...Array.from(new Set(favoritesData.map((item) => item.category)))]
 
-  // 筛选和排序收藏列表
-  useEffect(() => {
+  // 筛选和排序收藏列表（纯派生，直接由收藏数据与筛选条件计算）
+  const filteredFavorites = useMemo(() => {
     let filtered = [...favoritesData]
 
     // 搜索筛选
@@ -81,7 +80,7 @@ function FavoritesPageContent() {
         break
     }
 
-    setFilteredFavorites(filtered)
+    return filtered
   }, [favoritesData, searchQuery, sortBy, selectedCategory])
 
   // 处理全选/取消全选

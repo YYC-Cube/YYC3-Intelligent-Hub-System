@@ -4,7 +4,7 @@ import { useWizard } from "./wizard-context"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { WizardNavigation } from "./wizard-navigation"
 
 export function StepBasicInfo() {
@@ -12,11 +12,9 @@ export function StepBasicInfo() {
   const [name, setName] = useState(formData.name || "")
   const [environment, setEnvironment] = useState(formData.environment || "production")
   const [description, setDescription] = useState(formData.description || "")
-  const [isValid, setIsValid] = useState(false)
 
-  useEffect(() => {
-    setIsValid(!!name.trim())
-  }, [name])
+  // 校验结果由输入直接派生，无需额外的 state + effect。
+  const isValid = !!name.trim()
 
   const handleNext = () => {
     updateFormData({

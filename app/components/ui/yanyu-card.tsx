@@ -41,8 +41,10 @@ const YanyuCardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HT
 YanyuCardHeader.displayName = "YanyuCardHeader"
 
 const YanyuCardTitle = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLHeadingElement>>(
-  ({ className, ...props }, ref) => (
-    <h3 ref={ref} className={cn("text-xl font-semibold leading-none tracking-tight", className)} {...props} />
+  ({ className, children, ...props }, ref) => (
+    <h3 ref={ref} className={cn("text-xl font-semibold leading-none tracking-tight", className)} {...props}>
+      {children}
+    </h3>
   ),
 )
 YanyuCardTitle.displayName = "YanyuCardTitle"

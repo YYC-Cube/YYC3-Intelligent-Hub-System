@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo, useEffect, useCallback } from "react"
+import { useState, useMemo, useCallback } from "react"
 import { categories, integrations, subcategories } from "../data/integrations"
 import CollapsibleCategoryFilter from "./components/CollapsibleCategoryFilter"
 import SearchBar from "./components/SearchBar"
@@ -12,44 +12,52 @@ import { useSearchParams } from "next/navigation"
 import { PageBackground } from "@/app/components/ui/page-background"
 import { CategoryMemoryService } from "@/app/services/category-memory"
 import { useOptimizedFilter, type FilterOptions } from "@/app/hooks/use-optimized-filter"
+import { useClientSnapshot } from "@/hooks/use-client-snapshot"
 import { Badge } from "@/components/ui/badge"
 import { TrendingUp, Users, Star, Filter, RotateCcw, Zap } from "lucide-react"
 import { Button3D } from "@/app/components/ui/3d-button"
 
 const ITEMS_PER_PAGE = 30
 
+/** 用户显式设置的筛选项（覆盖 URL 参数 / 本地记忆提供的默认值）。 */
+interface FilterOverride {
+  category?: string
+  subcategory?: string
+  searchQuery?: string
+}
+
+/** 本地记忆中与筛选相关的字段。 */
+interface MemorySelection {
+  selectedCategory?: string
+  selectedSubcategory?: string
+  searchQuery?: string
+  expandedCategories?: Record<string, boolean>
+}
+
+const EMPTY_SELECTION: MemorySelection = {}
+const getMemorySelection = (): MemorySelection => CategoryMemoryService.getSelection()
+
 export default function IntegrationsPage() {
-  const [selectedCategory, setSelectedCategory] = useState("全部分类")
-  const [selectedSubcategory, setSelectedSubcategory] = useState<string | undefined>(undefined)
-  const [searchQuery, setSearchQuery] = useState("")
+  const searchParams = useSearchParams()
+  const memorySelection = useClientSnapshot(getMemorySelection, EMPTY_SELECTION)
+
+  // URL 参数（?id=）与本地记忆共同构成筛选「默认值」，用户操作作为覆盖层，
+  // 全部在渲染期派生，无需借助 effect 恢复状态（同时规避 SSR/CSR 水合不一致）。
+  const urlId = searchParams.get("id")
+  const urlIntegration = urlId ? integrations.find((i) => i.id === urlId) : undefined
+
+  const [override, setOverride] = useState<FilterOverride | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [sortBy, setSortBy] = useState<"name" | "rating" | "installCount" | "releaseDate">("installCount")
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc")
-  const searchParams = useSearchParams()
 
-  // 从URL参数中获取集成ID
-  useEffect(() => {
-    const id = searchParams.get("id")
-    if (id) {
-      const integration = integrations.find((i) => i.id === id)
-      if (integration) {
-        setSelectedCategory(integration.category)
-        setSearchQuery(integration.name)
-      }
-    }
-  }, [searchParams])
-
-  // 从本地存储恢复状态
-  useEffect(() => {
-    const memory = CategoryMemoryService.getSelection()
-    if (memory.selectedCategory && memory.selectedCategory !== selectedCategory) {
-      setSelectedCategory(memory.selectedCategory)
-      setSelectedSubcategory(memory.selectedSubcategory)
-    }
-    if (memory.searchQuery && memory.searchQuery !== searchQuery) {
-      setSearchQuery(memory.searchQuery)
-    }
-  }, [])
+  const selectedCategory = override?.category ?? urlIntegration?.category ?? memorySelection.selectedCategory ?? "全部分类"
+  const selectedSubcategory = override
+    ? override.subcategory
+    : urlIntegration
+      ? undefined
+      : memorySelection.selectedSubcategory
+  const searchQuery = override?.searchQuery ?? urlIntegration?.name ?? memorySelection.searchQuery ?? ""
 
   // 使用优化的筛选Hook
   const filterOptions: FilterOptions = useMemo(
@@ -72,26 +80,29 @@ export default function IntegrationsPage() {
   )
 
   // 优化的分类选择处理
-  const handleSelectCategory = useCallback((category: string, subcategory?: string) => {
-    setSelectedCategory(category)
-    setSelectedSubcategory(subcategory)
-    setCurrentPage(1)
+  const handleSelectCategory = useCallback(
+    (category: string, subcategory?: string) => {
+      setOverride({ category, subcategory, searchQuery })
+      setCurrentPage(1)
 
-    // 保存到本地存储
-    CategoryMemoryService.saveSelection(category, subcategory)
-  }, [])
+      // 保存到本地存储
+      CategoryMemoryService.saveSelection(category, subcategory)
+    },
+    [searchQuery],
+  )
 
   // 优化的搜索处理
-  const handleSearch = useCallback((query: string) => {
-    setSearchQuery(query)
-    setCurrentPage(1)
-  }, [])
+  const handleSearch = useCallback(
+    (query: string) => {
+      setOverride({ category: selectedCategory, subcategory: selectedSubcategory, searchQuery: query })
+      setCurrentPage(1)
+    },
+    [selectedCategory, selectedSubcategory],
+  )
 
   // 重置所有筛选
   const handleReset = useCallback(() => {
-    setSelectedCategory("全部分类")
-    setSelectedSubcategory(undefined)
-    setSearchQuery("")
+    setOverride({ category: "全部分类", subcategory: undefined, searchQuery: "" })
     setSortBy("installCount")
     setSortOrder("desc")
     setCurrentPage(1)

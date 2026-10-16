@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useMemo } from "react"
 import { useSearchParams } from "next/navigation"
 import { Navbar } from "@/components/ui/navbar"
 import { Button } from "@/components/ui/button"
@@ -12,6 +12,13 @@ import { FilterSidebar } from "../components/filter-sidebar"
 import { Filter, Search, SlidersHorizontal } from "lucide-react"
 import Link from "next/link"
 import { motion } from "framer-motion"
+
+/** 中文价格类型 → 内部价格枚举 的映射（常量，置于模块作用域以保证引用稳定）。 */
+const PRICE_TYPE_MAP: Record<string, string> = {
+  免费: "free",
+  免费增值: "freemium",
+  付费: "paid",
+}
 
 export default function SearchPage() {
   const searchParams = useSearchParams()
@@ -25,22 +32,19 @@ export default function SearchPage() {
   const [searchQuery, setSearchQuery] = useState(query)
   const [showFilters, setShowFilters] = useState(false)
   const [sortBy, setSortBy] = useState("relevance")
-  const [filteredIntegrations, setFilteredIntegrations] = useState(integrations)
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 12
 
-  // 解析筛选参数
+  // 解析筛选参数（原始参数字符串即为唯一来源，保持派生简单、依赖明确）
   const selectedCategories = categoryParam ? categoryParam.split(",") : []
   const selectedPriceTypes = priceTypesParam ? priceTypesParam.split(",") : []
 
-  // 价格类型映射
-  const priceTypeMap: Record<string, string> = {
-    免费: "free",
-    免费增值: "freemium",
-    付费: "paid",
-  }
+  // 结果列表由筛选条件纯派生，避免 effect + setState 带来的额外渲染。
+  const filteredIntegrations = useMemo(() => {
+    // 在 memo 内部重新解析，使依赖数组与推断依赖完全一致（React Compiler 友好）
+    const activeCategories = categoryParam ? categoryParam.split(",") : []
+    const activePriceTypes = priceTypesParam ? priceTypesParam.split(",") : []
 
-  useEffect(() => {
     // 筛选集成应用
     let filtered = [...integrations]
 
@@ -57,14 +61,14 @@ export default function SearchPage() {
     }
 
     // 类别筛选
-    if (selectedCategories.length > 0) {
-      filtered = filtered.filter((integration) => selectedCategories.includes(integration.category))
+    if (activeCategories.length > 0) {
+      filtered = filtered.filter((integration) => activeCategories.includes(integration.category))
     }
 
     // 价格类型筛选
-    if (selectedPriceTypes.length > 0) {
+    if (activePriceTypes.length > 0) {
       filtered = filtered.filter((integration) =>
-        selectedPriceTypes.some((type) => integration.price.type === priceTypeMap[type]),
+        activePriceTypes.some((type) => integration.price.type === PRICE_TYPE_MAP[type]),
       )
     }
 
@@ -112,13 +116,14 @@ export default function SearchPage() {
         break
     }
 
-    setFilteredIntegrations(filtered)
-    setCurrentPage(1)
-  }, [query, selectedCategories, selectedPriceTypes, minRating, minPrice, maxPrice, sortBy])
+    return filtered
+  }, [query, categoryParam, priceTypesParam, minRating, minPrice, maxPrice, sortBy])
 
   // 分页
   const totalPages = Math.ceil(filteredIntegrations.length / itemsPerPage)
-  const paginatedIntegrations = filteredIntegrations.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+  // 筛选条件变化导致页数减少时，将页码收敛到有效范围（替代原先的 setCurrentPage(1) 副作用）。
+  const safePage = Math.min(currentPage, Math.max(1, totalPages))
+  const paginatedIntegrations = filteredIntegrations.slice((safePage - 1) * itemsPerPage, safePage * itemsPerPage)
 
   const handleSearch = () => {
     // 构建查询参数
@@ -232,14 +237,14 @@ export default function SearchPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                    disabled={currentPage === 1}
+                    disabled={safePage === 1}
                   >
                     上一页
                   </Button>
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                     <Button
                       key={page}
-                      variant={currentPage === page ? "default" : "outline"}
+                      variant={safePage === page ? "default" : "outline"}
                       size="sm"
                       onClick={() => setCurrentPage(page)}
                     >
@@ -250,7 +255,7 @@ export default function SearchPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                    disabled={currentPage === totalPages}
+                    disabled={safePage === totalPages}
                   >
                     下一页
                   </Button>

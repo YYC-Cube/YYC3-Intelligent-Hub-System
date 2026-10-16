@@ -1,11 +1,12 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useMemo } from "react"
 import { Button3D } from "@/app/components/ui/3d-button"
 import { ChevronDown, ChevronRight, ChevronLeft, Grid, TrendingUp, Star, Filter, RotateCcw } from "lucide-react"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { calculateCategoryHeat } from "@/app/services/category-trends"
 import { CategoryMemoryService } from "@/app/services/category-memory"
+import { useClientSnapshot } from "@/hooks/use-client-snapshot"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -18,6 +19,19 @@ type CollapsibleCategoryFilterProps = {
   onSelectCategory: (category: string, subcategory?: string) => void
   onExpandedChange?: (expanded: Record<string, boolean>) => void
 }
+
+/** 本地记忆中与分类筛选相关的字段。 */
+interface MemorySelection {
+  selectedCategory?: string
+  selectedSubcategory?: string
+  searchQuery?: string
+  expandedCategories?: Record<string, boolean>
+}
+
+/** 服务端 / 首次水合期间的兜底快照（模块级稳定引用）。 */
+const EMPTY_SELECTION: MemorySelection = {}
+const EMPTY_EXPANDED: Record<string, boolean> = {}
+const getMemorySelection = (): MemorySelection => CategoryMemoryService.getSelection()
 
 // 优化后的分类名称映射（统一4个字）
 const categoryNameMap: Record<string, string> = {
@@ -118,22 +132,23 @@ export default function CollapsibleCategoryFilter({
   onExpandedChange,
 }: CollapsibleCategoryFilterProps) {
   const [isCollapsed, setIsCollapsed] = useState(false)
-  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({})
-  const [categoryHeats, setCategoryHeats] = useState<Record<string, ReturnType<typeof calculateCategoryHeat>>>({})
-  const [isInitialized, setIsInitialized] = useState(false)
+  // 用户交互产生的「覆盖值」；为 null 时回退到本地记忆，避免 effect 中同步 setState。
+  const [expandedOverride, setExpandedOverride] = useState<Record<string, boolean> | null>(null)
 
-  // 初始化时从本地存储恢复状态
+  const memorySelection = useClientSnapshot(getMemorySelection, EMPTY_SELECTION)
+  const expandedCategories = expandedOverride ?? memorySelection.expandedCategories ?? EMPTY_EXPANDED
+
+  // 恢复记忆中选中的分类时，仅通知父组件（不写入本地 state，规避水合不一致）。
   useEffect(() => {
-    const memory = CategoryMemoryService.getSelection()
-    if (memory.expandedCategories) {
-      setExpandedCategories(memory.expandedCategories)
+    if (memorySelection.selectedCategory && memorySelection.selectedCategory !== selectedCategory) {
+      onSelectCategory(memorySelection.selectedCategory, memorySelection.selectedSubcategory)
     }
-    // 如果有记忆的分类选择，通知父组件
-    if (memory.selectedCategory && memory.selectedCategory !== selectedCategory) {
-      onSelectCategory(memory.selectedCategory, memory.selectedSubcategory)
-    }
-    setIsInitialized(true)
-  }, [])
+  }, [
+    memorySelection.selectedCategory,
+    memorySelection.selectedSubcategory,
+    selectedCategory,
+    onSelectCategory,
+  ])
 
   // 自动收缩逻辑
   useEffect(() => {
@@ -146,35 +161,33 @@ export default function CollapsibleCategoryFilter({
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-  // 计算分类热度
-  useEffect(() => {
+  // 计算分类热度（纯计算，渲染期直接派生）
+  const categoryHeats = useMemo<Record<string, ReturnType<typeof calculateCategoryHeat>>>(() => {
     const heats: Record<string, ReturnType<typeof calculateCategoryHeat>> = {}
     categories.forEach((category) => {
       if (category !== "全部分类") {
         heats[category] = calculateCategoryHeat(category)
       }
     })
-    setCategoryHeats(heats)
+    return heats
   }, [categories])
 
-  // 保存展开状态到本地存储
+  // 保存展开状态到本地存储，并通知父组件
   useEffect(() => {
-    if (isInitialized) {
-      CategoryMemoryService.saveExpandedState(expandedCategories)
-      onExpandedChange?.(expandedCategories)
-    }
-  }, [expandedCategories, isInitialized, onExpandedChange])
+    CategoryMemoryService.saveExpandedState(expandedCategories)
+    onExpandedChange?.(expandedCategories)
+  }, [expandedCategories, onExpandedChange])
 
   // 优化的切换分类函数
-  const toggleCategory = useCallback((category: string) => {
-    setExpandedCategories((prev) => {
-      const newState = {
-        ...prev,
-        [category]: !prev[category],
-      }
-      return newState
-    })
-  }, [])
+  const toggleCategory = useCallback(
+    (category: string) => {
+      setExpandedOverride({
+        ...expandedCategories,
+        [category]: !expandedCategories[category],
+      })
+    },
+    [expandedCategories],
+  )
 
   // 优化的选择分类函数
   const handleSelectCategory = useCallback(
@@ -188,7 +201,7 @@ export default function CollapsibleCategoryFilter({
 
   // 重置所有筛选
   const handleReset = useCallback(() => {
-    setExpandedCategories({})
+    setExpandedOverride({})
     CategoryMemoryService.clearAll()
     onSelectCategory("全部分类")
   }, [onSelectCategory])

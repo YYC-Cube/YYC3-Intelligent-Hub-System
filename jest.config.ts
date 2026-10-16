@@ -39,6 +39,8 @@ const config: Config = {
       statements: 50,
     },
   },
+  // 阶段2 的 vitest 测试位于 tests/ 目录，由 vitest 负责，jest 需排除以免重复/报错
+  testPathIgnorePatterns: ['/node_modules/', '<rootDir>/tests/'],
   testMatch: [
     '**/__tests__/**/*.(test|spec).(ts|tsx)',
     '**/*.(test|spec).(ts|tsx)',
