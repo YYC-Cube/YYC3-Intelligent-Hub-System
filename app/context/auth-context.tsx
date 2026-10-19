@@ -1,16 +1,17 @@
 "use client"
 
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
-import { useToast } from "@/hooks/use-toast"
 import { useI18n } from "@/app/hooks/use-i18n"
+import { useToast } from "@/hooks/use-toast"
+import { hashPassword, verifyPassword, type PasswordRecord } from "@/lib/yyc3/password"
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
 
-async function hashPassword(password: string): Promise<string> {
-  const encoder = new TextEncoder()
-  const data = encoder.encode(password + "__yyc3_salt__")
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data)
-  return Array.from(new Uint8Array(hashBuffer))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("")
+/** localStorage "users" 数组项的存储记录（含旧版遗留字段） */
+type StoredUserRecord = PasswordRecord & {
+  id: string
+  name: string
+  email: string
+  avatar?: string
+  createdAt?: string
 }
 
 export type User = {
@@ -78,9 +79,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       // 检查用户是否存在（模拟）
       const usersData = localStorage.getItem("users")
-      const users = usersData ? JSON.parse(usersData) : []
+      const users: StoredUserRecord[] = usersData ? JSON.parse(usersData) : []
 
-      const foundUser = users.find((u: any) => u.email === email)
+      const foundUser = users.find((u) => u.email === email)
 
       if (!foundUser) {
         toast({
@@ -91,14 +92,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
         return false
       }
 
-      const hashedInput = await hashPassword(password)
-      if (foundUser.passwordHash !== hashedInput && foundUser.password !== password) {
+      const verification = await verifyPassword(password, foundUser)
+      if (!verification.valid) {
         toast({
           title: t("auth.登录失败"),
           description: t("auth.邮箱或密码不正确"),
           variant: "destructive",
         })
         return false
+      }
+
+      if (verification.upgradedHash) {
+        // 一次性安全升级：旧哈希/明文记录迁移至 PBKDF2，并彻底清除明文字段
+        foundUser.passwordHash = verification.upgradedHash
+        delete foundUser.password
+        localStorage.setItem("users", JSON.stringify(users))
       }
 
       // 创建用户对象（不包含密码）
@@ -143,9 +151,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       // 检查用户是否已存在
       const usersData = localStorage.getItem("users")
-      const users = usersData ? JSON.parse(usersData) : []
+      const users: StoredUserRecord[] = usersData ? JSON.parse(usersData) : []
 
-      if (users.some((u: any) => u.email === email)) {
+      if (users.some((u) => u.email === email)) {
         toast({
           title: t("auth.注册失败"),
           description: t("auth.该邮箱已被注册"),

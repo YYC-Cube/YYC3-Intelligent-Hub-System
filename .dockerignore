@@ -1,0 +1,13 @@
+node_modules
+.next
+out
+coverage-vitest
+docs
+tests
+.github
+*.log
+.env*
+!.env.example
+AI
+AI高级功能
+_api_backup

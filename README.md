@@ -139,10 +139,10 @@ import { brandAssets } from "@/lib/yyc3/brand"
 | 层 | 技术 | 徽章 |
 | :--- | :--- | :--- |
 | 框架 | Next.js 16（App Router · 静态导出 · Turbopack） | ![Next.js](https://img.shields.io/badge/next-16.4-black) |
-| UI | React 19 · shadcn/ui · Tailwind CSS 3 · framer-motion 14 | ![React](https://img.shields.io/badge/react-19-61dafb) |
+| UI | React 19 · shadcn/ui · Tailwind CSS 3 | ![React](https://img.shields.io/badge/react-19-61dafb) |
 | 语言 | TypeScript 5（严格模式） | ![TS](https://img.shields.io/badge/ts-5-3178c6) |
 | 协议 | MCP（JSON-RPC 2.0）· 自研传输层 | ![MCP](https://img.shields.io/badge/MCP-JSON--RPC_2.0-7c3aed) |
-| 测试 | Vitest 5（25 文件 / 217 用例基线） | ![Tests](https://img.shields.io/badge/test-vitest%205-6e9f18?logo=vitest) |
+| 测试 | Vitest 5（33 文件 / 289 用例基线） | ![Tests](https://img.shields.io/badge/test-vitest%205-6e9f18?logo=vitest) |
 | 工程化 | ESLint 9 · Prettier · pnpm · GitHub Actions | ![pnpm](https://img.shields.io/badge/pm-pnpm-F69220?logo=pnpm) |
 
 ---
@@ -154,7 +154,7 @@ import { brandAssets } from "@/lib/yyc3/brand"
 git clone https://github.com/YYC-Cube/YYC3-Intelligent-Hub-System.git
 cd YYC3-Intelligent-Hub-System
 
-# 安装依赖（Node ≥ 20.9 / pnpm ≥ 9）
+# 安装依赖（Node ≥ 22.19 / pnpm ≥ 10）
 pnpm install
 
 # 启动开发服务器
@@ -193,7 +193,7 @@ tests/legacy/  ──▶  AI 引擎 / 数据库 / 加密等服务级用例
 ```
 
 ```bash
-pnpm test            # 全量（当前基线 25 文件 / 217 用例）
+pnpm test            # 全量（当前基线 33 文件 / 289 用例）
 pnpm test:coverage   # 覆盖率报告
 ```
 
@@ -206,6 +206,7 @@ pnpm test:coverage   # 覆盖率报告
 - ⚙️ 推送 `main` 触发 [GitHub Actions](.github/workflows/ci-cd.yml)：构建静态站点 → 发布 GitHub Pages
 - 🌐 自定义域名 `nexus.yyc3.vip`（`public/CNAME`）
 - 📁 构建产物为纯静态文件（`out/`），可托管至任意静态主机
+- 🐳 容器化：`docker compose up --build`（多阶段构建，nginx 托管 `out/`，见 [Dockerfile](Dockerfile)）
 
 ---
 
