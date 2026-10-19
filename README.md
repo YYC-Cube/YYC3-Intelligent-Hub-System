@@ -2,7 +2,7 @@
 
 <img src="public/yyc3-family.png" width="1800" height="450" alt="YYC³ AI Family" />
 
-# 言语云³集成中心系统
+# YanYuCloudCube集成中心系统
 
 **YYC³ Intelligent Hub System**
 
@@ -30,7 +30,7 @@
 
 ## 📖 项目简介
 
-言语云³集成中心系统（YYC³-IC）是一个**静态导出、多端适配**的集成应用市场与智能中枢：
+YanYuCloudCube集成中心系统（YYC³-IC）是一个**静态导出、多端适配**的集成应用市场与智能中枢：
 
 - 🛒 **集成市场** —— 分类浏览、搜索、详情、安装向导
 - 🤖 **AI 智能** —— 用户行为分析、增强推荐、集成式助手
@@ -124,7 +124,7 @@ graph TB
 ```ts
 // ✅ 正确：从唯一事实源取路径
 import { brandAssets } from "@/lib/yyc3/brand"
-<Image src={brandAssets.logoPng} alt="言语云³" />
+<Image src={brandAssets.logoPng} alt="YanYuCloudCube" />
 
 // ❌ 错误：硬编码字符串（历史上正是它导致全端 logo 断链）
 <Image src="/images/logo.png" />
@@ -242,8 +242,8 @@ pnpm test:coverage   # 覆盖率报告
 
 <div align="center">
 
-**⭐ 如果言语云³对你有帮助，欢迎 Star 让更多人看到**
+**⭐ 如果YanYuCloudCube对你有帮助，欢迎 Star 让更多人看到**
 
-`言语云³ · YYC³ Intelligent Hub System`
+`YanYuCloudCube · YYC³ Intelligent Hub System`
 
 </div>

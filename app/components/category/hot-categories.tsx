@@ -1,15 +1,15 @@
 "use client"
 
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { categories } from "@/app/data/integrations"
-import { getHotCategories, getTrendingCategories, type CategoryHeat } from "@/app/services/category-trends"
-import CategoryHeatBadge from "./category-heat-badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useRouter } from "next/navigation"
-import CategorySubscribeButton from "./category-subscribe-button"
 import { useI18n } from "@/app/hooks/use-i18n"
+import { getHotCategories, getTrendingCategories, type CategoryHeat } from "@/app/services/category-trends"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { dataCat } from "@/lib/yyc3/i18n/data"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
+import CategoryHeatBadge from "./category-heat-badge"
+import CategorySubscribeButton from "./category-subscribe-button"
 
 export default function HotCategories() {
   const [activeTab, setActiveTab] = useState("hot")
@@ -47,7 +47,7 @@ export default function HotCategories() {
               {hotCategories.map((category) => (
                 <div
                   key={category.category}
-                  className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-md"
+                  className="flex items-center justify-between p-2 hover:bg-muted rounded-md"
                 >
                   <div className="flex items-center gap-2">
                     <CategoryHeatBadge
@@ -78,7 +78,7 @@ export default function HotCategories() {
               {trendingCategories.map((category) => (
                 <div
                   key={category.category}
-                  className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-md"
+                  className="flex items-center justify-between p-2 hover:bg-muted rounded-md"
                 >
                   <div className="flex items-center gap-2">
                     <CategoryHeatBadge

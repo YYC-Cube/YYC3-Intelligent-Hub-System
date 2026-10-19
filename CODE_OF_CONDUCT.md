@@ -45,6 +45,6 @@
 
 <div align="center">
 
-**言语云³ · 让每一次协作都有温度**
+**YanYuCloudCube · 让每一次协作都有温度**
 
 </div>

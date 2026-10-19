@@ -2,17 +2,16 @@
 
 import Link from "next/link"
 
-import { Navbar } from "@/components/ui/navbar"
-import { Footer } from "@/components/ui/footer"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { PageContainer } from "@/app/components/layout/page-container"
 import { useI18n } from "@/app/hooks/use-i18n"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { tc } from "@/lib/yyc3/i18n/data"
 
 /** 隐私政策章节 */
 const SECTIONS = [
   {
     title: "一、我们收集的信息",
-    body: "言语云³集成中心仅在您主动使用服务时收集必要信息，包括账号标识、您创建的收藏与应用启用偏好、以及用于故障排查的匿名运行日志。我们不采集与本服务功能无关的个人信息。",
+    body: "YanYuCloudCube集成中心仅在您主动使用服务时收集必要信息，包括账号标识、您创建的收藏与应用启用偏好、以及用于故障排查的匿名运行日志。我们不采集与本服务功能无关的个人信息。",
   },
   {
     title: "二、信息的使用方式",
@@ -41,41 +40,35 @@ export default function PrivacyPage() {
   const { t } = useI18n()
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
-      <Navbar />
+    <PageContainer className="py-12">
+      <div className="max-w-content mx-auto">
+        <h1 className="text-3xl font-bold mb-2">{t("pages.隐私政策")}</h1>
+        <p className="text-muted-foreground mb-8">{t("pages.最近更新：2026 年 10 月 16 日")}</p>
 
-      <main className="flex-1 container mx-auto px-4 py-12">
-        <div className="max-w-3xl mx-auto">
-          <h1 className="text-3xl font-bold mb-2">{t("pages.隐私政策")}</h1>
-          <p className="text-gray-500 mb-8">{t("pages.最近更新：2026 年 10 月 16 日")}</p>
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("pages.YanYuCloudCube集成中心隐私政策")}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {SECTIONS.map((section) => (
+              <section key={section.title}>
+                <h2 className="text-lg font-semibold mb-2">{tc("pages", section.title)}</h2>
+                <p className="text-muted-foreground leading-relaxed">{tc("pages", section.body)}</p>
+              </section>
+            ))}
 
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("pages.言语云³集成中心隐私政策")}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {SECTIONS.map((section) => (
-                <section key={section.title}>
-                  <h2 className="text-lg font-semibold mb-2">{tc("pages", section.title)}</h2>
-                  <p className="text-gray-600 leading-relaxed">{tc("pages", section.body)}</p>
-                </section>
-              ))}
-
-              <div className="pt-4 border-t">
-                <p className="text-gray-600">
-                  {t("pages.如对本政策有疑问，请前往")}
-                  <Link href="/contact" className="text-blue-600 hover:underline mx-1">
-                    {t("pages.联系我们")}
-                  </Link>
-                  {t("pages.。")}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </main>
-
-      <Footer />
-    </div>
+            <div className="pt-4 border-t">
+              <p className="text-muted-foreground">
+                {t("pages.如对本政策有疑问，请前往")}
+                <Link href="/contact" className="text-primary hover:underline mx-1">
+                  {t("pages.联系我们")}
+                </Link>
+                {t("pages.。")}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </PageContainer>
   )
 }

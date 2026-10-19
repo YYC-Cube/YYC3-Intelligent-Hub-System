@@ -2,15 +2,15 @@
 
 import type React from "react"
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useAuth } from "@/app/context/auth-context"
 import { useI18n } from "@/app/hooks/use-i18n"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Loader2 } from "lucide-react"
+import { useState } from "react"
 
 interface LoginFormProps {
   onSuccess?: () => void
@@ -110,7 +110,7 @@ export function LoginForm({ onSuccess, onCancel }: LoginFormProps) {
                   required
                 />
               </div>
-              {loginError && <p className="text-sm text-red-500">{loginError}</p>}
+              {loginError && <p className="text-sm text-destructive">{loginError}</p>}
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? (
                   <>
@@ -169,7 +169,7 @@ export function LoginForm({ onSuccess, onCancel }: LoginFormProps) {
                   disabled={isLoading}
                 />
               </div>
-              {registerError && <p className="text-sm text-red-500">{registerError}</p>}
+              {registerError && <p className="text-sm text-destructive">{registerError}</p>}
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? (
                   <>
@@ -189,11 +189,11 @@ export function LoginForm({ onSuccess, onCancel }: LoginFormProps) {
         <Button variant="ghost" onClick={onCancel}>
           {t("auth.取消")}
         </Button>
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-muted-foreground">
           {activeTab === "login" ? t("auth.没有账户？") : t("auth.已有账户？")}
           <button
             type="button"
-            className="text-blue-600 hover:underline ml-1"
+            className="text-primary hover:underline ml-1"
             onClick={() => setActiveTab(activeTab === "login" ? "register" : "login")}
           >
             {activeTab === "login" ? t("auth.注册") : t("auth.登录")}

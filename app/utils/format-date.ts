@@ -1,3 +1,30 @@
+import { format } from "date-fns"
+import { enUS, zhCN } from "date-fns/locale"
+
+/**
+ * 按 UI 语言格式化日期时间（zh-CN: 2026年10月19日 14:30 / en: Oct 19, 2026 14:30）。
+ * @param value Date 对象或 ISO 日期字符串
+ * @param locale 当前 UI 语言
+ */
+export function formatDateTime(value: Date | string | number, locale = "zh-CN"): string {
+  const isEn = locale.startsWith("en")
+  return format(new Date(value), isEn ? "MMM d, yyyy HH:mm" : "yyyy年MM月dd日 HH:mm", {
+    locale: isEn ? enUS : zhCN,
+  })
+}
+
+/**
+ * 按 UI 语言格式化日期（zh-CN: 2026年10月19日 / en: Oct 19, 2026）。
+ * @param value Date 对象或 ISO 日期字符串
+ * @param locale 当前 UI 语言
+ */
+export function formatDateOnly(value: Date | string | number, locale = "zh-CN"): string {
+  const isEn = locale.startsWith("en")
+  return format(new Date(value), isEn ? "MMM d, yyyy" : "yyyy年MM月dd日", {
+    locale: isEn ? enUS : zhCN,
+  })
+}
+
 /**
  * 格式化日期为本地化字符串
  * @param dateString ISO格式的日期字符串

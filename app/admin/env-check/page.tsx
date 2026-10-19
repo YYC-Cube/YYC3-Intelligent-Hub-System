@@ -1,15 +1,12 @@
 "use client"
 
-import { useState, useMemo } from "react"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { InfoIcon, AlertTriangleIcon, CheckCircleIcon, CopyIcon, RefreshCwIcon, PlusIcon } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
+import { PageContainer } from "@/app/components/layout/page-container"
+import { PageHeader } from "@/app/components/layout/page-header"
 import { useI18n } from "@/app/hooks/use-i18n"
-import { tc } from "@/lib/yyc3/i18n"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import {
   Dialog,
   DialogContent,
@@ -21,6 +18,11 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { useToast } from "@/hooks/use-toast"
+import { tc } from "@/lib/yyc3/i18n"
+import { AlertTriangleIcon, CheckCircleIcon, CopyIcon, InfoIcon, PlusIcon, RefreshCwIcon } from "lucide-react"
+import { useMemo, useState } from "react"
 
 interface EnvVariable {
   key: string
@@ -141,13 +143,13 @@ export default function EnvironmentVariablesCheck() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "ok":
-        return <CheckCircleIcon className="h-5 w-5 text-green-500" />
+        return <CheckCircleIcon className="h-5 w-5 text-success" />
       case "warning":
-        return <AlertTriangleIcon className="h-5 w-5 text-yellow-500" />
+        return <AlertTriangleIcon className="h-5 w-5 text-warning" />
       case "error":
-        return <AlertTriangleIcon className="h-5 w-5 text-red-500" />
+        return <AlertTriangleIcon className="h-5 w-5 text-destructive" />
       default:
-        return <InfoIcon className="h-5 w-5 text-blue-500" />
+        return <InfoIcon className="h-5 w-5 text-info" />
     }
   }
 
@@ -155,25 +157,25 @@ export default function EnvironmentVariablesCheck() {
     switch (type) {
       case "public":
         return (
-          <Badge variant="outline" className="bg-sky-100 text-sky-800 border-sky-200">
+          <Badge variant="outline" className="bg-brand-100 text-brand-600 border-brand-200">
             {t("admin.公共")}
           </Badge>
         )
       case "server":
         return (
-          <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-200">
+          <Badge variant="outline" className="bg-accent/15 text-accent border-accent/30">
             {t("admin.服务端")}
           </Badge>
         )
       case "missing":
         return (
-          <Badge variant="outline" className="bg-red-100 text-red-800 border-red-200">
+          <Badge variant="destructive">
             {t("admin.缺失")}
           </Badge>
         )
       case "custom":
         return (
-          <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-200">
+          <Badge variant="warning">
             {t("admin.自定义")}
           </Badge>
         )
@@ -183,32 +185,31 @@ export default function EnvironmentVariablesCheck() {
   }
 
   return (
-    <div className="container mx-auto py-8">
-      <Card className="shadow-lg">
-        <CardHeader className="bg-gradient-to-r from-sky-600 to-blue-700 text-white">
-          <div className="flex justify-between items-center">
-            <div>
-              <CardTitle className="text-2xl">{t("admin.环境变量检查工具")}</CardTitle>
-              <CardDescription className="text-sky-100 mt-2">{t("admin.查看和管理当前项目中的环境变量配置")}</CardDescription>
-            </div>
-            <Button
-              variant="outline"
-              size="icon"
-              className="bg-white/20 hover:bg-white/30 text-white border-white/30"
-              onClick={refreshEnvironmentVariables}
-            >
-              <RefreshCwIcon className="h-5 w-5" />
-            </Button>
-          </div>
-        </CardHeader>
+    <PageContainer>
+      <PageHeader
+        crumbs={[
+          { label: t("admin.管理员控制台"), href: "/admin" },
+          { label: t("admin.环境变量检查工具") },
+        ]}
+        title={t("admin.环境变量检查工具")}
+        description={t("admin.查看和管理当前项目中的环境变量配置")}
+        actions={
+          <Button variant="outline" size="sm" onClick={refreshEnvironmentVariables}>
+            <RefreshCwIcon className="h-4 w-4" />
+            {t("admin.刷新")}
+          </Button>
+        }
+        className="mb-6"
+      />
 
+      <Card className="shadow-lg">
         <CardContent className="pt-6">
-          <Alert className="mb-6 bg-blue-50 border-blue-200">
-            <InfoIcon className="h-5 w-5 text-blue-600" />
-            <AlertTitle className="text-blue-800">{t("admin.关于环境变量")}</AlertTitle>
-            <AlertDescription className="text-blue-700">
+          <Alert className="mb-6 bg-brand-50 border-brand-200">
+            <InfoIcon className="h-5 w-5 text-primary" />
+            <AlertTitle className="text-brand-600">{t("admin.关于环境变量")}</AlertTitle>
+            <AlertDescription className="text-primary">
               {t("admin.环境变量用于存储配置信息，如API密钥、数据库连接字符串等。以")}{" "}
-              <code className="bg-blue-100 px-1 rounded">NEXT_PUBLIC_</code>{" "}
+              <code className="bg-brand-100 px-1 rounded">NEXT_PUBLIC_</code>{" "}
               {t("admin.开头的环境变量可在客户端访问。")}
             </AlertDescription>
           </Alert>
@@ -216,7 +217,7 @@ export default function EnvironmentVariablesCheck() {
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow className="bg-gray-50">
+                <TableRow className="bg-muted">
                   <TableHead className="w-[50px]">{t("admin.状态")}</TableHead>
                   <TableHead className="w-[200px]">{t("admin.变量名")}</TableHead>
                   <TableHead className="w-[100px]">{t("admin.类型")}</TableHead>
@@ -239,10 +240,10 @@ export default function EnvironmentVariablesCheck() {
                           variable.value
                         )
                       ) : (
-                        <span className="text-red-500">{t("admin.未设置")}</span>
+                        <span className="text-destructive">{t("admin.未设置")}</span>
                       )}
                     </TableCell>
-                    <TableCell className="text-gray-600 text-sm">
+                    <TableCell className="text-muted-foreground text-sm">
                       {variable.description ? tc("admin", variable.description) : "-"}
                     </TableCell>
                     <TableCell>
@@ -262,7 +263,7 @@ export default function EnvironmentVariablesCheck() {
         </CardContent>
 
         <CardFooter className="flex justify-between border-t p-6">
-          <div className="text-sm text-gray-500">
+          <div className="text-sm text-muted-foreground">
             {t("admin.检测到 {total} 个环境变量，{ok} 个正常，{warn} 个警告，{error} 个错误", {
               total: String(envVariables.length),
               ok: String(envVariables.filter((v) => v.status === "ok").length),
@@ -273,7 +274,7 @@ export default function EnvironmentVariablesCheck() {
 
           <Dialog>
             <DialogTrigger asChild>
-              <Button className="bg-gradient-to-r from-sky-600 to-blue-700 hover:from-sky-700 hover:to-blue-800">
+              <Button className="bg-gradient-to-r from-info to-primary hover:from-info/90 hover:to-primary/90">
                 <PlusIcon className="h-4 w-4 mr-2" />
                 {t("admin.添加自定义变量")}
               </Button>
@@ -307,7 +308,7 @@ export default function EnvironmentVariablesCheck() {
                     id="envValue"
                     value={newEnvValue}
                     onChange={(e) => setNewEnvValue(e.target.value)}
-                    placeholder="例如: https://api.example.com"
+                    placeholder={t("admin.例如: https://api.example.com")}
                     className="col-span-3"
                   />
                 </div>
@@ -320,6 +321,6 @@ export default function EnvironmentVariablesCheck() {
           </Dialog>
         </CardFooter>
       </Card>
-    </div>
+    </PageContainer>
   )
 }

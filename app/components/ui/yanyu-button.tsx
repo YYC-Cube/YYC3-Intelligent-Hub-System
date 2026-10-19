@@ -1,70 +1,32 @@
 "use client"
 
 import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
-import { cn } from "@/lib/utils"
 
-const buttonVariants = cva(
-  "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none",
-  {
-    variants: {
-      variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary-dark",
-        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary-dark",
-        accent: "bg-accent text-accent-foreground hover:bg-accent-dark",
-        outline: "border border-input bg-background hover:bg-muted hover:text-foreground",
-        ghost: "hover:bg-muted hover:text-foreground",
-        link: "underline-offset-4 hover:underline text-primary",
-        success: "bg-success text-white hover:bg-success-dark",
-        warning: "bg-warning text-white hover:bg-warning-dark",
-        error: "bg-error text-white hover:bg-error-dark",
-        info: "bg-info text-white hover:bg-info-dark",
-      },
-      size: {
-        default: "h-10 py-2 px-4",
-        sm: "h-8 px-3 text-xs",
-        lg: "h-12 px-6 text-base",
-        icon: "h-10 w-10",
-      },
-      rounded: {
-        default: "rounded-md",
-        full: "rounded-full",
-        none: "rounded-none",
-      },
-      width: {
-        default: "",
-        full: "w-full",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
-      rounded: "default",
-      width: "default",
-    },
-  },
-)
+import { Button, type ButtonProps } from "@/components/ui/button"
 
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
-  asChild?: boolean
+/**
+ * YYC³ 品牌按钮 —— 基线 Button 的兼容门面（facade）。
+ *
+ * v2.0 起全部变体/尺寸/加载态由基线 Button 提供，本组件仅保留：
+ * 1. 旧 API 兼容：error → destructive 映射；
+ * 2. asChild 修复：委托基线 Slot 实现（旧实现直接渲染 children 导致样式全丢，已废弃）。
+ * 新业务请直接使用 @/components/ui/button 的 Button。
+ */
+type YanyuVariant = ButtonProps["variant"] | "error"
+
+export interface YanyuButtonProps extends Omit<ButtonProps, "variant"> {
+  variant?: YanyuVariant
 }
 
-const YanyuButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, rounded, width, asChild = false, ...props }, ref) => {
-    if (asChild) {
-      return <>{props.children}</>
-    }
-    return (
-      <button
-        ref={ref}
-        className={cn(buttonVariants({ variant, size, rounded, width, className }))}
-        {...props}
-      />
-    )
-  },
+const YanyuButton = React.forwardRef<HTMLButtonElement, YanyuButtonProps>(
+  ({ variant, ...props }, ref) => (
+    <Button
+      ref={ref}
+      variant={variant === "error" ? "destructive" : variant}
+      {...props}
+    />
+  )
 )
 YanyuButton.displayName = "YanyuButton"
 
-export { YanyuButton, buttonVariants }
+export { YanyuButton }

@@ -186,4 +186,14 @@ function useToast() {
   }
 }
 
-export { useToast, toast }
+/**
+ * 操作结果语义快捷方法 —— 四类结果状态（成功/警告/错误/信息）统一入口，
+ * 与 Toast variant 四色体系（success/warning/destructive/info）严格对齐，
+ * 替代业务各自 `toast({ variant: ... })` 手拼，保证视觉反馈强度与操作重要性匹配。
+ */
+const toastSuccess = (title: string, description?: string) => toast({ title, description, variant: "success" })
+const toastWarning = (title: string, description?: string) => toast({ title, description, variant: "warning" })
+const toastError = (title: string, description?: string) => toast({ title, description, variant: "destructive" })
+const toastInfo = (title: string, description?: string) => toast({ title, description, variant: "info" })
+
+export { toast, toastError, toastInfo, toastSuccess, toastWarning, useToast }

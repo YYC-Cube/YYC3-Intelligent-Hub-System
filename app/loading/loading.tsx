@@ -1,6 +1,5 @@
-import { LoadingScreen } from "@/app/components/ui/loading-screen"
-import { t } from "@/lib/yyc3/i18n"
+import { RouteSkeleton } from '@/app/components/ui/route-skeleton';
 
 export default function Loading() {
-  return <LoadingScreen message={t("ui.页面加载中...")} />
+  return <RouteSkeleton variant="detail" />;
 }

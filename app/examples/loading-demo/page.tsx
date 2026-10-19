@@ -1,12 +1,13 @@
 "use client"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { PageContainer } from "@/app/components/layout/page-container"
+import { GlobalLoadingProvider, useGlobalLoading } from "@/app/components/ui/global-loading"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Slider } from "@/components/ui/slider"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { GlobalLoadingProvider, useGlobalLoading } from "@/app/components/ui/global-loading"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
 
 function LoadingDemoContent() {
   const router = useRouter()
@@ -28,7 +29,7 @@ function LoadingDemoContent() {
   }
 
   return (
-    <div className="container mx-auto py-10">
+    <PageContainer className="py-10">
       <div className="max-w-4xl mx-auto space-y-8">
         <div>
           <h1 className="text-4xl font-bold mb-4">全局加载演示</h1>
@@ -66,7 +67,7 @@ function LoadingDemoContent() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </PageContainer>
   )
 }
 

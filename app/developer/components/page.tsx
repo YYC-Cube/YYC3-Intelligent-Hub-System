@@ -1,10 +1,10 @@
 "use client"
 
-import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
+import Link from "next/link"
 
-import { Navbar } from "@/components/ui/navbar"
-import { Footer } from "@/components/ui/footer"
+import { PageContainer } from "@/app/components/layout/page-container"
+import { useI18n } from "@/app/hooks/use-i18n"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -14,7 +14,6 @@ import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Switch } from "@/components/ui/switch"
-import { useI18n } from "@/app/hooks/use-i18n"
 import { tc } from "@/lib/yyc3/i18n/data"
 
 /** 组件库中可复用组件的分类清单 */
@@ -44,7 +43,7 @@ const GROUPS = [
 /**
  * 组件库参考页面。
  *
- * 展示言语云³集成中心可复用的 shadcn/ui 组件清单与交互样例，供开发者
+ * 展示YanYuCloudCube集成中心可复用的 shadcn/ui 组件清单与交互样例，供开发者
  * 在接入新页面时复用既有组件，避免重复实现。
  *
  * @returns 组件库参考视图
@@ -53,22 +52,20 @@ export default function DeveloperComponentsPage() {
   const { t } = useI18n()
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
-      <Navbar />
-
-      <main className="flex-1 container mx-auto px-4 py-8">
+    <>
+      <PageContainer>
         <Link
           href="/developer/guide"
-          className="mb-6 inline-flex items-center text-sm text-gray-600 hover:text-gray-900"
+          className="mb-6 inline-flex items-center text-sm text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="mr-2 h-4 w-4" aria-hidden="true" />
           {t("developer.返回开发者指南")}
         </Link>
 
         <h1 className="mb-2 text-2xl font-bold">{t("developer.组件库")}</h1>
-        <p className="mb-8 text-gray-600">
+        <p className="mb-8 text-muted-foreground">
           {t("developer.基于 shadcn/ui 构建，统一从")}{" "}
-          <code className="rounded bg-gray-100 px-1.5 py-0.5">@/components/ui/*</code> {t("developer.引入。")}
+          <code className="rounded bg-muted px-1.5 py-0.5">@/components/ui/*</code> {t("developer.引入。")}
         </p>
 
         <Alert className="mb-8">
@@ -161,9 +158,7 @@ export default function DeveloperComponentsPage() {
             </CardContent>
           </Card>
         </div>
-      </main>
-
-      <Footer />
-    </div>
+      </PageContainer>
+    </>
   )
 }

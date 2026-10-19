@@ -1,20 +1,20 @@
 "use client"
 
-import React from "react"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Slider } from "@/components/ui/slider"
 import { Separator } from "@/components/ui/separator"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Info, AlertCircle, Check } from "lucide-react"
+import { Slider } from "@/components/ui/slider"
+import { Switch } from "@/components/ui/switch"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { AlertCircle, Check, Info } from "lucide-react"
+import React from "react"
 
 export function DesignSystem() {
   const [isDarkMode, setIsDarkMode] = React.useState(false)
@@ -28,9 +28,9 @@ export function DesignSystem() {
   }, [isDarkMode])
 
   return (
-    <div className="container mx-auto py-10 px-4">
+    <div className="mx-auto w-full max-w-page py-10 px-4">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">言语云³集成中心系统 - 设计系统</h1>
+        <h1 className="text-3xl font-bold">YanYuCloudCube集成中心系统 - 设计系统</h1>
         <div className="flex items-center space-x-2">
           <Label htmlFor="dark-mode">暗色模式</Label>
           <Switch id="dark-mode" checked={isDarkMode} onCheckedChange={setIsDarkMode} />
@@ -69,7 +69,7 @@ export function DesignSystem() {
                     </div>
                   </div>
                   <div>
-                    <div className="h-20 rounded-md bg-primary-dark mb-2"></div>
+                    <div className="h-20 rounded-md bg-primary/80 mb-2"></div>
                     <div className="flex justify-between">
                       <span className="text-sm font-medium">主色调-深色</span>
                       <span className="text-sm text-muted-foreground">var(--primary-dark)</span>
@@ -127,7 +127,7 @@ export function DesignSystem() {
                     <span className="text-sm font-medium">警告</span>
                   </div>
                   <div>
-                    <div className="h-16 rounded-md bg-error mb-2"></div>
+                    <div className="h-16 rounded-md bg-destructive mb-2"></div>
                     <span className="text-sm font-medium">错误</span>
                   </div>
                   <div>
@@ -146,44 +146,40 @@ export function DesignSystem() {
               <CardContent>
                 <div className="space-y-3">
                   <div className="flex items-center">
-                    <div className="w-12 h-8 rounded-md bg-gray-50 mr-3"></div>
-                    <span className="text-sm">Gray 50</span>
+                    <div className="w-12 h-8 rounded-md bg-background border border-border mr-3"></div>
+                    <span className="text-sm">background · 页面背景</span>
                   </div>
                   <div className="flex items-center">
-                    <div className="w-12 h-8 rounded-md bg-gray-100 mr-3"></div>
-                    <span className="text-sm">Gray 100</span>
+                    <div className="w-12 h-8 rounded-md bg-card border border-border mr-3"></div>
+                    <span className="text-sm">card · 卡片表面</span>
                   </div>
                   <div className="flex items-center">
-                    <div className="w-12 h-8 rounded-md bg-gray-200 mr-3"></div>
-                    <span className="text-sm">Gray 200</span>
+                    <div className="w-12 h-8 rounded-md bg-muted border border-border mr-3"></div>
+                    <span className="text-sm">muted · 弱化背景</span>
                   </div>
                   <div className="flex items-center">
-                    <div className="w-12 h-8 rounded-md bg-gray-300 mr-3"></div>
-                    <span className="text-sm">Gray 300</span>
+                    <div className="w-12 h-8 rounded-md bg-secondary mr-3"></div>
+                    <span className="text-sm">secondary · 次级表面</span>
                   </div>
                   <div className="flex items-center">
-                    <div className="w-12 h-8 rounded-md bg-gray-400 mr-3"></div>
-                    <span className="text-sm">Gray 400</span>
+                    <div className="w-12 h-8 rounded-md bg-accent mr-3"></div>
+                    <span className="text-sm">accent · 强调表面</span>
                   </div>
                   <div className="flex items-center">
-                    <div className="w-12 h-8 rounded-md bg-gray-500 mr-3"></div>
-                    <span className="text-sm text-white">Gray 500</span>
+                    <div className="w-12 h-8 rounded-md bg-border mr-3"></div>
+                    <span className="text-sm">border · 边框</span>
                   </div>
                   <div className="flex items-center">
-                    <div className="w-12 h-8 rounded-md bg-gray-600 mr-3"></div>
-                    <span className="text-sm text-white">Gray 600</span>
+                    <div className="w-12 h-8 rounded-md bg-input mr-3"></div>
+                    <span className="text-sm">input · 输入框边框</span>
                   </div>
                   <div className="flex items-center">
-                    <div className="w-12 h-8 rounded-md bg-gray-700 mr-3"></div>
-                    <span className="text-sm text-white">Gray 700</span>
+                    <div className="w-12 h-8 rounded-md bg-muted-foreground mr-3"></div>
+                    <span className="text-sm">muted-foreground · 次要文本</span>
                   </div>
                   <div className="flex items-center">
-                    <div className="w-12 h-8 rounded-md bg-gray-800 mr-3"></div>
-                    <span className="text-sm text-white">Gray 800</span>
-                  </div>
-                  <div className="flex items-center">
-                    <div className="w-12 h-8 rounded-md bg-gray-900 mr-3"></div>
-                    <span className="text-sm text-white">Gray 900</span>
+                    <div className="w-12 h-8 rounded-md bg-foreground mr-3"></div>
+                    <span className="text-sm">foreground · 主要文本</span>
                   </div>
                 </div>
               </CardContent>
@@ -284,6 +280,35 @@ export function DesignSystem() {
                     </div>
                   </div>
                 </div>
+
+                <Separator />
+
+                <div>
+                  <h6 className="text-sm font-medium text-muted-foreground mb-4">卡片排版令牌（全站卡片唯一真源）</h6>
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-card-title">集成应用卡片标题</p>
+                      <p className="text-sm text-muted-foreground mt-1">text-card-title · 15 / 22 · 600</p>
+                    </div>
+                    <div>
+                      <p className="text-card-body text-muted-foreground">
+                        卡片简介正文使用 card-body，两行截断以保持网格等高。
+                      </p>
+                      <p className="text-sm text-muted-foreground mt-1">text-card-body · 13 / 18</p>
+                    </div>
+                    <div>
+                      <p className="text-card-meta text-muted-foreground">评分 4.9 · 评论 516 · 安装 2.1K</p>
+                      <p className="text-sm text-muted-foreground mt-1">text-card-meta · 12 / 16</p>
+                    </div>
+                    <div>
+                      <span className="text-card-chip px-2 py-0.5 rounded-full bg-muted text-muted-foreground">客户支持</span>
+                      <p className="text-sm text-muted-foreground mt-1">text-card-chip · 11 / 16</p>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      规则：卡片型组件只引用以上四个令牌，禁止用同值的 text-sm / text-xs 表达不同语义；语义色仅表达状态。
+                    </p>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -326,7 +351,7 @@ export function DesignSystem() {
                     <Button variant="outline" className="border-dashed">
                       虚线边框
                     </Button>
-                    <Button className="bg-primary-dark hover:bg-primary-dark">悬停状态</Button>
+                    <Button className="bg-primary hover:bg-primary/90">悬停状态</Button>
                   </div>
                 </div>
 
@@ -582,14 +607,14 @@ export function DesignSystem() {
                     <div className="border rounded-md p-4">
                       <div className="flex">
                         <div className="w-48 h-80 bg-muted rounded-l-md p-4 flex flex-col space-y-3">
-                          <div className="w-full h-6 bg-gray-300 rounded-md"></div>
+                          <div className="w-full h-6 bg-background rounded-md"></div>
                           <div className="w-full h-6 bg-primary rounded-md"></div>
-                          <div className="w-full h-6 bg-gray-300 rounded-md"></div>
-                          <div className="w-full h-6 bg-gray-300 rounded-md"></div>
+                          <div className="w-full h-6 bg-background rounded-md"></div>
+                          <div className="w-full h-6 bg-background rounded-md"></div>
                         </div>
-                        <div className="flex-1 h-80 bg-gray-100 rounded-r-md p-4">
-                          <div className="h-12 bg-white rounded-md mb-4"></div>
-                          <div className="h-60 bg-white rounded-md"></div>
+                        <div className="flex-1 h-80 bg-background rounded-r-md p-4">
+                          <div className="h-12 bg-card rounded-md mb-4"></div>
+                          <div className="h-60 bg-card rounded-md"></div>
                         </div>
                       </div>
                     </div>
@@ -666,7 +691,7 @@ export function DesignSystem() {
                       </div>
                       <div className="h-48 bg-muted rounded-md mb-4"></div>
                       <div className="flex justify-between">
-                        <div className="w-24 h-10 bg-gray-300 rounded-md"></div>
+                        <div className="w-24 h-10 bg-muted rounded-md"></div>
                         <div className="w-24 h-10 bg-primary rounded-md"></div>
                       </div>
                     </div>

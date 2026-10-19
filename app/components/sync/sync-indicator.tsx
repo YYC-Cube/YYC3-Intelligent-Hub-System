@@ -1,29 +1,35 @@
 "use client"
 
 import { useFavorites } from "@/app/context/favorites-context"
-import { Badge } from "@/components/ui/badge"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { formatDistanceToNow } from "date-fns"
-import { zhCN } from "date-fns/locale"
-import { Check, Cloud, CloudOff, RefreshCw } from "lucide-react"
 import { useI18n } from "@/app/hooks/use-i18n"
+import { Badge, type BadgeProps } from "@/components/ui/badge"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { statusVariant } from "@/lib/yyc3/status-variants"
+import { formatDistanceToNow } from "date-fns"
+import { enUS, zhCN } from "date-fns/locale"
+import { Check, Cloud, CloudOff, RefreshCw } from "lucide-react"
 
+/**
+ * 云同步状态指示器 —— 业务状态视觉统一示范：
+ * 色彩不再内联拼类，统一取自 lib/yyc3/status-variants 的 STATUS_VARIANT 语义映射表
+ * （success=已同步 / info=同步中 / warning=未同步·冲突 / destructive=失败）。
+ */
 export function SyncIndicator() {
   const { syncStatus, lastSyncTime, syncWithCloud, hasPendingChanges } = useFavorites()
-  const { t } = useI18n()
+  const { locale, t } = useI18n()
 
   const getStatusIcon = () => {
     switch (syncStatus) {
       case "success":
-        return <Check className="h-3 w-3 mr-1" />
+        return <Check className="mr-1 h-3 w-3" />
       case "syncing":
-        return <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
+        return <RefreshCw className="mr-1 h-3 w-3 animate-spin" />
       case "error":
-        return <CloudOff className="h-3 w-3 mr-1" />
+        return <CloudOff className="mr-1 h-3 w-3" />
       case "conflict":
-        return <Cloud className="h-3 w-3 mr-1 text-yellow-500" />
+        return <Cloud className="mr-1 h-3 w-3" />
       default:
-        return <Cloud className="h-3 w-3 mr-1" />
+        return <Cloud className="mr-1 h-3 w-3" />
     }
   }
 
@@ -42,26 +48,27 @@ export function SyncIndicator() {
     }
   }
 
-  const getStatusClass = () => {
+  /** 状态 → Badge 语义变体：冲突与未同步同属「待处理」warning 组，失败归 destructive 组 */
+  const getVariant = (): BadgeProps["variant"] => {
     switch (syncStatus) {
       case "success":
-        return "bg-green-100 text-green-700 border-green-200"
+        return statusVariant("synced")
       case "syncing":
-        return "bg-blue-100 text-blue-700 border-blue-200"
+        return statusVariant("syncing")
       case "error":
-        return "bg-red-100 text-red-700 border-red-200"
+        return statusVariant("error")
       case "conflict":
-        return "bg-yellow-100 text-yellow-700 border-yellow-200"
+        return statusVariant("conflict")
       default:
-        return hasPendingChanges
-          ? "bg-yellow-100 text-yellow-700 border-yellow-200"
-          : "bg-green-100 text-green-700 border-green-200"
+        return hasPendingChanges ? statusVariant("pending") : statusVariant("synced")
     }
   }
 
   const getTooltipText = () => {
     if (lastSyncTime) {
-      const timeAgo = formatDistanceToNow(new Date(lastSyncTime), { addSuffix: true, locale: zhCN })
+      // 相对时间需随 UI 语言本地化：英文环境使用 enUS，避免出现「约 1 小时前」中文回退
+      const dateLocale = locale === "en" ? enUS : zhCN
+      const timeAgo = formatDistanceToNow(new Date(lastSyncTime), { addSuffix: true, locale: dateLocale })
       return t("sync.上次同步: {time}", { time: timeAgo })
     }
     return t("sync.尚未同步")
@@ -71,15 +78,15 @@ export function SyncIndicator() {
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Badge variant="outline" className={`cursor-pointer ${getStatusClass()}`} onClick={() => syncWithCloud()}>
+          <Badge variant={getVariant()} className="cursor-pointer" onClick={() => syncWithCloud()}>
             {getStatusIcon()}
             {getStatusText()}
           </Badge>
         </TooltipTrigger>
         <TooltipContent>
           <p>{getTooltipText()}</p>
-          {hasPendingChanges && <p className="text-xs text-yellow-600">{t("sync.有未同步的更改")}</p>}
-          <p className="text-xs text-gray-500">{t("sync.点击进行同步")}</p>
+          {hasPendingChanges && <p className="text-xs text-warning">{t("sync.有未同步的更改")}</p>}
+          <p className="text-xs text-muted-foreground">{t("sync.点击进行同步")}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

@@ -1,9 +1,10 @@
 "use client"
 
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
-import { useAuth } from "./auth-context"
-import { useToast } from "@/hooks/use-toast"
 import { useI18n } from "@/app/hooks/use-i18n"
+import { useToast } from "@/hooks/use-toast"
+import { requireSession } from "@/lib/yyc3/session"
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
+import { useAuth } from "./auth-context"
 
 export type SubscriptionType = "category" | "developer" | "integration"
 
@@ -79,11 +80,12 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
   }, [isAuthenticated, user])
 
   // 保存订阅数据到localStorage
+  // 数据层二次校验（P3 固化）：写盘前核对持久会话真源并验证归属，
+  // 不信任上方 React 状态（isAuthenticated/user 可能与持久会话短暂不一致）。
   const saveSubscriptions = (newSubscriptions: Subscription[]) => {
-    if (!user) return
-
     try {
-      localStorage.setItem(`subscriptions_${user.id}`, JSON.stringify(newSubscriptions))
+      const session = requireSession("subscriptions", user?.id)
+      localStorage.setItem(`subscriptions_${session.id}`, JSON.stringify(newSubscriptions))
       setSubscriptions(newSubscriptions)
     } catch (error) {
       console.error("保存订阅数据失败:", error)
@@ -160,16 +162,16 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
       saveSubscriptions(newSubscriptions)
 
       toast({
-        title: "取消订阅成功",
-        description: `您已取消订阅${subscription.targetName}`,
+        title: t("account.取消订阅成功"),
+        description: t("account.您已取消订阅{name}", { name: subscription.targetName }),
       })
 
       return true
     } catch (error) {
       console.error("取消订阅失败:", error)
       toast({
-        title: "取消订阅失败",
-        description: "发生错误，请稍后重试",
+        title: t("account.取消订阅失败"),
+        description: t("common.发生错误，请稍后重试"),
         variant: "destructive",
       })
       return false
@@ -199,16 +201,16 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
       saveSubscriptions(newSubscriptions)
 
       toast({
-        title: "设置已更新",
-        description: "订阅设置已成功更新",
+        title: t("account.设置已更新"),
+        description: t("account.订阅设置已成功更新"),
       })
 
       return true
     } catch (error) {
       console.error("更新订阅设置失败:", error)
       toast({
-        title: "更新设置失败",
-        description: "发生错误，请稍后重试",
+        title: t("account.更新设置失败"),
+        description: t("common.发生错误，请稍后重试"),
         variant: "destructive",
       })
       return false

@@ -14,7 +14,8 @@ permissions:
 
 concurrency:
   group: "pages"
-  cancel-in-progress: false
+  # PR 上新提交直接取消旧运行（省额度）；main 保持串行部署不取消
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   # Node 22：dev 链 undici@8（jsdom→vitest 测试栈）engines 要求 >=22.19，Node 20 下模块加载即崩
@@ -48,14 +49,20 @@ jobs:
         run: pnpm lint
 
       - name: TypeScript type check
-        run: npx tsc --noEmit
+        run: pnpm typecheck
 
       - name: Vitest test gate
         run: pnpm test
 
-      # 生产依赖安全门禁：高危漏洞即失败（dev 链路豁免项在 pnpm-workspace.yaml 管理）
+      # 生产依赖安全门禁：高危漏洞即失败
+      # （braces/GHSA-vfj7-8cjw-p6xm 已随构建工具迁入 devDependencies 而退出生产树）
       - name: Production dependency audit
         run: pnpm audit --prod --audit-level=high
+
+      # 全量依赖安全门禁（含 dev 链）：阻断新引入的高危传递依赖；
+      # 无上游修复的既有项在 pnpm-workspace.yaml auditConfig 中豁免并注明依据
+      - name: Full dependency audit
+        run: pnpm audit --audit-level=high
 
       - name: Build static export
         run: pnpm build

@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"
-import { render, screen, fireEvent, waitFor, within } from "@testing-library/react"
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-import IntegrationsPage from "@/app/integrations/page"
 import { integrations } from "@/app/data/integrations"
+import IntegrationsPage from "@/app/integrations/page"
 
 /**
  * 业务场景测试 · 集成应用中心（IntegrationsPage）
@@ -59,11 +59,15 @@ const expectedMatches = (term: string) => {
 }
 
 const filteredCount = () => screen.getByText("个应用").previousElementSibling?.textContent
-const cardLinks = (container: HTMLElement) => container.querySelectorAll("a[href^='/integrations/']")
+// 卡片内含详情链接与「安装」链接，统计卡片数需排除 /install 入口
+const cardLinks = (container: HTMLElement) =>
+  container.querySelectorAll("a[href^='/integrations/']:not([href$='/install'])")
 
-const pagerRoot = () => document.querySelector("div.flex.justify-center.items-center.space-x-2") as HTMLElement
+/** 分页根节点：以无障碍语义（nav + aria-label）定位，不依赖实现类名。 */
+const pagerRoot = () => document.querySelector("nav[aria-label='分页导航']") as HTMLElement
 const pagerText = () => within(pagerRoot()).getByText(/第 \d+ 页/).textContent
-const pagerButtons = () => within(pagerRoot()).getAllByRole("button") as HTMLButtonElement[]
+const prevButton = () => within(pagerRoot()).getByRole("button", { name: "上一页" }) as HTMLButtonElement
+const nextButton = () => within(pagerRoot()).getByRole("button", { name: "下一页" }) as HTMLButtonElement
 
 describe("业务场景 · 集成应用中心（IntegrationsPage）", () => {
   /**
@@ -87,7 +91,7 @@ describe("业务场景 · 集成应用中心（IntegrationsPage）", () => {
     expect(filteredCount()).toBe("1000")
     expect(pagerText()).toBe("第 1 页，共 34 页")
     expect(cardLinks(container)).toHaveLength(30)
-    expect(pagerButtons()[0]).toBeDisabled()
+    expect(prevButton()).toBeDisabled()
   })
 
   it("TC-B-011 分类检索：点击「数据分析」后仅展示该分类应用", () => {
@@ -139,13 +143,13 @@ describe("业务场景 · 集成应用中心（IntegrationsPage）", () => {
   it("TC-B-015 分页翻页：下一页进入第 2 页并可回退到第 1 页", () => {
     const { container } = render(<IntegrationsPage />)
 
-    fireEvent.click(pagerButtons()[1])
+    fireEvent.click(nextButton())
     expect(pagerText()).toBe("第 2 页，共 34 页")
     expect(cardLinks(container)).toHaveLength(30)
 
-    fireEvent.click(pagerButtons()[0])
+    fireEvent.click(prevButton())
     expect(pagerText()).toBe("第 1 页，共 34 页")
-    expect(pagerButtons()[0]).toBeDisabled()
+    expect(prevButton()).toBeDisabled()
   })
 
   it("TC-B-016 新增应用上架：新上架应用进入目录并可被检索定位", async () => {
@@ -164,11 +168,11 @@ describe("业务场景 · 集成应用中心（IntegrationsPage）", () => {
     const { container } = render(<IntegrationsPage />)
 
     for (let i = 0; i < 33; i += 1) {
-      fireEvent.click(pagerButtons()[1])
+      fireEvent.click(nextButton())
     }
 
     expect(pagerText()).toBe("第 34 页，共 34 页")
     expect(cardLinks(container)).toHaveLength(10)
-    expect(pagerButtons()[1]).toBeDisabled()
+    expect(nextButton()).toBeDisabled()
   })
 })

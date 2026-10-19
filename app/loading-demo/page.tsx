@@ -1,12 +1,12 @@
 "use client"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { PageContainer } from "@/app/components/layout/page-container"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
 import { GlobalLoadingProvider, useGlobalLoading } from "../components/ui/global-loading"
 
 function LoadingDemoPageContent() {
@@ -17,7 +17,7 @@ function LoadingDemoPageContent() {
   const [redirectPath, setRedirectPath] = useState("/")
 
   const handleGlobalLoading = () => {
-    showLoading({ message, timeout: timeoutState, onComplete: () => {} })
+    showLoading({ message, timeout: timeoutState, onComplete: () => { } })
 
     let progress = 0
     const interval = setInterval(() => {
@@ -37,10 +37,10 @@ function LoadingDemoPageContent() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-8">
+    <PageContainer>
       <div className="max-w-4xl mx-auto space-y-6">
         <h1 className="text-3xl font-bold">全局加载状态演示</h1>
-        
+
         <Card>
           <CardHeader>
             <CardTitle>基本用法</CardTitle>
@@ -60,7 +60,7 @@ function LoadingDemoPageContent() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </PageContainer>
   )
 }
 

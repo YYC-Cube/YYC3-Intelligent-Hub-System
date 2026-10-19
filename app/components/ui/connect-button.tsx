@@ -1,39 +1,29 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import * as React from "react"
+
+import { Button, type ButtonProps } from "@/components/ui/button"
 import { useI18n } from "@/app/hooks/use-i18n"
 
-interface ConnectButtonProps {
-  className?: string
-  size?: "default" | "sm" | "lg" | "icon"
-  variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link"
-  onClick?: () => void
-  disabled?: boolean
+/**
+ * 「连接」操作按钮 —— 基于 Button info 语义变体（替代旧 className 颜色覆盖），
+ * 支持 loading 加载态与文案定制；默认尺寸 xs（工具条/卡片内嵌场景）。
+ */
+export type ConnectButtonProps = Omit<ButtonProps, "children"> & {
+  children?: React.ReactNode
 }
 
 export function ConnectButton({
-  className,
-  size = "default",
-  variant = "default",
-  onClick,
-  disabled = false,
+  children,
+  size = "xs",
+  variant = "info",
+  ...props
 }: ConnectButtonProps) {
   const { t } = useI18n()
 
   return (
-    <Button
-      className={cn(
-        "bg-sky-500 hover:bg-sky-600 text-white font-medium",
-        size === "sm" && "text-xs py-1 px-2 h-7",
-        className,
-      )}
-      size={size}
-      variant={variant}
-      onClick={onClick}
-      disabled={disabled}
-    >
-      {t("ui.连接")}
+    <Button size={size} variant={variant} {...props}>
+      {children ?? t("ui.连接")}
     </Button>
   )
 }

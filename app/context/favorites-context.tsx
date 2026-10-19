@@ -1,5 +1,6 @@
 "use client"
 
+import { useI18n } from "@/app/hooks/use-i18n"
 import { useToast } from "@/hooks/use-toast"
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react"
 import type { Integration } from "../data/integrations"
@@ -58,6 +59,7 @@ interface FavoritesProviderProps {
 export function FavoritesProvider({ children, integrations }: FavoritesProviderProps) {
   const { user, isAuthenticated } = useAuth()
   const { encryptionStatus, encryptionSettings, encrypt, decrypt } = useEncryption()
+  const { t } = useI18n()
   const { toast } = useToast()
   const [favorites, setFavorites] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
@@ -190,8 +192,8 @@ export function FavoritesProvider({ children, integrations }: FavoritesProviderP
     } catch (error) {
       console.error("保存收藏数据失败:", error)
       toast({
-        title: "保存失败",
-        description: "无法保存收藏数据",
+        title: t("account.保存失败"),
+        description: t("account.无法保存收藏数据"),
         variant: "destructive",
       })
     }
@@ -205,14 +207,15 @@ export function FavoritesProvider({ children, integrations }: FavoritesProviderP
     lastSavedFavorites,
     syncOptions,
     toast,
+    t,
   ])
 
   // 同步到云端，支持加密
   const syncWithCloud = useCallback(async () => {
     if (!isAuthenticated || !user) {
       toast({
-        title: "同步失败",
-        description: "请先登录以使用云同步功能",
+        title: t("account.同步失败"),
+        description: t("account.请先登录以使用云同步功能"),
         variant: "destructive",
       })
       return false
@@ -252,8 +255,8 @@ export function FavoritesProvider({ children, integrations }: FavoritesProviderP
           updateLastSyncTime(user)
 
           toast({
-            title: "同步成功",
-            description: "您的收藏已成功加密并同步到云端",
+            title: t("account.同步成功"),
+            description: t("account.您的收藏已成功加密并同步到云端"),
           })
 
           return true
@@ -262,8 +265,8 @@ export function FavoritesProvider({ children, integrations }: FavoritesProviderP
           setSyncStatus("error")
 
           toast({
-            title: "同步失败",
-            description: "加密同步失败，请稍后重试",
+            title: t("account.同步失败"),
+            description: t("account.加密同步失败，请稍后重试"),
             variant: "destructive",
           })
 
@@ -279,8 +282,8 @@ export function FavoritesProvider({ children, integrations }: FavoritesProviderP
           if (syncOptions.conflictResolution === "manual") {
             setSyncStatus("conflict")
             toast({
-              title: "发现冲突",
-              description: "本地数据与云端数据存在冲突，请手动解决",
+              title: t("account.发现冲突"),
+              description: t("account.本地数据与云端数据存在冲突，请手动解决"),
             })
             return false
           }
@@ -317,8 +320,8 @@ export function FavoritesProvider({ children, integrations }: FavoritesProviderP
         updateLastSyncTime(user)
 
         toast({
-          title: "同步成功",
-          description: "您的收藏已成功同步到云端",
+          title: t("account.同步成功"),
+          description: t("account.您的收藏已成功同步到云端"),
         })
 
         return true
@@ -333,14 +336,14 @@ export function FavoritesProvider({ children, integrations }: FavoritesProviderP
       })
 
       toast({
-        title: "同步失败",
-        description: "无法同步到云端，请稍后重试",
+        title: t("account.同步失败"),
+        description: t("account.无法同步到云端，请稍后重试"),
         variant: "destructive",
       })
 
       return false
     }
-  }, [isAuthenticated, user, favorites, syncOptions, encryptionStatus, encryptionSettings, encrypt, toast])
+  }, [isAuthenticated, user, favorites, syncOptions, encryptionStatus, encryptionSettings, encrypt, toast, t])
 
   // 获取同步统计信息
   const getSyncStats = useCallback(() => {

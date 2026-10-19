@@ -1,11 +1,11 @@
 "use client"
 
-import { useState } from "react"
-import { Info, ChevronDown, ChevronUp } from "lucide-react"
+import { useI18n } from "@/app/hooks/use-i18n"
+import { formatDate, getRelativeTimeString } from "@/app/utils/format-date"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { formatDate, getRelativeTimeString } from "@/app/utils/format-date"
-import { useI18n } from "@/app/hooks/use-i18n"
+import { ChevronDown, ChevronUp, Info } from "lucide-react"
+import { useState } from "react"
 
 interface VersionDisplayProps {
   className?: string
@@ -22,7 +22,7 @@ export function VersionDisplay({ className = "", showDetails = false }: VersionD
   const versionInfo = parseVersion(version)
 
   return (
-    <div className={`text-xs text-gray-500 ${className}`}>
+    <div className={`text-xs text-muted-foreground ${className}`}>
       <div className="flex items-center gap-1">
         <TooltipProvider>
           <Tooltip>
@@ -30,7 +30,7 @@ export function VersionDisplay({ className = "", showDetails = false }: VersionD
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-6 px-2 text-gray-500 hover:text-gray-700"
+                className="h-6 px-2 text-muted-foreground hover:text-foreground"
                 onClick={() => setIsExpanded(!isExpanded)}
               >
                 <Info className="h-3 w-3 mr-1" />
@@ -47,7 +47,7 @@ export function VersionDisplay({ className = "", showDetails = false }: VersionD
       </div>
 
       {showDetails && isExpanded && (
-        <div className="mt-2 p-3 bg-gray-50 rounded-md text-xs">
+        <div className="mt-2 p-3 bg-muted rounded-md text-xs">
           <table className="w-full text-left">
             <tbody>
               {versionInfo.major !== undefined && (

@@ -27,7 +27,7 @@ export function WizardNavigation({ onComplete, isSubmitting = false, disableNext
   const isNextDisabled = disableNext || isSubmitting || isTesting
 
   return (
-    <div className="flex justify-between mt-8 pt-4 border-t">
+    <div className="sticky bottom-0 z-sticky -mx-6 mt-8 flex justify-between gap-3 border-t bg-background/95 px-6 py-4 backdrop-blur supports-[backdrop-filter]:bg-background/80">
       <Button
         variant="outline"
         onClick={goToPreviousStep}

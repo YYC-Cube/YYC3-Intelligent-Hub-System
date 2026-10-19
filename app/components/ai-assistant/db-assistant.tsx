@@ -2,36 +2,36 @@
 
 import type React from "react"
 
-import { useState, useEffect, useRef } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { EmptyState } from "@/app/components/ui/empty-state"
+import { useI18n } from "@/app/hooks/use-i18n"
+import { formatDateOnly, formatDateTime } from "@/app/utils/format-date"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { toast } from "@/components/ui/use-toast"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Textarea } from "@/components/ui/textarea"
+import { toast } from "@/hooks/use-toast"
 import {
-  Bot,
-  User,
-  Trash2,
-  Plus,
-  MessageSquare,
-  Edit,
-  Copy,
-  Loader2,
   BarChart,
+  Bot,
+  Copy,
+  Edit,
   Key,
-  Save,
+  Loader2,
+  MessageSquare,
   Pin,
   PinOff,
+  Plus,
+  Save,
+  Trash2,
+  User,
 } from "lucide-react"
-import { format } from "date-fns"
-import { zhCN } from "date-fns/locale"
+import { useEffect, useRef, useState } from "react"
 import ReactMarkdown from "react-markdown"
-import { useI18n } from "@/app/hooks/use-i18n"
 
 // 类型定义
 type Message = {
@@ -88,7 +88,7 @@ type UsageStat = {
 // 消息组件
 function AssistantMessageItem({ message }: { message: Message }) {
   const [copied, setCopied] = useState(false)
-  const { t } = useI18n()
+  const { locale, t } = useI18n()
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(message.content)
@@ -100,28 +100,26 @@ function AssistantMessageItem({ message }: { message: Message }) {
 
   return (
     <div
-      className={`flex gap-3 p-4 rounded-lg group ${
-        message.role === "user" ? "bg-blue-50 ml-8" : message.role === "system" ? "bg-gray-100" : "bg-gray-50 mr-8"
-      }`}
+      className={`flex gap-3 p-4 rounded-lg group ${message.role === "user" ? "bg-brand-50 ml-8" : message.role === "system" ? "bg-muted" : "bg-card mr-8"
+        }`}
     >
       <div className="flex-shrink-0">
         <div
-          className={`w-8 h-8 rounded-full flex items-center justify-center ${
-            message.role === "user" ? "bg-blue-100" : message.role === "system" ? "bg-gray-300" : "bg-gray-200"
-          }`}
+          className={`w-8 h-8 rounded-full flex items-center justify-center ${message.role === "user" ? "bg-brand-100" : message.role === "system" ? "bg-muted" : "bg-muted"
+            }`}
         >
           {message.role === "user" ? (
-            <User className="w-4 h-4 text-blue-600" />
+            <User className="w-4 h-4 text-primary" />
           ) : (
-            <Bot className="w-4 h-4 text-gray-600" />
+            <Bot className="w-4 h-4 text-muted-foreground" />
           )}
         </div>
       </div>
       <div className="flex-1 overflow-hidden">
         <div className="flex justify-between items-start">
-          <div className="text-xs text-gray-500 mb-1">
-            {format(createdAt, "yyyy年MM月dd日 HH:mm", { locale: zhCN })}
-            {message.tokens_used && <span className="ml-2 text-xs text-gray-400">{message.tokens_used} tokens</span>}
+          <div className="text-xs text-muted-foreground mb-1">
+            {formatDateTime(createdAt, locale)}
+            {message.tokens_used && <span className="ml-2 text-xs text-muted-foreground">{message.tokens_used} tokens</span>}
           </div>
           {message.role !== "system" && (
             <div className="opacity-0 group-hover:opacity-100 transition-opacity">
@@ -193,9 +191,8 @@ function ConversationListItem({
       role="button"
       tabIndex={0}
       aria-pressed={isActive}
-      className={`flex items-center justify-between p-2 rounded-md cursor-pointer hover:bg-gray-100 ${
-        isActive ? "bg-blue-50 border-l-4 border-blue-500" : ""
-      }`}
+      className={`flex items-center justify-between p-2 rounded-md cursor-pointer hover:bg-muted ${isActive ? "bg-brand-50 border-l-4 border-primary" : ""
+        }`}
       onClick={onClick}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
@@ -205,7 +202,7 @@ function ConversationListItem({
       }}
     >
       <div className="flex items-center flex-1 min-w-0">
-        <MessageSquare className="h-4 w-4 mr-2 text-gray-500" />
+        <MessageSquare className="h-4 w-4 mr-2 text-muted-foreground" />
         {isEditing ? (
           <input
             ref={inputRef}
@@ -219,7 +216,7 @@ function ConversationListItem({
           />
         ) : (
           <div className="flex items-center flex-1 truncate text-sm">
-            {conversation.is_pinned && <Pin className="h-3 w-3 mr-1 text-blue-500" />}
+            {conversation.is_pinned && <Pin className="h-3 w-3 mr-1 text-primary" />}
             {conversation.title}
           </div>
         )}
@@ -256,7 +253,7 @@ function ConversationListItem({
         <Button
           variant="ghost"
           size="icon"
-          className="h-6 w-6 opacity-0 group-hover:opacity-100 hover:text-red-500"
+          className="h-6 w-6 opacity-0 group-hover:opacity-100 hover:text-destructive"
           onClick={(e) => {
             e.stopPropagation()
             onDelete()
@@ -386,7 +383,7 @@ function AssistantSettings({
             placeholder={t("ai.输入默认系统提示词")}
             rows={4}
           />
-          <p className="text-xs text-gray-500">{t("ai.系统提示词用于指导AI助手的行为和知识范围。")}</p>
+          <p className="text-xs text-muted-foreground">{t("ai.系统提示词用于指导AI助手的行为和知识范围。")}</p>
         </div>
 
         <div className="space-y-2">
@@ -431,12 +428,12 @@ function AssistantSettings({
       <TabsContent value="api-keys" className="space-y-6">
         <div className="space-y-4">
           <div className="flex items-center">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-green-400 to-green-600 flex items-center justify-center text-white font-bold">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-success to-success/70 flex items-center justify-center text-success-foreground font-bold">
               O
             </div>
             <div className="ml-2">
               <h3 className="font-medium">OpenAI</h3>
-              <p className="text-xs text-gray-500">{t("ai.支持GPT-4、GPT-3.5等模型")}</p>
+              <p className="text-xs text-muted-foreground">{t("ai.支持GPT-4、GPT-3.5等模型")}</p>
             </div>
           </div>
 
@@ -455,12 +452,12 @@ function AssistantSettings({
 
         <div className="space-y-4">
           <div className="flex items-center">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-400 to-purple-600 flex items-center justify-center text-white font-bold">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-accent to-accent/70 flex items-center justify-center text-accent-foreground font-bold">
               A
             </div>
             <div className="ml-2">
               <h3 className="font-medium">Anthropic</h3>
-              <p className="text-xs text-gray-500">{t("ai.支持Claude系列模型")}</p>
+              <p className="text-xs text-muted-foreground">{t("ai.支持Claude系列模型")}</p>
             </div>
           </div>
 
@@ -479,12 +476,13 @@ function AssistantSettings({
 
         <div className="space-y-4">
           <div className="flex items-center">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold">
+            {/* 品牌渐变头像：text-white 位于深色品牌渐变之上，明暗主题均可读 */}
+            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-brand-300 to-primary flex items-center justify-center text-white font-bold">
               G
             </div>
             <div className="ml-2">
               <h3 className="font-medium">Google Gemini</h3>
-              <p className="text-xs text-gray-500">{t("ai.支持Gemini系列模型")}</p>
+              <p className="text-xs text-muted-foreground">{t("ai.支持Gemini系列模型")}</p>
             </div>
           </div>
 
@@ -501,7 +499,7 @@ function AssistantSettings({
           </div>
         </div>
 
-        <div className="text-xs text-gray-500 mt-4">
+        <div className="text-xs text-muted-foreground mt-4">
           <p>{t("ai.API密钥仅存储在您的账户中，用于访问相应的AI服务。")}</p>
           <p>{t("ai.我们不会将您的API密钥用于任何其他目的或与第三方共享。")}</p>
         </div>
@@ -522,11 +520,11 @@ function AssistantSettings({
             onChange={(e) => handlePreferenceChange("temperature", Number.parseFloat(e.target.value))}
             className="w-full"
           />
-          <div className="flex justify-between text-xs text-gray-500">
+          <div className="flex justify-between text-xs text-muted-foreground">
             <span>{t("ai.精确")}</span>
             <span>{t("ai.创造性")}</span>
           </div>
-          <p className="text-xs text-gray-500">{t("ai.较低的温度会产生更确定和一致的回复，较高的温度会产生更多样化和创造性的回复。")}</p>
+          <p className="text-xs text-muted-foreground">{t("ai.较低的温度会产生更确定和一致的回复，较高的温度会产生更多样化和创造性的回复。")}</p>
         </div>
 
         <div className="space-y-2">
@@ -545,7 +543,7 @@ function AssistantSettings({
               <SelectItem value="4000">{t("ai.超长 (4000 tokens)")}</SelectItem>
             </SelectContent>
           </Select>
-          <p className="text-xs text-gray-500">{t("ai.控制AI回复的最大长度。较长的回复可能会消耗更多的API额度。")}</p>
+          <p className="text-xs text-muted-foreground">{t("ai.控制AI回复的最大长度。较长的回复可能会消耗更多的API额度。")}</p>
         </div>
 
         <Button onClick={handleSavePreferences} disabled={isSaving} className="w-full">
@@ -559,7 +557,7 @@ function AssistantSettings({
 
 // 使用统计组件
 function UsageStatistics({ usageStats }: { usageStats: UsageStat[] }) {
-  const { t } = useI18n()
+  const { locale, t } = useI18n()
 
   // 按日期分组
   const groupedByDate = usageStats.reduce(
@@ -602,11 +600,12 @@ function UsageStatistics({ usageStats }: { usageStats: UsageStat[] }) {
 
   if (sortedStats.length === 0) {
     return (
-      <div className="text-center py-8">
-        <BarChart className="h-12 w-12 text-gray-300 mx-auto mb-2" />
-        <h3 className="text-lg font-medium">{t("ai.暂无使用数据")}</h3>
-        <p className="text-gray-500">{t("ai.开始使用AI助手后，您的使用统计将显示在这里。")}</p>
-      </div>
+      <EmptyState
+        size="sm"
+        icon={<BarChart className="h-6 w-6 text-brand-500" aria-hidden="true" />}
+        title={t("ai.暂无使用数据")}
+        description={t("ai.开始使用AI助手后，您的使用统计将显示在这里。")}
+      />
     )
   }
 
@@ -619,7 +618,7 @@ function UsageStatistics({ usageStats }: { usageStats: UsageStat[] }) {
               <div className="text-2xl font-bold">
                 {sortedStats.reduce((sum, stat) => sum + stat.totalTokens, 0).toLocaleString()}
               </div>
-              <p className="text-sm text-gray-500">{t("ai.总Token使用量")}</p>
+              <p className="text-sm text-muted-foreground">{t("ai.总Token使用量")}</p>
             </div>
           </CardContent>
         </Card>
@@ -630,7 +629,7 @@ function UsageStatistics({ usageStats }: { usageStats: UsageStat[] }) {
               <div className="text-2xl font-bold">
                 {sortedStats.reduce((sum, stat) => sum + stat.totalRequests, 0).toLocaleString()}
               </div>
-              <p className="text-sm text-gray-500">{t("ai.总请求次数")}</p>
+              <p className="text-sm text-muted-foreground">{t("ai.总请求次数")}</p>
             </div>
           </CardContent>
         </Card>
@@ -639,7 +638,7 @@ function UsageStatistics({ usageStats }: { usageStats: UsageStat[] }) {
           <CardContent className="pt-6">
             <div className="text-center">
               <div className="text-2xl font-bold">{sortedStats.length}</div>
-              <p className="text-sm text-gray-500">{t("ai.活跃天数")}</p>
+              <p className="text-sm text-muted-foreground">{t("ai.活跃天数")}</p>
             </div>
           </CardContent>
         </Card>
@@ -652,8 +651,8 @@ function UsageStatistics({ usageStats }: { usageStats: UsageStat[] }) {
             <Card key={stat.date}>
               <CardContent className="p-4">
                 <div className="flex justify-between items-center mb-2">
-                  <div className="font-medium">{format(new Date(stat.date), "yyyy年MM月dd日", { locale: zhCN })}</div>
-                  <div className="text-sm text-gray-500">
+                  <div className="font-medium">{formatDateOnly(stat.date, locale)}</div>
+                  <div className="text-sm text-muted-foreground">
                     {t("ai.{count} 次请求 | {tokens} tokens", {
                       count: String(stat.totalRequests),
                       tokens: stat.totalTokens.toLocaleString(),
@@ -666,21 +665,20 @@ function UsageStatistics({ usageStats }: { usageStats: UsageStat[] }) {
                     <div key={`${model.provider}-${model.name}`} className="flex justify-between items-center text-sm">
                       <div className="flex items-center">
                         <div
-                          className={`w-2 h-2 rounded-full mr-2 ${
-                            model.provider === "openai"
-                              ? "bg-green-500"
-                              : model.provider === "anthropic"
-                                ? "bg-purple-500"
-                                : model.provider === "gemini"
-                                  ? "bg-blue-500"
-                                  : "bg-gray-500"
-                          }`}
+                          className={`w-2 h-2 rounded-full mr-2 ${model.provider === "openai"
+                            ? "bg-success"
+                            : model.provider === "anthropic"
+                              ? "bg-accent"
+                              : model.provider === "gemini"
+                                ? "bg-primary"
+                                : "bg-muted-foreground"
+                            }`}
                         ></div>
                         <span>
                           {model.name} ({model.provider})
                         </span>
                       </div>
-                      <div className="text-gray-500">
+                      <div className="text-muted-foreground">
                         {t("ai.{count} 次 | {tokens} tokens", {
                           count: String(model.requests),
                           tokens: model.tokens.toLocaleString(),

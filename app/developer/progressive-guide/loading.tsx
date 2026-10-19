@@ -1,12 +1,12 @@
-import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export default function ProgressiveGuideLoading() {
   return (
-    <div className="min-h-screen bg-gray-50 pb-12">
+    <div className="min-h-screen bg-background pb-12">
       {/* 页面标题骨架 */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-12 px-4">
-        <div className="container mx-auto max-w-6xl">
+      <div className="bg-gradient-to-r from-primary to-accent text-white py-12 px-4">
+        <div className="mx-auto w-full max-w-page">
           <Skeleton className="h-10 w-64 bg-white/20 mb-4" />
           <Skeleton className="h-6 w-96 bg-white/20 mb-8" />
 
@@ -21,7 +21,7 @@ export default function ProgressiveGuideLoading() {
         </div>
       </div>
 
-      <div className="container mx-auto max-w-6xl px-4 mt-8">
+      <div className="mx-auto w-full max-w-page px-4 mt-8">
         {/* 标签骨架 */}
         <div className="mb-8">
           <Skeleton className="h-10 w-64 rounded-md" />

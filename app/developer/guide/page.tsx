@@ -1,45 +1,45 @@
 "use client"
 
-import { useState } from "react"
-import { Navbar } from "@/components/ui/navbar"
-import { Footer } from "@/components/ui/footer"
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+import { PageContainer } from "@/app/components/layout/page-container"
+import { EmptyState } from "@/app/components/ui/empty-state"
+import { useI18n } from "@/app/hooks/use-i18n"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Card, CardContent } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { tc } from "@/lib/yyc3/i18n/data"
 import {
-  ChevronRight,
-  Search,
-  FileCode,
-  Package,
-  Database,
-  Server,
-  Layers,
-  TestTube,
-  Rocket,
-  GitBranch,
   BookOpen,
+  ChevronRight,
+  Database,
+  FileCode,
+  GitBranch,
   HelpCircle,
+  Layers,
+  Package,
+  Rocket,
+  Search,
+  Server,
+  TestTube,
 } from "lucide-react"
 import Link from "next/link"
-import { motion } from "framer-motion"
-import { useI18n } from "@/app/hooks/use-i18n"
-import { tc } from "@/lib/yyc3/i18n/data"
+import { useState } from "react"
 
 export default function DeveloperGuidePage() {
   const { t } = useI18n()
   const [searchQuery, setSearchQuery] = useState("")
   const [activeTab, setActiveTab] = useState("overview")
 
-  // 过滤文档内容
+  // 过滤文档内容（按当前语言的标题/正文匹配）
   const filterContent = (content: any[]) => {
     if (!searchQuery.trim()) return content
 
+    const q = searchQuery.toLowerCase()
     return content.filter(
       (item) =>
-        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.content.toLowerCase().includes(searchQuery.toLowerCase()),
+        tc("developer", item.title).toLowerCase().includes(q) ||
+        tc("developer", item.content).toLowerCase().includes(q),
     )
   }
 
@@ -49,7 +49,7 @@ export default function DeveloperGuidePage() {
       {
         title: "项目概述",
         content:
-          "言语云³集成中心系统是一个现代化的集成应用管理平台，旨在帮助用户发现、连接并管理各种集成应用，提升业务效率。本系统采用最新的Web技术栈构建，提供直观的用户界面和强大的功能。",
+          "YanYuCloudCube集成中心系统是一个现代化的集成应用管理平台，旨在帮助用户发现、连接并管理各种集成应用，提升业务效率。本系统采用最新的Web技术栈构建，提供直观的用户界面和强大的功能。",
       },
       {
         title: "核心功能",
@@ -110,7 +110,7 @@ export default function DeveloperGuidePage() {
       {
         title: "自定义组件开发",
         content:
-          '开发新组件时，请遵循以下原则:\n\n1. 组件应该是可重用的\n2. 使用 TypeScript 定义 props 接口\n3. 提供合理的默认值\n4. 使用 Tailwind CSS 进行样式设计\n5. 确保组件是响应式的\n6. 添加适当的注释\n7. 考虑可访问性 (ARIA 属性等)\n\n示例:\n```tsx\ninterface CardProps {\n  title: string\n  description?: string\n  className?: string\n  children: React.ReactNode\n}\n\nexport function Card({ title, description, className, children }: CardProps) {\n  return (\n    <div className={`rounded-lg border p-4 ${className}`}>\n      <h3 className="text-lg font-medium">{title}</h3>\n      {description && <p className="text-sm text-gray-500">{description}</p>}\n      <div className="mt-4">{children}</div>\n    </div>\n  )\n}\n```',
+          '开发新组件时，请遵循以下原则:\n\n1. 组件应该是可重用的\n2. 使用 TypeScript 定义 props 接口\n3. 提供合理的默认值\n4. 使用 Tailwind CSS 进行样式设计\n5. 确保组件是响应式的\n6. 添加适当的注释\n7. 考虑可访问性 (ARIA 属性等)\n\n示例:\n```tsx\ninterface CardProps {\n  title: string\n  description?: string\n  className?: string\n  children: React.ReactNode\n}\n\nexport function Card({ title, description, className, children }: CardProps) {\n  return (\n    <div className={`rounded-lg border p-4 ${className}`}>\n      <h3 className="text-lg font-medium">{title}</h3>\n      {description && <p className="text-sm text-muted-foreground">{description}</p>}\n      <div className="mt-4">{children}</div>\n    </div>\n  )\n}\n```',
       },
     ],
     state: [
@@ -138,7 +138,7 @@ export default function DeveloperGuidePage() {
       {
         title: "API 路由示例",
         content:
-          '```tsx\n// 浏览器端直连 OpenAI 兼容端点（无厂商 SDK 依赖）\nasync function chat(messages: Message[]) {\n  const res = await fetch("https://api.openai.com/v1/chat/completions", {\n    method: "POST",\n    headers: {\n      "Content-Type": "application/json",\n      Authorization: `Bearer ${process.env.NEXT_PUBLIC_OPENAI_API_KEY}`,\n    },\n    body: JSON.stringify({\n      model: "gpt-4o-mini",\n      messages: [{ role: "system", content: "你是言语云³集成中心的智能助手..." }, ...messages],\n    }),\n  })\n  return (await res.json()).choices[0].message\n}\n```',
+          '```tsx\n// 浏览器端直连 OpenAI 兼容端点（无厂商 SDK 依赖）\nasync function chat(messages: Message[]) {\n  const res = await fetch("https://api.openai.com/v1/chat/completions", {\n    method: "POST",\n    headers: {\n      "Content-Type": "application/json",\n      Authorization: `Bearer ${process.env.NEXT_PUBLIC_OPENAI_API_KEY}`,\n    },\n    body: JSON.stringify({\n      model: "gpt-4o-mini",\n      messages: [{ role: "system", content: "你是YanYuCloudCube集成中心的智能助手..." }, ...messages],\n    }),\n  })\n  return (await res.json()).choices[0].message\n}\n```',
       },
       {
         title: "错误处理",
@@ -238,29 +238,17 @@ export default function DeveloperGuidePage() {
   }, {} as any)
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
-      <Navbar />
-
-      <main className="flex-1 container mx-auto px-4 py-8">
+    <>
+      <PageContainer>
         <div className="flex flex-col space-y-8">
           {/* 标题区域 */}
-          <div className="text-center">
-            <motion.h1
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="text-3xl md:text-4xl font-bold mb-4"
-            >
-              {t("developer.言语云³集成中心系统")}
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-xl text-gray-600 mb-8"
-            >
+          <div className="text-center motion-page-enter">
+            <h1 className="text-3xl md:text-4xl font-bold mb-4">
+              {t("developer.YanYuCloudCube集成中心系统")}
+            </h1>
+            <p className="text-xl text-muted-foreground mb-8">
               {t("developer.开发者指南")}
-            </motion.p>
+            </p>
           </div>
 
           {/* 搜索栏 */}
@@ -272,88 +260,88 @@ export default function DeveloperGuidePage() {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 pr-4 py-6 rounded-lg"
             />
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
           </div>
 
           {/* 文档内容 */}
-          <div className="bg-white rounded-lg shadow-sm border">
+          <div className="bg-card rounded-lg shadow-sm border">
             <Tabs defaultValue="overview" value={activeTab} onValueChange={setActiveTab}>
               <div className="border-b">
                 <ScrollArea className="max-w-full pb-2">
                   <TabsList className="p-0 bg-transparent h-12">
                     <TabsTrigger
                       value="overview"
-                      className="data-[state=active]:bg-gray-100 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+                      className="data-[state=active]:bg-muted rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
                     >
                       <FileCode className="h-4 w-4 mr-2" />
                       {t("developer.项目概述")}
                     </TabsTrigger>
                     <TabsTrigger
                       value="setup"
-                      className="data-[state=active]:bg-gray-100 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+                      className="data-[state=active]:bg-muted rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
                     >
                       <Package className="h-4 w-4 mr-2" />
                       {t("developer.环境设置")}
                     </TabsTrigger>
                     <TabsTrigger
                       value="structure"
-                      className="data-[state=active]:bg-gray-100 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+                      className="data-[state=active]:bg-muted rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
                     >
                       <Layers className="h-4 w-4 mr-2" />
                       {t("developer.项目结构")}
                     </TabsTrigger>
                     <TabsTrigger
                       value="components"
-                      className="data-[state=active]:bg-gray-100 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+                      className="data-[state=active]:bg-muted rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
                     >
                       <Package className="h-4 w-4 mr-2" />
                       {t("developer.组件库")}
                     </TabsTrigger>
                     <TabsTrigger
                       value="state"
-                      className="data-[state=active]:bg-gray-100 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+                      className="data-[state=active]:bg-muted rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
                     >
                       <Database className="h-4 w-4 mr-2" />
                       {t("developer.状态管理")}
                     </TabsTrigger>
                     <TabsTrigger
                       value="api"
-                      className="data-[state=active]:bg-gray-100 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+                      className="data-[state=active]:bg-muted rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
                     >
                       <Server className="h-4 w-4 mr-2" />
                       {t("developer.API文档")}
                     </TabsTrigger>
                     <TabsTrigger
                       value="data"
-                      className="data-[state=active]:bg-gray-100 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+                      className="data-[state=active]:bg-muted rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
                     >
                       <Database className="h-4 w-4 mr-2" />
                       {t("developer.数据管理")}
                     </TabsTrigger>
                     <TabsTrigger
                       value="testing"
-                      className="data-[state=active]:bg-gray-100 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+                      className="data-[state=active]:bg-muted rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
                     >
                       <TestTube className="h-4 w-4 mr-2" />
                       {t("developer.测试指南")}
                     </TabsTrigger>
                     <TabsTrigger
                       value="deployment"
-                      className="data-[state=active]:bg-gray-100 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+                      className="data-[state=active]:bg-muted rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
                     >
                       <Rocket className="h-4 w-4 mr-2" />
                       {t("developer.部署流程")}
                     </TabsTrigger>
                     <TabsTrigger
                       value="contribution"
-                      className="data-[state=active]:bg-gray-100 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+                      className="data-[state=active]:bg-muted rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
                     >
                       <GitBranch className="h-4 w-4 mr-2" />
                       {t("developer.贡献指南")}
                     </TabsTrigger>
                     <TabsTrigger
                       value="faq"
-                      className="data-[state=active]:bg-gray-100 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+                      className="data-[state=active]:bg-muted rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
                     >
                       <HelpCircle className="h-4 w-4 mr-2" />
                       {t("developer.常见问题")}
@@ -370,22 +358,24 @@ export default function DeveloperGuidePage() {
                         <div key={index} className="space-y-4">
                           <h2 className="text-2xl font-bold">{tc("developer", section.title)}</h2>
                           <div className="prose prose-gray max-w-none">
-                            {section.content.split("\n").map((line: string, i: number) => (
-                              <p key={i} className="whitespace-pre-wrap">
-                                {line}
-                              </p>
-                            ))}
+                            {tc("developer", section.content)
+                              .split("\n")
+                              .map((line: string, i: number) => (
+                                <p key={i} className="whitespace-pre-wrap">
+                                  {line}
+                                </p>
+                              ))}
                           </div>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center py-12">
-                      <BookOpen className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                      <h3 className="text-xl font-medium mb-2">{t("developer.没有找到相关内容")}</h3>
-                      <p className="text-gray-500 mb-4">{t("developer.尝试使用不同的搜索关键词")}</p>
-                      <Button onClick={() => setSearchQuery("")}>{t("developer.清除搜索")}</Button>
-                    </div>
+                    <EmptyState
+                      icon={<BookOpen className="h-10 w-10 text-brand-500" aria-hidden="true" />}
+                      title={t("developer.没有找到相关内容")}
+                      description={t("developer.尝试使用不同的搜索关键词")}
+                      actions={<Button onClick={() => setSearchQuery("")}>{t("developer.清除搜索")}</Button>}
+                    />
                   )}
                 </TabsContent>
               ))}
@@ -397,12 +387,12 @@ export default function DeveloperGuidePage() {
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-start space-x-4">
-                  <div className="bg-blue-100 p-3 rounded-full">
-                    <BookOpen className="h-6 w-6 text-blue-600" />
+                  <div className="bg-brand-100 p-3 rounded-full">
+                    <BookOpen className="h-6 w-6 text-primary" />
                   </div>
                   <div>
                     <h3 className="text-lg font-medium mb-2">{t("developer.API参考文档")}</h3>
-                    <p className="text-gray-500 mb-4">{t("developer.完整的API参考文档，包含所有端点和参数说明。")}</p>
+                    <p className="text-muted-foreground mb-4">{t("developer.完整的API参考文档，包含所有端点和参数说明。")}</p>
                     <Button variant="outline" asChild className="w-full">
                       <Link href="/developer/api" className="flex items-center justify-between">
                         <span>{t("developer.查看文档")}</span>
@@ -417,12 +407,12 @@ export default function DeveloperGuidePage() {
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-start space-x-4">
-                  <div className="bg-purple-100 p-3 rounded-full">
-                    <Package className="h-6 w-6 text-purple-600" />
+                  <div className="bg-accent/15 p-3 rounded-full">
+                    <Package className="h-6 w-6 text-accent" />
                   </div>
                   <div>
                     <h3 className="text-lg font-medium mb-2">{t("developer.组件示例")}</h3>
-                    <p className="text-gray-500 mb-4">{t("developer.浏览所有UI组件的示例和用法说明。")}</p>
+                    <p className="text-muted-foreground mb-4">{t("developer.浏览所有UI组件的示例和用法说明。")}</p>
                     <Button variant="outline" asChild className="w-full">
                       <Link href="/developer/components" className="flex items-center justify-between">
                         <span>{t("developer.查看组件")}</span>
@@ -437,12 +427,12 @@ export default function DeveloperGuidePage() {
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-start space-x-4">
-                  <div className="bg-green-100 p-3 rounded-full">
-                    <GitBranch className="h-6 w-6 text-green-600" />
+                  <div className="bg-primary/10 p-3 rounded-full">
+                    <GitBranch className="h-6 w-6 text-primary" />
                   </div>
                   <div>
                     <h3 className="text-lg font-medium mb-2">{t("developer.GitHub仓库")}</h3>
-                    <p className="text-gray-500 mb-4">{t("developer.访问项目的GitHub仓库，查看源代码和提交问题。")}</p>
+                    <p className="text-muted-foreground mb-4">{t("developer.访问项目的GitHub仓库，查看源代码和提交问题。")}</p>
                     <Button variant="outline" asChild className="w-full">
                       <Link
                         href="https://github.com/yanyu-cloud/integration-center"
@@ -459,9 +449,7 @@ export default function DeveloperGuidePage() {
             </Card>
           </div>
         </div>
-      </main>
-
-      <Footer />
-    </div>
+      </PageContainer>
+    </>
   )
 }

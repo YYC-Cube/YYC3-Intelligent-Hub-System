@@ -18,7 +18,7 @@ const DEFAULT_CONFIG: AssistantConfig = {
   model: "gpt-4o",
   temperature: 0.7,
   maxTokens: 4000,
-  systemPrompt: "你是言语云³集成中心的智能助手",
+  systemPrompt: "你是YanYuCloudCube集成中心的智能助手",
 }
 
 // 默认状态
@@ -247,14 +247,14 @@ class FrontendAssistantService implements IAssistantService {
     const content = userMessage.toLowerCase()
     
     if (content.includes('你好') || content.includes('嗨')) {
-      return '您好！我是言语云³智能助手。有什么可以帮助您的吗？'
+      return '您好！我是YanYuCloudCube智能助手。有什么可以帮助您的吗？'
     }
     
     if (content.includes('集成') || content.includes('应用')) {
-      return '言语云³集成中心提供多种应用集成服务，包括数据库、API、营销工具等。您想了解哪方面的信息？'
+      return 'YanYuCloudCube集成中心提供多种应用集成服务，包括数据库、API、营销工具等。您想了解哪方面的信息？'
     }
 
-    return '感谢您的提问！作为言语云³集成助手，我可以帮助您了解各种集成应用和解决问题。请告诉我更多细节。'
+    return '感谢您的提问！作为YanYuCloudCube集成助手，我可以帮助您了解各种集成应用和解决问题。请告诉我更多细节。'
   }
 }
 

@@ -1,19 +1,29 @@
-"use client"
+'use client';
 
-import { useState, useEffect } from "react"
-import Image from "next/image"
-import { Progress } from "@/components/ui/progress"
-import { BRAND, brandAssets } from "@/lib/yyc3/brand"
-import { useI18n } from "@/app/hooks/use-i18n"
+import { useI18n } from '@/app/hooks/use-i18n';
+import { Progress } from '@/components/ui/progress';
+import { BRAND, brandAssets } from '@/lib/yyc3/brand';
+import Image from 'next/image';
+import { useEffect } from 'react';
+import { Spinner } from './spinner';
 
 interface LoadingScreenProps {
-  message?: string
-  progress?: number
-  showProgress?: boolean
-  duration?: number
-  onComplete?: () => void
+  message?: string;
+  progress?: number;
+  showProgress?: boolean;
+  duration?: number;
+  onComplete?: () => void;
 }
 
+/**
+ * L1 全局冷启动加载屏（克制版）。
+ *
+ * 规范：
+ * - 仅保留静态品牌背景 + Logo + 文案 + 单一状态指示，不再叠加光斑/光环/跳动圆点；
+ * - 传入 progress 时展示真实进度；未传入时展示不确定态 Spinner，不模拟虚假百分比；
+ * - 未受控场景按 duration 触发 onComplete（兼容 GlobalLoadingProvider 的自动收起语义）；
+ * - 入场仅一次 200ms，prefers-reduced-motion 下自动禁用。
+ */
 export function LoadingScreen({
   message,
   progress,
@@ -21,93 +31,56 @@ export function LoadingScreen({
   duration = 3000,
   onComplete,
 }: LoadingScreenProps) {
-  const [animatedProgress, setAnimatedProgress] = useState(0)
-  const { t } = useI18n()
+  const { t } = useI18n();
 
   // 参数未传 message 时在组件内兜底（跟随当前语言）
-  const displayMessage = message ?? t("ui.正在加载中...")
+  const displayMessage = message ?? t('ui.正在加载中...');
 
-  // 受控进度（传入 progress）优先级高于内部动画，派生而非同步写入 state。
-  const currentProgress = progress !== undefined ? progress : animatedProgress
-
+  // 未受控时只负责按时结束，不再伪造进度值
   useEffect(() => {
-    if (progress !== undefined) {
-      return
-    }
+    if (progress !== undefined) return;
 
-    const interval = setInterval(() => {
-      setAnimatedProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval)
-          onComplete?.()
-          return 100
-        }
-        return prev + 100 / (duration / 100)
-      })
-    }, 100)
-
-    return () => clearInterval(interval)
-  }, [progress, duration, onComplete])
+    const timer = setTimeout(() => onComplete?.(), duration);
+    return () => clearTimeout(timer);
+  }, [progress, duration, onComplete]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-blue-50 via-purple-50 to-cyan-50">
-      {/* 背景动画效果 */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-purple-600/20 rounded-full blur-3xl animate-float" />
-        <div
-          className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-cyan-400/20 to-teal-600/20 rounded-full blur-3xl animate-float"
-          style={{ animationDelay: "1s" }}
+    <div
+      aria-busy="true"
+      aria-live="polite"
+      className="fixed inset-0 z-backdrop flex items-center justify-center bg-gradient-to-br from-brand-50 via-background to-brand-100"
+    >
+      <div className="motion-page-enter flex flex-col items-center space-y-6 p-8 text-center">
+        {/* 品牌标识 */}
+        <Image
+          src={brandAssets.logoPng}
+          alt={BRAND.name}
+          width={80}
+          height={80}
+          priority
+          className="h-20 w-20 object-contain"
         />
-        <div
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-60 h-60 bg-gradient-to-br from-purple-400/20 to-pink-600/20 rounded-full blur-3xl animate-float"
-          style={{ animationDelay: "2s" }}
-        />
-      </div>
-
-      <div className="relative z-10 flex flex-col items-center space-y-8 p-8">
-        {/* Logo区域 */}
-        <div className="relative">
-          <div className="w-24 h-24 relative animate-float">
-            <Image
-              src={brandAssets.logoPng}
-              alt={BRAND.name}
-              width={96}
-              height={96}
-              className="object-contain drop-shadow-2xl"
-            />
-          </div>
-
-          {/* 光环效果 */}
-          <div className="absolute inset-0 w-24 h-24 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500 opacity-20 animate-ping" />
-          <div className="absolute inset-2 w-20 h-20 rounded-full bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 opacity-30 animate-pulse" />
-        </div>
 
         {/* 标题 */}
-        <div className="text-center space-y-2">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-500 bg-clip-text text-transparent">
-            {t("ui.言语云³集成中心系统")}
-          </h1>
-          <p className="text-sm text-muted-foreground font-medium">YanYu Cloud³ Integration Center</p>
+        <div className="space-y-1">
+          <p className="brand-text text-xl font-bold">{t('ui.YanYuCloudCube集成中心系统')}</p>
+          <p className="text-xs font-medium text-muted-foreground">
+            YanYuCloudCube Integration Center
+          </p>
         </div>
 
-        {/* 加载消息 */}
-        <div className="text-center">
-          <p className="text-lg font-medium text-gray-700 mb-2">{displayMessage}</p>
-          {showProgress && (
-            <div className="w-64 space-y-2">
-              <Progress value={currentProgress} className="h-2 bg-gray-200" />
-              <p className="text-sm text-gray-500">{Math.round(currentProgress)}%</p>
-            </div>
-          )}
-        </div>
+        {/* 加载消息 + 状态指示 */}
+        <p className="text-sm font-medium text-foreground">{displayMessage}</p>
 
-        {/* 装饰性元素 */}
-        <div className="flex space-x-2">
-          <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" />
-          <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: "0.1s" }} />
-          <div className="w-2 h-2 bg-cyan-500 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }} />
-        </div>
+        {progress !== undefined ? (
+          <div className="w-64 space-y-2">
+            <Progress value={progress} className="h-1.5" />
+            <p className="text-xs text-muted-foreground">{Math.round(progress)}%</p>
+          </div>
+        ) : showProgress ? (
+          <Spinner size="medium" className="text-primary" />
+        ) : null}
       </div>
     </div>
-  )
+  );
 }

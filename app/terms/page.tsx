@@ -2,17 +2,16 @@
 
 import Link from "next/link"
 
-import { Navbar } from "@/components/ui/navbar"
-import { Footer } from "@/components/ui/footer"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { PageContainer } from "@/app/components/layout/page-container"
 import { useI18n } from "@/app/hooks/use-i18n"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { tc } from "@/lib/yyc3/i18n/data"
 
 /** 服务条款章节 */
 const SECTIONS = [
   {
     title: "一、服务说明",
-    body: "言语云³集成中心为企业与个人用户提供集成应用发现、上架、检索与连接器编排服务。集成应用由第三方开发者或本平台提供，启用前请阅读对应应用的说明与权限范围。",
+    body: "YanYuCloudCube集成中心为企业与个人用户提供集成应用发现、上架、检索与连接器编排服务。集成应用由第三方开发者或本平台提供，启用前请阅读对应应用的说明与权限范围。",
   },
   {
     title: "二、账号与责任",
@@ -41,41 +40,35 @@ export default function TermsPage() {
   const { t } = useI18n()
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
-      <Navbar />
+    <PageContainer className="py-12">
+      <div className="max-w-content mx-auto">
+        <h1 className="text-3xl font-bold mb-2">{t("pages.服务条款")}</h1>
+        <p className="text-muted-foreground mb-8">{t("pages.最近更新：2026 年 10 月 16 日")}</p>
 
-      <main className="flex-1 container mx-auto px-4 py-12">
-        <div className="max-w-3xl mx-auto">
-          <h1 className="text-3xl font-bold mb-2">{t("pages.服务条款")}</h1>
-          <p className="text-gray-500 mb-8">{t("pages.最近更新：2026 年 10 月 16 日")}</p>
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("pages.YanYuCloudCube集成中心服务条款")}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {SECTIONS.map((section) => (
+              <section key={section.title}>
+                <h2 className="text-lg font-semibold mb-2">{tc("pages", section.title)}</h2>
+                <p className="text-muted-foreground leading-relaxed">{tc("pages", section.body)}</p>
+              </section>
+            ))}
 
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("pages.言语云³集成中心服务条款")}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {SECTIONS.map((section) => (
-                <section key={section.title}>
-                  <h2 className="text-lg font-semibold mb-2">{tc("pages", section.title)}</h2>
-                  <p className="text-gray-600 leading-relaxed">{tc("pages", section.body)}</p>
-                </section>
-              ))}
-
-              <div className="pt-4 border-t">
-                <p className="text-gray-600">
-                  {t("pages.继续使用本服务即表示您已阅读并同意上述条款。如有疑问请前往")}
-                  <Link href="/contact" className="text-blue-600 hover:underline mx-1">
-                    {t("pages.联系我们")}
-                  </Link>
-                  {t("pages.。")}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </main>
-
-      <Footer />
-    </div>
+            <div className="pt-4 border-t">
+              <p className="text-muted-foreground">
+                {t("pages.继续使用本服务即表示您已阅读并同意上述条款。如有疑问请前往")}
+                <Link href="/contact" className="text-primary hover:underline mx-1">
+                  {t("pages.联系我们")}
+                </Link>
+                {t("pages.。")}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </PageContainer>
   )
 }

@@ -1,5 +1,5 @@
 /**
- * 言语云³集成中心 - PostgreSQL 数据库服务
+ * YanYuCloudCube集成中心 - PostgreSQL 数据库服务
  * 基于pg连接池的生产级数据库访问层
  */
 

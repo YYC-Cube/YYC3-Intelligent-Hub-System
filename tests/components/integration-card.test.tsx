@@ -63,9 +63,11 @@ describe("组件测试 · 应用卡片渲染", () => {
   })
 
   it("TC-C-002 卡片链接指向详情页 /marketplace/integration/{id}", () => {
-    render(<IntegrationCard integration={makeIntegration({ id: "77" })} />)
-    const link = screen.getByRole("link")
-    expect(link).toHaveAttribute("href", "/marketplace/integration/77")
+    const { container } = render(<IntegrationCard integration={makeIntegration({ id: "77" })} />)
+    // 卡片同时提供详情链接与「安装」链接，此处断言详情链接（排除 /install）
+    const link = container.querySelector("a[href='/marketplace/integration/77']")
+    expect(link).not.toBeNull()
+    expect(container.querySelector("a[href='/integrations/77/install']")).not.toBeNull()
   })
 
   it("TC-C-003 安装量超过 1000 时按“千”格式化（两分支）", () => {
@@ -107,9 +109,9 @@ describe("组件测试 · 应用卡片渲染", () => {
   })
 
   it("TC-C-009 detailHref 自定义详情路由基路径（/integrations 复用同一卡片）", () => {
-    render(<IntegrationCard integration={makeIntegration({ id: "77" })} detailHref="/integrations" />)
-    const link = screen.getByRole("link")
-    expect(link).toHaveAttribute("href", "/integrations/77")
+    const { container } = render(<IntegrationCard integration={makeIntegration({ id: "77" })} detailHref="/integrations" />)
+    const link = container.querySelector("a[href='/integrations/77']")
+    expect(link).not.toBeNull()
   })
 
   it("TC-C-007 未知图标回退到默认图标而不崩溃", () => {

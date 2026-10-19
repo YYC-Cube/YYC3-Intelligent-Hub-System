@@ -1,12 +1,12 @@
 "use client"
 
-import type React from "react"
+import { useI18n } from "@/app/hooks/use-i18n"
 import type { HeatLevel, TrendDirection } from "@/app/services/category-trends"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { TrendingUp, TrendingDown, Minus, Flame, Activity } from "lucide-react"
-import { useI18n } from "@/app/hooks/use-i18n"
 import { tc } from "@/lib/yyc3/i18n/data"
+import { Activity, Flame, Minus, TrendingDown, TrendingUp } from "lucide-react"
+import type React from "react"
 
 interface CategoryHeatBadgeProps {
   heatLevel: HeatLevel
@@ -27,28 +27,28 @@ export default function CategoryHeatBadge({
   // 热度级别对应的样式和图标
   const heatStyles: Record<HeatLevel, { bg: string; text: string; icon: React.ReactNode }> = {
     极热: {
-      bg: "bg-gradient-to-r from-red-500 to-orange-500",
-      text: "text-white",
+      bg: "bg-gradient-to-r from-destructive to-warning",
+      text: "text-destructive-foreground",
       icon: <Flame className={size === "sm" ? "h-3 w-3" : "h-4 w-4"} />,
     },
     热门: {
-      bg: "bg-orange-500",
-      text: "text-white",
+      bg: "bg-warning",
+      text: "text-warning-foreground",
       icon: <Flame className={size === "sm" ? "h-3 w-3" : "h-4 w-4"} />,
     },
     活跃: {
-      bg: "bg-yellow-500",
-      text: "text-black",
+      bg: "bg-warning",
+      text: "text-warning-foreground",
       icon: <Activity className={size === "sm" ? "h-3 w-3" : "h-4 w-4"} />,
     },
     稳定: {
-      bg: "bg-blue-500",
-      text: "text-white",
+      bg: "bg-primary",
+      text: "text-primary-foreground",
       icon: null,
     },
     冷门: {
-      bg: "bg-gray-500",
-      text: "text-white",
+      bg: "bg-muted",
+      text: "text-muted-foreground",
       icon: null,
     },
   }
@@ -62,9 +62,9 @@ export default function CategoryHeatBadge({
 
   // 趋势对应的样式
   const trendStyles: Record<TrendDirection, { text: string }> = {
-    上升: { text: "text-green-500" },
-    平稳: { text: "text-blue-500" },
-    下降: { text: "text-red-500" },
+    上升: { text: "text-success" },
+    平稳: { text: "text-info" },
+    下降: { text: "text-destructive" },
   }
 
   const { bg, text, icon } = heatStyles[heatLevel]

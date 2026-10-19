@@ -1,6 +1,11 @@
+# 单仓项目：显式纳入根包，缺失此字段会导致 pnpm audit 报
+# "packages field missing or empty"
+packages:
+  - "."
+
 allowBuilds:
-  '@swc/core': true
-  '@parcel/watcher': true
+  "@swc/core": true
+  "@parcel/watcher": true
   esbuild: true
   unrs-resolver: true
   workerd: true
@@ -8,13 +13,13 @@ allowBuilds:
 
 # 依赖覆盖：强制提升存在修复版的传递依赖
 overrides:
-  postcss-selector-parser: '>=7.1.6'
+  postcss-selector-parser: ">=7.1.6"
 
-# 审计豁免（2026-10-17 复核）：
-#   braces (GHSA-vfj7-8cjw-p6xm) — 上游 <=3.0.3 全版本受影响且无修复发布；
-#   传递链全部为构建期工具（tailwindcss → chokidar/fast-glob/micromatch），
-#   不进入静态导出运行时产物，实际暴露面为零。
-#   （历史豁免 sprintf-js/GHSA-hp3w-g68c-fv3c 已随 M-1 jest 移除而撤销）
+# 审计豁免（2026-10-19 复核）：
+#   braces (GHSA-vfj7-8cjw-p6xm) — 上游 <=3.0.3 全版本受影响且无修复发布（Patched <0.0.0）。
+#   2026-10-19 起构建工具（tailwindcss-animate/autoprefixer）已迁入 devDependencies，
+#   braces 仅存于 dev 链（tailwindcss/eslint-config-next 的 chokidar/fast-glob/micromatch），
+#   不进入静态导出运行时产物，实际暴露面为零；生产树审计（--prod）已为 0 漏洞。
 # 待上游发布修复版后移除豁免。
 auditConfig:
   ignoreGhsas:

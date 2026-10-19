@@ -1,13 +1,14 @@
 "use client"
 
+import { PageContainer } from "@/app/components/layout/page-container"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertTriangle } from "lucide-react"
 
 export default function ErrorTestPage() {
   return (
-    <div className="container mx-auto py-8">
+    <PageContainer>
       <h1 className="text-2xl font-bold mb-6">错误测试页面</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -61,6 +62,6 @@ export default function ErrorTestPage() {
           此页面仅用于测试错误处理机制。在生产环境中，我们会捕获这些错误并提供友好的错误信息。
         </AlertDescription>
       </Alert>
-    </div>
+    </PageContainer>
   )
 }

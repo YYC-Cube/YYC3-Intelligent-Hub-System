@@ -1,15 +1,15 @@
 "use client"
 
-import { useWizard } from "./wizard-context"
+import { useI18n } from "@/app/hooks/use-i18n"
+import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useState } from "react"
-import { WizardNavigation } from "./wizard-navigation"
-import { Button } from "@/components/ui/button"
-import { Eye, EyeOff, HelpCircle } from "lucide-react"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { useI18n } from "@/app/hooks/use-i18n"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Eye, EyeOff, HelpCircle } from "lucide-react"
+import { useState } from "react"
+import { useWizard } from "./wizard-context"
+import { WizardNavigation } from "./wizard-navigation"
 
 export function StepAuthentication() {
   const { t } = useI18n()
@@ -58,7 +58,7 @@ export function StepAuthentication() {
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <Label htmlFor="apiKey">
-                {t("install.API密钥")} <span className="text-red-500">*</span>
+                {t("install.API密钥")} <span className="text-destructive">*</span>
               </Label>
               <TooltipProvider>
                 <Tooltip>
@@ -91,13 +91,13 @@ export function StepAuthentication() {
                 {showSecret ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </Button>
             </div>
-            <p className="text-xs text-gray-500">{t("install.输入您从集成应用提供商获取的API密钥")}</p>
+            <p className="text-xs text-muted-foreground">{t("install.输入您从集成应用提供商获取的API密钥")}</p>
           </div>
         ) : (
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="clientId">
-                {t("install.客户端ID")} <span className="text-red-500">*</span>
+                {t("install.客户端ID")} <span className="text-destructive">*</span>
               </Label>
               <Input
                 id="clientId"
@@ -110,7 +110,7 @@ export function StepAuthentication() {
 
             <div className="space-y-2">
               <Label htmlFor="clientSecret">
-                {t("install.客户端密钥")} <span className="text-red-500">*</span>
+                {t("install.客户端密钥")} <span className="text-destructive">*</span>
               </Label>
               <div className="relative max-w-md">
                 <Input

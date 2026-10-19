@@ -1,23 +1,23 @@
-import type React from "react"
-import "./globals.css"
-// 添加正确的设计系统CSS导入
-import "./styles/design-system.css"
-import type { Metadata, Viewport } from "next"
 import { ThemeProvider } from "@/components/theme-provider"
-import { FavoritesProvider } from "./context/favorites-context"
+import { Toaster } from "@/components/ui/toaster"
+import { BRAND, ICON_BASE, THEME_COLORS, brandAssets } from "@/lib/yyc3/brand"
+import type { Metadata, Viewport } from "next"
+import type React from "react"
+import { ErrorBoundary } from "./components/error-handling/error-boundary"
+import { DocumentTitleSync } from "./components/i18n/document-title-sync"
+import { I18nBootstrap } from "./components/i18n/i18n-bootstrap"
 import { AuthProvider } from "./context/auth-context"
 import { EncryptionProvider } from "./context/encryption-context"
+import { FavoritesProvider } from "./context/favorites-context"
 import { integrations } from "./data/integrations"
-import { Toaster } from "@/components/ui/toaster"
-import { ErrorBoundary } from "./components/error-handling/error-boundary"
-import { I18nBootstrap } from "./components/i18n/i18n-bootstrap"
-import { BRAND, ICON_BASE, THEME_COLORS, brandAssets } from "@/lib/yyc3/brand"
+import "./globals.css"
 
 export const metadata: Metadata = {
   metadataBase: new URL(BRAND.siteUrl),
   title: {
     default: `${BRAND.name} - ${BRAND.shortName}`,
-    template: `%s | ${BRAND.shortName}`,
+    // 统一规范：「页面名 - YanYuCloudCube」。页面侧只传页面名，禁止自拼后缀。
+    template: `%s - ${BRAND.shortName}`,
   },
   description: BRAND.description,
   applicationName: BRAND.name,
@@ -91,6 +91,7 @@ export default function RootLayout({
     <html lang="zh-CN" suppressHydrationWarning>
       <body className="font-sans antialiased">
         <I18nBootstrap />
+        <DocumentTitleSync />
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           <ErrorBoundary>
             <AuthProvider>

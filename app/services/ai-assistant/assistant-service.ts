@@ -72,7 +72,7 @@ export class AssistantService {
           systemPrompt = userPreference.default_system_prompt
         } else {
           // 默认系统提示
-          systemPrompt = "你是言语云³集成中心的智能助手，可以帮助用户了解各种集成应用、解决集成问题，并提供相关建议。"
+          systemPrompt = "你是YanYuCloudCube集成中心的智能助手，可以帮助用户了解各种集成应用、解决集成问题，并提供相关建议。"
         }
       }
 
@@ -220,17 +220,17 @@ export class AssistantService {
     const lastUserMessage = [...messages].reverse().find((m) => m.role === "user")
 
     if (!lastUserMessage) {
-      return "您好！我是言语云³智能助手。有什么可以帮助您的吗？"
+      return "您好！我是YanYuCloudCube智能助手。有什么可以帮助您的吗？"
     }
 
     const content = lastUserMessage.content.toLowerCase()
 
     if (content.includes("你好") || content.includes("嗨") || content.includes("hi")) {
-      return "您好！我是言语云³智能助手。有什么可以帮助您的吗？"
+      return "您好！我是YanYuCloudCube智能助手。有什么可以帮助您的吗？"
     }
 
     if (content.includes("集成") || content.includes("应用")) {
-      return "言语云³集成中心提供多种应用集成服务，包括数据库、API、营销工具、CRM系统等。您需要了解哪方面的集成信息？"
+      return "YanYuCloudCube集成中心提供多种应用集成服务，包括数据库、API、营销工具、CRM系统等。您需要了解哪方面的集成信息？"
     }
 
     if (content.includes("数据库") || content.includes("database")) {
@@ -238,7 +238,7 @@ export class AssistantService {
     }
 
     if (content.includes("api") || content.includes("接口")) {
-      return "言语云³支持REST API、GraphQL和SOAP等多种API集成方式，可以帮助您连接各种第三方服务。"
+      return "YanYuCloudCube支持REST API、GraphQL和SOAP等多种API集成方式，可以帮助您连接各种第三方服务。"
     }
 
     if (content.includes("问题") || content.includes("错误") || content.includes("bug")) {
@@ -246,7 +246,7 @@ export class AssistantService {
     }
 
     // 默认回复
-    return "感谢您的提问。作为言语云³集成助手，我可以帮助您了解各种集成应用、解决集成问题，并提供相关建议。请告诉我您需要了解的具体内容。"
+    return "感谢您的提问。作为YanYuCloudCube集成助手，我可以帮助您了解各种集成应用、解决集成问题，并提供相关建议。请告诉我您需要了解的具体内容。"
   }
 
   // OpenAI响应生成

@@ -1,12 +1,12 @@
-import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export default function ModuleDetailLoading() {
   return (
-    <div className="min-h-screen bg-gray-50 pb-12">
+    <div className="min-h-screen bg-background pb-12">
       {/* 面包屑导航骨架 */}
-      <div className="bg-white border-b">
-        <div className="container mx-auto max-w-6xl px-4 py-4">
+      <div className="bg-card border-b">
+        <div className="mx-auto w-full max-w-page px-4 py-4">
           <div className="flex items-center">
             <Skeleton className="h-4 w-24" />
             <Skeleton className="h-4 w-4 mx-2" />
@@ -17,7 +17,7 @@ export default function ModuleDetailLoading() {
         </div>
       </div>
 
-      <div className="container mx-auto max-w-6xl px-4 py-8">
+      <div className="mx-auto w-full max-w-page px-4 py-8">
         {/* 模块标题和进度骨架 */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
@@ -30,7 +30,7 @@ export default function ModuleDetailLoading() {
             <Skeleton className="h-4 w-32" />
           </div>
 
-          <div className="bg-white p-4 rounded-lg border mb-4">
+          <div className="bg-card p-4 rounded-lg border mb-4">
             <div className="flex justify-between mb-2">
               <Skeleton className="h-5 w-24" />
               <Skeleton className="h-5 w-12" />
@@ -43,7 +43,7 @@ export default function ModuleDetailLoading() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* 左侧：步骤列表骨架 */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg border p-4">
+            <div className="bg-card rounded-lg border p-4">
               <Skeleton className="h-6 w-24 mb-4" />
               <div className="space-y-2">
                 {[1, 2, 3].map((i) => (

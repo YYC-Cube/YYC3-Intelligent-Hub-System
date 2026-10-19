@@ -1,5 +1,6 @@
 "use client"
 
+import { cn } from "@/lib/utils"
 import { useI18n } from "@/app/hooks/use-i18n"
 
 interface SpinnerProps {
@@ -7,18 +8,28 @@ interface SpinnerProps {
   className?: string
 }
 
-export function Spinner({ size = "medium", className = "" }: SpinnerProps) {
+/**
+ * YYC³ 独立加载指示器（块级场景使用；按钮内加载请直接使用 <Button loading />）。
+ * - role="status" + i18n aria-label，保证读屏可感知；
+ * - border-current 跟随文字颜色，无需按主题逐处调色。
+ */
+export function Spinner({ size = "medium", className }: SpinnerProps) {
   const { t } = useI18n()
   const sizeClasses = {
-    small: "w-4 h-4",
-    medium: "w-8 h-8",
-    large: "w-12 h-12",
+    small: "size-4 border-2",
+    medium: "size-8 border-[3px]",
+    large: "size-12 border-4",
   }
 
   return (
     <div
-      className={`animate-spin rounded-full border-t-2 border-b-2 ${sizeClasses[size]} ${className}`}
+      role="status"
       aria-label={t("ui.加载中")}
-    ></div>
+      className={cn(
+        "animate-spin rounded-full border-current border-t-transparent",
+        sizeClasses[size],
+        className
+      )}
+    />
   )
 }

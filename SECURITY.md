@@ -61,6 +61,6 @@
 
 <div align="center">
 
-🔒 安全无小事 · 感谢你帮助保护言语云³
+🔒 安全无小事 · 感谢你帮助保护YanYuCloudCube
 
 </div>

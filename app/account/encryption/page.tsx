@@ -2,43 +2,35 @@
 
 import { Badge } from "@/components/ui/badge"
 
-import { useState } from "react"
-import { Navbar } from "@/components/ui/navbar"
+import { EncryptionSetupDialog } from "@/app/components/encryption/encryption-setup-dialog"
+import { PageContainer } from "@/app/components/layout/page-container"
+import { PageHeader } from "@/app/components/layout/page-header"
+import { ConfirmActionDialog } from "@/app/components/ui/confirm-action-dialog"
+import { useAuth } from "@/app/context/auth-context"
+import { useEncryption } from "@/app/context/encryption-context"
+import { useFavorites } from "@/app/context/favorites-context"
+import { useI18n } from "@/app/hooks/use-i18n"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { useAuth } from "@/app/context/auth-context"
-import { useEncryption } from "@/app/context/encryption-context"
-import { useFavorites } from "@/app/context/favorites-context"
-import { useI18n } from "@/app/hooks/use-i18n"
-import { EncryptionSetupDialog } from "@/app/components/encryption/encryption-setup-dialog"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useToast } from "@/hooks/use-toast"
 import {
+  AlertTriangle,
   ArrowLeft,
+  Key,
+  Loader2,
   Lock,
   LockOpen,
+  RefreshCw,
   ShieldAlert,
   ShieldCheck,
-  Loader2,
-  Key,
-  AlertTriangle,
-  RefreshCw,
 } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useToast } from "@/hooks/use-toast"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
+import { useState } from "react"
 
 export default function EncryptionSettingsPage() {
   const { isAuthenticated, user } = useAuth()
@@ -127,120 +119,110 @@ export default function EncryptionSettingsPage() {
   // 如果未登录，重定向到登录页面
   if (!isAuthenticated) {
     return (
-      <div className="flex flex-col min-h-screen bg-gray-50">
-        <Navbar />
-        <main className="flex-1 container mx-auto px-4 py-8">
-          <div className="flex items-center mb-6">
-            <Link href="/favorites" className="text-blue-600 hover:underline mr-2">
-              <ArrowLeft className="mr-2 h-4 w-4 inline" />
-              {t("account.返回收藏")}
-            </Link>
-          </div>
+      <PageContainer>
+        <div className="flex items-center mb-6">
+          <Link href="/favorites" className="text-primary hover:underline mr-2">
+            <ArrowLeft className="mr-2 h-4 w-4 inline" />
+            {t("account.返回收藏")}
+          </Link>
+        </div>
 
-          <div className="max-w-3xl mx-auto">
-            <Card className="mb-8">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <LockOpen className="mr-2 h-5 w-5 text-gray-500" />
-                  {t("account.未登录")}
-                </CardTitle>
-                <CardDescription>{t("account.请登录以管理您的加密设置")}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-center py-4">{t("account.您需要登录才能访问加密设置")}</p>
-              </CardContent>
-              <CardFooter className="flex justify-center">
-                <Button onClick={() => router.push("/")}>{t("account.返回首页")}</Button>
-              </CardFooter>
-            </Card>
-          </div>
-        </main>
-      </div>
+        <div className="max-w-content mx-auto">
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <LockOpen className="mr-2 h-5 w-5 text-muted-foreground" />
+                {t("account.未登录")}
+              </CardTitle>
+              <CardDescription>{t("account.请登录以管理您的加密设置")}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-center py-4">{t("account.您需要登录才能访问加密设置")}</p>
+            </CardContent>
+            <CardFooter className="flex justify-center">
+              <Button onClick={() => router.push("/")}>{t("account.返回首页")}</Button>
+            </CardFooter>
+          </Card>
+        </div>
+      </PageContainer>
     )
   }
 
   // 如果浏览器不支持加密
   if (!isSupported) {
     return (
-      <div className="flex flex-col min-h-screen bg-gray-50">
-        <Navbar />
-        <main className="flex-1 container mx-auto px-4 py-8">
-          <div className="flex items-center mb-6">
-            <Link href="/favorites" className="text-blue-600 hover:underline mr-2">
-              <ArrowLeft className="mr-2 h-4 w-4 inline" />
-              {t("account.返回收藏")}
-            </Link>
-          </div>
-
-          <div className="max-w-3xl mx-auto">
-            <Card className="mb-8">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <ShieldAlert className="mr-2 h-5 w-5 text-red-500" />
-                  {t("account.不支持加密")}
-                </CardTitle>
-                <CardDescription>{t("account.您的浏览器不支持所需的加密API")}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="bg-red-50 p-4 rounded-md border border-red-200 mb-4">
-                  <div className="flex items-start">
-                    <AlertTriangle className="h-5 w-5 text-red-500 mr-2 mt-0.5" />
-                    <div className="text-sm text-red-700">
-                      <p className="font-medium">{t("account.浏览器不兼容")}</p>
-                      <p>
-                        {t(
-                          "account.您的浏览器不支持所需的Web Crypto API，无法使用端到端加密功能。请使用最新版本的Chrome、Firefox、Safari或Edge浏览器。"
-                        )}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter className="flex justify-center">
-                <Button onClick={() => router.push("/favorites")}>{t("account.返回收藏")}</Button>
-              </CardFooter>
-            </Card>
-          </div>
-        </main>
-      </div>
-    )
-  }
-
-  return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
-      <Navbar />
-      <main className="flex-1 container mx-auto px-4 py-8">
+      <PageContainer>
         <div className="flex items-center mb-6">
-          <Link href="/favorites" className="text-blue-600 hover:underline mr-2">
+          <Link href="/favorites" className="text-primary hover:underline mr-2">
             <ArrowLeft className="mr-2 h-4 w-4 inline" />
             {t("account.返回收藏")}
           </Link>
         </div>
 
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-content mx-auto">
           <Card className="mb-8">
             <CardHeader>
               <CardTitle className="flex items-center">
-                {encryptionStatus === "enabled" ? (
-                  <Lock className="mr-2 h-5 w-5 text-green-500" />
-                ) : encryptionStatus === "initializing" ? (
-                  <Loader2 className="mr-2 h-5 w-5 text-blue-500 animate-spin" />
-                ) : (
-                  <LockOpen className="mr-2 h-5 w-5 text-gray-500" />
-                )}
-                {t("account.端到端加密设置")}
+                <ShieldAlert className="mr-2 h-5 w-5 text-destructive" />
+                {t("account.不支持加密")}
               </CardTitle>
-              <CardDescription>{t("account.管理您的数据加密设置，保护您的隐私")}</CardDescription>
+              <CardDescription>{t("account.您的浏览器不支持所需的加密API")}</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center justify-between p-4 rounded-lg bg-blue-50 border border-blue-100 mb-6">
+              <div className="bg-destructive/10 p-4 rounded-md border border-destructive/30 mb-4">
+                <div className="flex items-start">
+                  <AlertTriangle className="h-5 w-5 text-destructive mr-2 mt-0.5" />
+                  <div className="text-sm text-destructive">
+                    <p className="font-medium">{t("account.浏览器不兼容")}</p>
+                    <p>
+                      {t(
+                        "account.您的浏览器不支持所需的Web Crypto API，无法使用端到端加密功能。请使用最新版本的Chrome、Firefox、Safari或Edge浏览器。"
+                      )}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+            <CardFooter className="flex justify-center">
+              <Button onClick={() => router.push("/favorites")}>{t("account.返回收藏")}</Button>
+            </CardFooter>
+          </Card>
+        </div>
+      </PageContainer>
+    )
+  }
+
+  return (
+    <>
+      <PageContainer>
+        <PageHeader
+          crumbs={[
+            { label: t("account.账户中心"), href: "/account/sync" },
+            { label: t("account.端到端加密设置") },
+          ]}
+          title={t("account.端到端加密设置")}
+          description={t("account.管理您的数据加密设置，保护您的隐私")}
+          className="mb-6"
+        />
+
+        <div className="flex items-center mb-6">
+          <Link href="/favorites" className="text-primary hover:underline mr-2">
+            <ArrowLeft className="mr-2 h-4 w-4 inline" />
+            {t("account.返回收藏")}
+          </Link>
+        </div>
+
+        <div className="max-w-content mx-auto">
+          <Card className="mb-8">
+            <CardContent>
+              <div className="flex items-center justify-between p-4 rounded-lg bg-brand-50 border border-brand-100 mb-6">
                 <div className="flex items-center">
                   {encryptionStatus === "enabled" ? (
-                    <ShieldCheck className="h-5 w-5 mr-3 text-green-500" />
+                    <ShieldCheck className="h-5 w-5 mr-3 text-success" />
                   ) : encryptionStatus === "initializing" ? (
-                    <Loader2 className="h-5 w-5 mr-3 text-blue-500 animate-spin" />
+                    <Loader2 className="h-5 w-5 mr-3 text-primary animate-spin" />
                   ) : (
-                    <ShieldAlert className="h-5 w-5 mr-3 text-yellow-500" />
+                    <ShieldAlert className="h-5 w-5 mr-3 text-warning" />
                   )}
                   <div>
                     <h3 className="font-medium">
@@ -250,7 +232,7 @@ export default function EncryptionSettingsPage() {
                           ? t("account.需要解锁加密")
                           : t("account.加密未启用")}
                     </h3>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       {encryptionStatus === "enabled"
                         ? isEncrypted
                           ? t("account.您的数据已使用端到端加密保护")
@@ -287,7 +269,7 @@ export default function EncryptionSettingsPage() {
                       <div className="flex items-center justify-between">
                         <div className="space-y-0.5">
                           <Label htmlFor="autoEncrypt">{t("account.自动加密")}</Label>
-                          <p className="text-sm text-gray-500">{t("account.自动加密所有新添加的收藏数据")}</p>
+                          <p className="text-sm text-muted-foreground">{t("account.自动加密所有新添加的收藏数据")}</p>
                         </div>
                         <Switch
                           id="autoEncrypt"
@@ -304,7 +286,7 @@ export default function EncryptionSettingsPage() {
                             onChange={(e) => setPasswordHint(e.target.value)}
                             placeholder={t("account.输入密码提示（可选）")}
                           />
-                          <p className="text-xs text-gray-500">{t("account.密码提示可以帮助您记住密码，但不要输入您的实际密码")}</p>
+                          <p className="text-xs text-muted-foreground">{t("account.密码提示可以帮助您记住密码，但不要输入您的实际密码")}</p>
                           <Button
                             onClick={() => updateEncryptionSettings({ passwordHint })}
                             size="sm"
@@ -318,16 +300,9 @@ export default function EncryptionSettingsPage() {
                       <div className="pt-4 border-t">
                         <h3 className="text-base font-medium mb-2">{t("account.加密状态")}</h3>
                         <div className="space-y-2">
-                          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-md border">
+                          <div className="flex items-center justify-between p-3 bg-muted rounded-md border">
                             <span className="text-sm">{t("account.收藏数据加密状态")}</span>
-                            <Badge
-                              variant="outline"
-                              className={
-                                isEncrypted
-                                  ? "bg-green-100 text-green-700 border-green-200"
-                                  : "bg-yellow-100 text-yellow-700 border-yellow-200"
-                              }
-                            >
+                            <Badge variant={isEncrypted ? "success" : "warning"}>
                               {isEncrypted ? t("account.已加密") : t("account.未加密")}
                             </Badge>
                           </div>
@@ -377,7 +352,7 @@ export default function EncryptionSettingsPage() {
                           />
                         </div>
 
-                        {passwordError && <p className="text-sm text-red-500">{passwordError}</p>}
+                        {passwordError && <p className="text-sm text-destructive">{passwordError}</p>}
 
                         <Button onClick={handleChangePassword} disabled={isChangingPassword} className="gap-2">
                           {isChangingPassword ? (
@@ -394,10 +369,10 @@ export default function EncryptionSettingsPage() {
                         </Button>
                       </div>
 
-                      <div className="bg-yellow-50 p-3 rounded-md border border-yellow-200 mt-4">
+                      <div className="bg-warning/10 p-3 rounded-md border border-warning/30 mt-4">
                         <div className="flex items-start">
-                          <AlertTriangle className="h-5 w-5 text-yellow-500 mr-2 mt-0.5" />
-                          <div className="text-sm text-yellow-700">
+                          <AlertTriangle className="h-5 w-5 text-warning mr-2 mt-0.5" />
+                          <div className="text-sm text-warning">
                             <p className="font-medium">{t("account.重要提示")}</p>
                             <p>
                               {t("account.请务必记住您的新密码。如果忘记密码，您将无法恢复加密的数据。我们不存储您的密码，也无法帮您重置。")}
@@ -412,9 +387,9 @@ export default function EncryptionSettingsPage() {
 
               {encryptionStatus === "initializing" && (
                 <div className="flex flex-col items-center justify-center py-8">
-                  <ShieldAlert className="h-16 w-16 text-yellow-500 mb-4" />
+                  <ShieldAlert className="h-16 w-16 text-warning mb-4" />
                   <h3 className="text-lg font-medium mb-2">{t("account.需要解锁加密数据")}</h3>
-                  <p className="text-gray-500 text-center mb-4 max-w-md">
+                  <p className="text-muted-foreground text-center mb-4 max-w-md">
                     {t("account.您的数据已加密，但尚未解锁。请输入您的加密密码以访问数据。")}
                     {encryptionSettings.passwordHint && (
                       <span className="block mt-2 font-medium">
@@ -428,10 +403,10 @@ export default function EncryptionSettingsPage() {
 
               {encryptionStatus === "disabled" && (
                 <div className="space-y-6 py-4">
-                  <div className="bg-blue-50 p-4 rounded-md border border-blue-200">
+                  <div className="bg-brand-50 p-4 rounded-md border border-brand-100">
                     <div className="flex items-start">
-                      <ShieldCheck className="h-5 w-5 text-blue-500 mr-2 mt-0.5" />
-                      <div className="text-sm text-blue-700">
+                      <ShieldCheck className="h-5 w-5 text-primary mr-2 mt-0.5" />
+                      <div className="text-sm text-primary">
                         <p className="font-medium">{t("account.关于端到端加密")}</p>
                         <p>
                           {t("account.启用端到端加密后，您的收藏数据将在本地加密，然后再同步到云端。这意味着只有您知道密码，即使是服务提供商也无法查看您的数据内容。")}
@@ -461,26 +436,23 @@ export default function EncryptionSettingsPage() {
             </CardContent>
           </Card>
         </div>
-      </main>
+      </PageContainer>
 
       {/* 加密设置对话框 */}
       <EncryptionSetupDialog />
 
-      {/* 禁用加密确认对话框 */}
-      <AlertDialog open={showDisableDialog} onOpenChange={setShowDisableDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t("account.确认禁用加密？")}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t("account.禁用加密后，您的数据将不再受到端到端加密保护。这意味着您的数据可能在传输和存储过程中以明文形式存在。")}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{t("account.取消")}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDisableEncryption}>{t("account.确认禁用")}</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
+      {/* 禁用加密确认对话框 —— 统一 ConfirmActionDialog 四段规范结构 */}
+      <ConfirmActionDialog
+        open={showDisableDialog}
+        onOpenChange={setShowDisableDialog}
+        title={t("account.确认禁用加密？")}
+        description={t(
+          "account.禁用加密后，您的数据将不再受到端到端加密保护。这意味着您的数据可能在传输和存储过程中以明文形式存在。"
+        )}
+        onConfirm={handleDisableEncryption}
+        cancelLabel={t("account.取消")}
+        confirmLabel={t("account.确认禁用")}
+      />
+    </>
   )
 }

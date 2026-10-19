@@ -3,6 +3,8 @@
  * 使用Web Crypto API实现安全的加密和解密
  */
 
+import { requireSession } from "@/lib/yyc3/session"
+
 // 加密配置
 const ENCRYPTION_ALGORITHM = "AES-GCM"
 const KEY_LENGTH = 256 // 密钥长度（位）
@@ -220,19 +222,26 @@ export function getUserEncryptionSettings(userId: string): EncryptionSettings {
 
 /**
  * 保存用户的加密设置
+ *
+ * 数据层二次校验（P3 固化）：写盘前核对持久会话真源并验证归属，
+ * 不信任调用方传入的登录状态；无会话/跨用户写入直接抛错拒绝。
  * @param userId 用户ID
  * @param settings 加密设置
  */
 export function saveUserEncryptionSettings(userId: string, settings: EncryptionSettings): void {
+  requireSession("encryption_settings", userId)
   localStorage.setItem(`encryption_settings_${userId}`, JSON.stringify(settings))
 }
 
 /**
  * 保存用户的密钥包
+ *
+ * 数据层二次校验（P3 固化）：密钥包为高敏数据，写入口强制会话归属校验。
  * @param userId 用户ID
  * @param keyPackage 密钥包
  */
 export function saveKeyPackage(userId: string, keyPackage: { salt: string; encryptedValidationToken: string }): void {
+  requireSession("key_package", userId)
   localStorage.setItem(`key_package_${userId}`, JSON.stringify(keyPackage))
 }
 

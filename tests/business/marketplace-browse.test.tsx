@@ -1,8 +1,8 @@
-import { describe, it, expect, vi } from "vitest"
-import { render, screen, fireEvent } from "@testing-library/react"
+import { fireEvent, render, screen } from "@testing-library/react"
+import { describe, expect, it, vi } from "vitest"
 
-import { IntegrationBrowser } from "@/app/marketplace/components/integration-browser"
 import { integrations } from "@/app/data/integrations"
+import { IntegrationBrowser } from "@/app/marketplace/components/integration-browser"
 import { makeIntegration, makeIntegrations } from "../fixtures/integrations"
 
 /**
@@ -10,6 +10,11 @@ import { makeIntegration, makeIntegrations } from "../fixtures/integrations"
  *
  * 覆盖需求：应用列表加载、分类/关键字检索、收藏入口占位、分页翻页（共 34 页）、空状态。
  * 隔离策略：Navbar / FavoriteButton 依赖全局 Provider，业务链路中与浏览无关，故置空。
+ *
+ * 分页断言基于全站统一 ControlledPagination 交互规范：
+ * - 页码按钮无障碍名为「第 X 页」，当前页 aria-current="page"
+ * - 页码窗口化（默认 5 个）+ 首尾省略号，末页经「下一页」逐页可达
+ * - 「第 X 页，共 Y 页」aria-live 总页数提示
  */
 vi.mock("@/components/ui/navbar", () => ({ Navbar: () => null }))
 vi.mock("@/app/components/favorites/favorite-button", () => ({ FavoriteButton: () => null }))
@@ -17,14 +22,22 @@ vi.mock("@/app/components/favorites/favorite-button", () => ({ FavoriteButton: (
 /** 应用网格为 ul.list-none 下的 li 列表，排除页脚等其它列表干扰。 */
 const gridItems = (container: HTMLElement) => container.querySelectorAll("ul.list-none > li")
 
+/** 从当前页连续点击「下一页」n 次（统一分页组件的翻页路径）。 */
+const clickNext = (times: number) => {
+  for (let i = 0; i < times; i += 1) {
+    fireEvent.click(screen.getByRole("button", { name: "下一页" }))
+  }
+}
+
 describe("业务场景 · 应用市场浏览（IntegrationBrowser）", () => {
   it("TC-B-001 全量 1000 条应用按 30 条/页展开为 34 页", () => {
     const { container } = render(<IntegrationBrowser title="全部应用" source={integrations} itemsPerPage={30} />)
 
     expect(screen.getByText("共 1000 个集成应用")).toBeInTheDocument()
     expect(gridItems(container)).toHaveLength(30)
-    // 页码窗口 [1..5] 后折叠，末页 34 必须可达
-    expect(screen.getByRole("button", { name: "34" })).toBeInTheDocument()
+    // 统一分页：aria-live 提示总页数，页码窗口折叠为 5 个 + 省略号
+    expect(screen.getByText("第 1 页，共 34 页")).toBeInTheDocument()
+    expect(screen.getAllByRole("button", { name: /第 \d+ 页/ })).toHaveLength(5)
   })
 
   it("TC-B-002 首页按数据源顺序渲染且上一页禁用", () => {
@@ -40,7 +53,7 @@ describe("业务场景 · 应用市场浏览（IntegrationBrowser）", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "下一页" }))
 
-    expect(screen.getByRole("button", { name: "2" })).toHaveAttribute("aria-current", "page")
+    expect(screen.getByRole("button", { name: "第 2 页" })).toHaveAttribute("aria-current", "page")
     expect(gridItems(container)).toHaveLength(30)
     expect(gridItems(container)[0].textContent).toContain(integrations[30].name)
     expect(screen.queryByText(integrations[0].name)).not.toBeInTheDocument()
@@ -49,10 +62,10 @@ describe("业务场景 · 应用市场浏览（IntegrationBrowser）", () => {
   it("TC-B-004 跳转末页（第 34 页）仅渲染剩余 10 条且下一页禁用", () => {
     const { container } = render(<IntegrationBrowser title="全部应用" source={integrations} itemsPerPage={30} />)
 
-    fireEvent.click(screen.getByRole("button", { name: "34" }))
+    clickNext(33)
 
     expect(gridItems(container)).toHaveLength(10)
-    expect(screen.getByRole("button", { name: "34" })).toHaveAttribute("aria-current", "page")
+    expect(screen.getByRole("button", { name: "第 34 页" })).toHaveAttribute("aria-current", "page")
     expect(screen.getByRole("button", { name: "下一页" })).toBeDisabled()
   })
 
@@ -100,11 +113,11 @@ describe("业务场景 · 应用市场浏览（IntegrationBrowser）", () => {
     render(<IntegrationBrowser title="翻页" source={makeIntegrations(60)} itemsPerPage={30} />)
 
     fireEvent.click(screen.getByRole("button", { name: "下一页" }))
-    expect(screen.getByRole("button", { name: "2" })).toHaveAttribute("aria-current", "page")
+    expect(screen.getByRole("button", { name: "第 2 页" })).toHaveAttribute("aria-current", "page")
 
     fireEvent.change(screen.getByLabelText("搜索集成应用"), { target: { value: "测试应用" } })
 
     expect(screen.getByRole("button", { name: "上一页" })).toBeDisabled()
-    expect(screen.getByRole("button", { name: "1" })).toHaveAttribute("aria-current", "page")
+    expect(screen.getByRole("button", { name: "第 1 页" })).toHaveAttribute("aria-current", "page")
   })
 })

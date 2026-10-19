@@ -64,10 +64,10 @@ export function EncryptionSetupDialog() {
           {t("encryption.设置加密")}
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-form">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Shield className="h-5 w-5 text-blue-500" />
+            <Shield className="h-5 w-5 text-primary" />
             {t("encryption.设置数据加密")}
           </DialogTitle>
           <DialogDescription>

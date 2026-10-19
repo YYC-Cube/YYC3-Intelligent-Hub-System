@@ -8,7 +8,7 @@
  */
 import { useCallback, useSyncExternalStore } from "react"
 
-import { appI18n, DEFAULT_LOCALE, type Locale } from "@/lib/yyc3/i18n"
+import { appI18n, t as appT, DEFAULT_LOCALE, type Locale } from "@/lib/yyc3/i18n"
 
 export function useI18n() {
   const locale = useSyncExternalStore(
@@ -27,7 +27,7 @@ export function useI18n() {
   }, [])
 
   const translate = useCallback(
-    (key: string, params?: Record<string, string>) => appI18n.t(key, params),
+    (key: string, params?: Record<string, string>) => appT(key, params),
     []
   )
 

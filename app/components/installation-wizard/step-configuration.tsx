@@ -1,14 +1,14 @@
 "use client"
 
-import { useWizard } from "./wizard-context"
+import { useI18n } from "@/app/hooks/use-i18n"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useState } from "react"
-import { WizardNavigation } from "./wizard-navigation"
-import { Switch } from "@/components/ui/switch"
-import { Slider } from "@/components/ui/slider"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useI18n } from "@/app/hooks/use-i18n"
+import { Slider } from "@/components/ui/slider"
+import { Switch } from "@/components/ui/switch"
+import { useState } from "react"
+import { useWizard } from "./wizard-context"
+import { WizardNavigation } from "./wizard-navigation"
 
 export function StepConfiguration() {
   const { t } = useI18n()
@@ -41,7 +41,7 @@ export function StepConfiguration() {
             onChange={(e) => setWebhookUrl(e.target.value)}
             className="max-w-md"
           />
-          <p className="text-xs text-gray-500">{t("install.输入接收事件通知的Webhook URL")}</p>
+          <p className="text-xs text-muted-foreground">{t("install.输入接收事件通知的Webhook URL")}</p>
         </div>
 
         <div className="space-y-2">
@@ -56,7 +56,7 @@ export function StepConfiguration() {
               <SelectItem value="csv">CSV</SelectItem>
             </SelectContent>
           </Select>
-          <p className="text-xs text-gray-500">{t("install.选择数据交换的格式")}</p>
+          <p className="text-xs text-muted-foreground">{t("install.选择数据交换的格式")}</p>
         </div>
 
         <div className="space-y-2">
@@ -69,13 +69,13 @@ export function StepConfiguration() {
             step={5}
             className="max-w-md"
           />
-          <p className="text-xs text-gray-500">{t("install.设置数据同步的频率")}</p>
+          <p className="text-xs text-muted-foreground">{t("install.设置数据同步的频率")}</p>
         </div>
 
         <div className="flex items-center justify-between max-w-md">
           <div className="space-y-0.5">
             <Label htmlFor="notifications">{t("install.启用通知")}</Label>
-            <p className="text-xs text-gray-500">{t("install.接收有关集成状态的通知")}</p>
+            <p className="text-xs text-muted-foreground">{t("install.接收有关集成状态的通知")}</p>
           </div>
           <Switch id="notifications" checked={enableNotifications} onCheckedChange={setEnableNotifications} />
         </div>
@@ -83,7 +83,7 @@ export function StepConfiguration() {
         <div className="flex items-center justify-between max-w-md">
           <div className="space-y-0.5">
             <Label htmlFor="logging">{t("install.启用日志记录")}</Label>
-            <p className="text-xs text-gray-500">{t("install.记录集成活动以便于故障排除")}</p>
+            <p className="text-xs text-muted-foreground">{t("install.记录集成活动以便于故障排除")}</p>
           </div>
           <Switch id="logging" checked={enableLogging} onCheckedChange={setEnableLogging} />
         </div>

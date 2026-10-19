@@ -1,11 +1,11 @@
 "use client"
 
-import { useState } from "react"
-import { AlertCircle, X, Download, Settings } from "lucide-react"
+import { useVersionCheck } from "@/app/context/version-check-context"
+import { useI18n } from "@/app/hooks/use-i18n"
+import { formatDate } from "@/app/utils/format-date"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { useVersionCheck } from "@/app/context/version-check-context"
-import { formatDate } from "@/app/utils/format-date"
 import {
   Dialog,
   DialogContent,
@@ -15,10 +15,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useI18n } from "@/app/hooks/use-i18n"
+import { Switch } from "@/components/ui/switch"
+import { AlertCircle, Download, Settings, X } from "lucide-react"
+import { useState } from "react"
 
 export function UpdateNotification() {
   const { updateAvailable, updateInfo, dismissUpdate } = useVersionCheck()
@@ -32,12 +33,6 @@ export function UpdateNotification() {
   const { currentVersion, latestVersion, updateType } = updateInfo
   const updateTypeText =
     updateType === "major" ? t("common.重大更新") : updateType === "minor" ? t("common.功能更新") : t("common.补丁更新")
-  const updateTypeClass =
-    updateType === "major"
-      ? "bg-red-100 text-red-800"
-      : updateType === "minor"
-        ? "bg-blue-100 text-blue-800"
-        : "bg-green-100 text-green-800"
 
   return (
     <div className="fixed bottom-4 right-4 z-50 max-w-md w-full shadow-lg">
@@ -46,9 +41,15 @@ export function UpdateNotification() {
           <div className="flex justify-between items-start">
             <div>
               <CardTitle className="text-lg flex items-center">
-                <AlertCircle className="h-5 w-5 mr-2 text-yellow-500" />
+                <AlertCircle className="h-5 w-5 mr-2 text-warning" />
                 {t("common.发现新版本")}
-                <span className={`ml-2 text-xs px-2 py-1 rounded-full ${updateTypeClass}`}>{updateTypeText}</span>
+                {/* 更新类型标签：收编至 Badge 语义变体（major=destructive / minor=info / patch=success） */}
+                <Badge
+                  variant={updateType === "major" ? "destructive" : updateType === "minor" ? "info" : "success"}
+                  className="ml-2"
+                >
+                  {updateTypeText}
+                </Badge>
               </CardTitle>
               <CardDescription>
                 {t("common.版本 {latest} 已发布，您当前的版本是 {current}", {
@@ -71,7 +72,7 @@ export function UpdateNotification() {
               </div>
               <div>
                 <span className="font-medium">{t("common.更新内容：")}</span>
-                <div className="mt-1 p-2 bg-gray-50 rounded text-xs whitespace-pre-line">
+                <div className="mt-1 p-2 bg-muted rounded text-xs whitespace-pre-line">
                   {latestVersion.releaseNotes}
                 </div>
               </div>

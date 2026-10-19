@@ -1,7 +1,11 @@
-@import url("./styles/3d-effects.css");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ============================================================
+   YYC³ 集成中心系统 · 唯一设计令牌真源（Design Token Source of Truth）
+   规范：全项目 CSS 变量仅在此文件定义，tailwind.config.ts 只做映射
+   ============================================================ */
 
 @layer base {
   :root {
@@ -25,7 +29,81 @@
     --input: 220 13% 91%;
     --ring: 221 83% 53%;
     --radius: 0.5rem;
-    --brand-gradient: linear-gradient(135deg, #1e40af 0%, #3b82f6 25%, #6366f1 50%, #8b5cf6 75%, #a855f7 100%);
+
+    /* 功能色：集成运行中=success / 同步中=warning / 提示=info */
+    --success: 160 84% 39%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 26 83% 14%;
+    --info: 217 91% 60%;
+    --info-foreground: 0 0% 100%;
+
+    /* YYC³ 品牌色阶（蓝 → 靛 → 紫中轴，brand-400 = --primary 锚点） */
+    --brand-50: 214 100% 97%;
+    --brand-100: 214 95% 93%;
+    --brand-200: 217 91% 85%;
+    --brand-300: 219 86% 74%;
+    --brand-400: 221 83% 53%;
+    --brand-500: 224 76% 48%;
+    --brand-600: 229 70% 42%;
+    --brand-700: 236 62% 36%;
+    --brand-800: 245 58% 30%;
+    --brand-900: 254 55% 24%;
+    --brand-950: 259 60% 15%;
+
+    /* 图表色 */
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+
+    /* 侧栏 */
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 221 83% 53%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 221 83% 53%;
+
+    /* ============================================================
+       动效令牌（唯一真源）：业务只引用令牌/工具类，禁止魔法数
+       进入 ≤300ms、退出 ≤进入；仅 transform / opacity 做位移动效
+       ============================================================ */
+    --motion-duration-instant: 100ms; /* 按下、焦点 */
+    --motion-duration-fast: 150ms; /* hover、颜色、轻反馈 */
+    --motion-duration-base: 200ms; /* Dialog、折叠、页面进入 */
+    --motion-duration-slow: 250ms; /* Sheet / Drawer 侧滑 */
+    --motion-duration-exit: 150ms; /* 所有退出统一 */
+
+    --motion-ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+    --motion-ease-enter: cubic-bezier(0, 0, 0.2, 1);
+    --motion-ease-exit: cubic-bezier(0.4, 0, 1, 1);
+    --motion-ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+
+    --motion-distance-sm: 4px;
+    --motion-distance-md: 8px;
+    --motion-scale-press: 0.98;
+    --motion-scale-enter: 0.96;
+    --motion-stagger-step: 30ms;
+
+    /* 阴影层级 */
+    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.05);
+    --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.1), 0 2px 4px -2px hsl(0 0% 0% / 0.1);
+    --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.1), 0 4px 6px -4px hsl(0 0% 0% / 0.1);
+    --shadow-xl: 0 20px 25px -5px hsl(0 0% 0% / 0.1), 0 8px 10px -6px hsl(0 0% 0% / 0.1);
+
+    /* 品牌渐变与辉光（品牌视觉资产，色值仅允许定义于此） */
+    --brand-gradient: linear-gradient(
+      135deg,
+      #1e40af 0%,
+      #3b82f6 25%,
+      #6366f1 50%,
+      #8b5cf6 75%,
+      #a855f7 100%
+    );
     --brand-glow: 0 0 40px rgba(99, 102, 241, 0.3);
   }
 
@@ -49,17 +127,209 @@
     --border: 217 33% 20%;
     --input: 217 33% 20%;
     --ring: 224 76% 94%;
+
+    --success: 161 79% 46%;
+    --success-foreground: 160 84% 8%;
+    --warning: 43 96% 56%;
+    --warning-foreground: 26 83% 10%;
+    --info: 213 94% 68%;
+    --info-foreground: 222 47% 11%;
+
+    --brand-50: 224 50% 12%;
+    --brand-100: 224 44% 16%;
+    --brand-200: 223 38% 22%;
+    --brand-300: 222 32% 30%;
+    --brand-400: 217 91% 60%;
+    --brand-500: 217 91% 60%;
+    --brand-600: 221 83% 53%;
+    --brand-700: 224 76% 48%;
+    --brand-800: 229 70% 42%;
+    --brand-900: 236 62% 36%;
+    --brand-950: 236 45% 18%;
+
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+
+    --sidebar-background: 224 50% 10%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary-foreground: 224 71% 10%;
+    --sidebar-accent: 215 28% 17%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217 33% 20%;
+    --sidebar-ring: 224 76% 94%;
+
+    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.3);
+    --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.4), 0 2px 4px -2px hsl(0 0% 0% / 0.2);
+    --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.4), 0 4px 6px -4px hsl(0 0% 0% / 0.2);
+    --shadow-xl: 0 20px 25px -5px hsl(0 0% 0% / 0.4), 0 8px 10px -6px hsl(0 0% 0% / 0.2);
+
     --brand-gradient: linear-gradient(135deg, #3b82f6 0%, #6366f1 30%, #8b5cf6 70%, #a855f7 100%);
     --brand-glow: 0 0 60px rgba(139, 92, 246, 0.4);
   }
-}
 
-@layer base {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  /* YYC³ 品牌视觉系统 */
+  .brand-gradient {
+    background: var(--brand-gradient);
+  }
+
+  .brand-glow {
+    box-shadow: var(--brand-glow);
+  }
+
+  .brand-text {
+    background: var(--brand-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* 玻璃态效果 */
+  .glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .glass-dark {
+    background: rgba(30, 41, 59, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(148, 163, 184, 0.1);
+  }
+
+  /* 蓝紫渐变边框 */
+  .brand-border {
+    position: relative;
+  }
+
+  .brand-border::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    padding: 2px;
+    background: var(--brand-gradient);
+    border-radius: inherit;
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  /* 细滚动条（深色容器内使用，随主题令牌自适应） */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 9999px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground));
+  }
+
+  /* ============================================================
+     动效工具类：业务组件唯一可用入口（替代 transition-all / 魔法时长）
+     ============================================================ */
+  .motion-colors {
+    @apply transition-colors duration-fast ease-standard motion-reduce:transition-none;
+  }
+
+  .motion-opacity {
+    @apply transition-opacity duration-fast ease-standard motion-reduce:transition-none;
+  }
+
+  .motion-transform {
+    @apply transition-transform duration-fast ease-standard motion-reduce:transition-none;
+  }
+
+  /* 复合表面反馈：属性白名单，禁止 layout 属性进入过渡 */
+  .motion-surface {
+    transition-property: color, background-color, border-color, box-shadow, opacity;
+    transition-duration: var(--motion-duration-fast);
+    transition-timing-function: var(--motion-ease-standard);
+    @apply motion-reduce:transition-none;
+  }
+
+  /* 统一按下反馈（与 Button 基线一致） */
+  .motion-press {
+    @apply transition-transform duration-instant ease-standard active:scale-[0.98] motion-reduce:transition-none;
+  }
+
+  /* 卡片悬停：位移/阴影/边框，禁止字号与字重参与过渡 */
+  .motion-card {
+    transition-property: transform, box-shadow, border-color, opacity;
+    transition-duration: var(--motion-duration-fast);
+    transition-timing-function: var(--motion-ease-standard);
+    @apply motion-reduce:transition-none;
+  }
+
+  /* 页面内容进入：一次性 200ms，不做退场 */
+  .motion-page-enter {
+    animation: yyc3-page-enter var(--motion-duration-base) var(--motion-ease-enter) both;
+    @apply motion-reduce:animate-none;
+  }
+
+  /* 列表错峰：最多 5 档（30ms 间隔），总延迟 ≤150ms */
+  .motion-stagger > * {
+    animation: yyc3-fade-up var(--motion-duration-base) var(--motion-ease-enter) both;
+  }
+
+  .motion-stagger > :nth-child(2) {
+    animation-delay: calc(var(--motion-stagger-step) * 1);
+  }
+
+  .motion-stagger > :nth-child(3) {
+    animation-delay: calc(var(--motion-stagger-step) * 2);
+  }
+
+  .motion-stagger > :nth-child(4) {
+    animation-delay: calc(var(--motion-stagger-step) * 3);
+  }
+
+  .motion-stagger > :nth-child(5) {
+    animation-delay: calc(var(--motion-stagger-step) * 4);
+  }
+
+  .motion-stagger > :nth-child(n + 6) {
+    animation-delay: calc(var(--motion-stagger-step) * 5);
+  }
+
+  /* 骨架屏：统一 1.6s，替代各处 animate-pulse 默认 2s */
+  .motion-skeleton {
+    animation: yyc3-skeleton 1.6s var(--motion-ease-standard) infinite;
+    @apply motion-reduce:animate-none motion-reduce:opacity-70;
+  }
+
+  /* 必要状态指示（Spinner）：reduced-motion 下唯一保留的循环动画 */
+  .motion-essential {
+    animation-duration: 800ms;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
   }
 }
 
@@ -84,79 +354,76 @@
   opacity: 0.8;
 }
 
-/* 全局动画优化 */
-* {
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow,
-    transform, filter, backdrop-filter;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-}
-
 /* 3D变换优化 */
 .transform-gpu {
   transform: translateZ(0);
   will-change: transform;
 }
 
-/* YYC³ 品牌视觉系统 */
-.brand-gradient {
-  background: var(--brand-gradient);
+/* 动效语义 keyframes（仅 transform / opacity） */
+@keyframes yyc3-fade-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, var(--motion-distance-sm), 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
 }
 
-.brand-glow {
-  box-shadow: var(--brand-glow);
+@keyframes yyc3-page-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, var(--motion-distance-sm), 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
 }
 
-.brand-text {
-  background: var(--brand-gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+@keyframes yyc3-skeleton {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
-/* 玻璃态效果 */
-.glass {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+@keyframes yyc3-typing {
+  0%,
+  60%,
+  100% {
+    opacity: 0.35;
+    transform: translate3d(0, 0, 0);
+  }
+  30% {
+    opacity: 1;
+    transform: translate3d(0, -2px, 0);
+  }
 }
 
-.glass-dark {
-  background: rgba(30, 41, 59, 0.8);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(148, 163, 184, 0.1);
-}
+/* 全局减动效：装饰动效失效，必要状态指示（Spinner）保留 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
 
-/* 品牌动画 */
-@keyframes brand-shimmer {
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
-}
+  .motion-essential,
+  .animate-spin {
+    animation-duration: 800ms !important;
+    animation-iteration-count: infinite !important;
+  }
 
-.brand-shimmer {
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.1) 50%,
-    transparent 100%
-  );
-  background-size: 200% 100%;
-  animation: brand-shimmer 3s ease-in-out infinite;
-}
-
-/* 蓝紫渐变边框 */
-.brand-border {
-  position: relative;
-}
-
-.brand-border::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  padding: 2px;
-  background: var(--brand-gradient);
-  border-radius: inherit;
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask-composite: exclude;
-  pointer-events: none;
+  .motion-decorative {
+    display: none !important;
+  }
 }

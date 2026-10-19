@@ -242,7 +242,7 @@ function main() {
   for (const v of data.desc) collected.push(["data.desc", v])
 
   // 3. 品牌基础键（lib 常量，代码扫描不含；原文即 key）
-  collected.push(["brand", "言语云³集成中心系统"], ["brand", "言语云³"])
+  collected.push(["brand", "YanYuCloudCube集成中心系统"], ["brand", "YanYuCloudCube"])
   const tree = toNested(collected)
   const total = collected.length
 

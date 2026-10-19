@@ -1,23 +1,24 @@
 "use client"
+import { PageContainer } from "@/app/components/layout/page-container"
+import { YanyuBadge } from "@/app/components/ui/yanyu-badge"
 import { YanyuButton } from "@/app/components/ui/yanyu-button"
 import {
   YanyuCard,
+  YanyuCardContent,
+  YanyuCardDescription,
+  YanyuCardFooter,
   YanyuCardHeader,
   YanyuCardTitle,
-  YanyuCardDescription,
-  YanyuCardContent,
-  YanyuCardFooter,
 } from "@/app/components/ui/yanyu-card"
 import { YanyuInput } from "@/app/components/ui/yanyu-input"
-import { YanyuBadge } from "@/app/components/ui/yanyu-badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Check, ChevronRight, Download, ExternalLink, Plus, Search, Settings } from "lucide-react"
 
 export default function DesignSystemExamples() {
   return (
-    <div className="container mx-auto py-10 px-4">
-      <h1 className="text-3xl font-bold mb-8">言语云³集成中心系统 - 组件示例</h1>
+    <PageContainer className="py-10">
+      <h1 className="text-3xl font-bold mb-8">YanYuCloudCube集成中心系统 - 组件示例</h1>
 
       <Tabs defaultValue="integration-cards">
         <TabsList className="mb-6">
@@ -583,6 +584,6 @@ export default function DesignSystemExamples() {
           </div>
         </TabsContent>
       </Tabs>
-    </div>
+    </PageContainer>
   )
 }

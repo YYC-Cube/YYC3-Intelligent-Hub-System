@@ -1,12 +1,19 @@
 "use client"
 
-import { useEffect, useRef } from "react"
 import { categories } from "@/app/data/integrations"
 import { useI18n } from "@/app/hooks/use-i18n"
 import { dataCat } from "@/lib/yyc3/i18n/data"
+import { useEffect, useRef } from "react"
 
 type CategoryVisualizationProps = {
   onSelectCategory: (category: string, subcategory?: string) => void
+}
+
+/** 从 CSS 设计令牌读取颜色，供 canvas 绘制使用（canvas 无法直接消费 CSS 变量） */
+const tokenColor = (token: string, alpha?: number) => {
+  if (typeof window === "undefined") return ""
+  const value = getComputedStyle(document.documentElement).getPropertyValue(token).trim()
+  return alpha === undefined ? `hsl(${value})` : `hsl(${value} / ${alpha})`
 }
 
 export default function CategoryVisualization({ onSelectCategory }: CategoryVisualizationProps) {
@@ -46,7 +53,7 @@ export default function CategoryVisualization({ onSelectCategory }: CategoryVisu
       // 绘制中心圆
       ctx.beginPath()
       ctx.arc(centerX, centerY, 50, 0, Math.PI * 2)
-      ctx.fillStyle = "rgba(99, 102, 241, 0.8)"
+      ctx.fillStyle = tokenColor("--accent", 0.8)
       ctx.fill()
 
       ctx.fillStyle = "white"
@@ -67,7 +74,7 @@ export default function CategoryVisualization({ onSelectCategory }: CategoryVisu
         ctx.beginPath()
         ctx.moveTo(centerX, centerY)
         ctx.lineTo(x, y)
-        ctx.strokeStyle = "rgba(156, 163, 175, 0.5)"
+        ctx.strokeStyle = tokenColor("--muted-foreground", 0.5)
         ctx.stroke()
 
         // 绘制分类节点
@@ -135,7 +142,7 @@ export default function CategoryVisualization({ onSelectCategory }: CategoryVisu
   }, [onSelectCategory, t, locale])
 
   return (
-    <div className="w-full bg-white rounded-lg shadow-md p-4 mb-6">
+    <div className="w-full bg-card rounded-lg shadow-md p-4 mb-6">
       <h3 className="text-lg font-semibold mb-4">{t("ui.分类导航图")}</h3>
       <div className="w-full">
         <canvas ref={canvasRef} className="w-full" style={{ height: "500px" }}></canvas>

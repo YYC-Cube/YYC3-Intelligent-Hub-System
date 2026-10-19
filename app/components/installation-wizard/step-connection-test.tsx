@@ -1,14 +1,14 @@
 "use client"
 
+import { useI18n } from "@/app/hooks/use-i18n"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
+import { dataIntegrationName } from "@/lib/yyc3/i18n/data"
+import { AlertCircle, CheckCircle2, Loader2, RefreshCw } from "lucide-react"
+import { useEffect, useState } from "react"
 import { useWizard } from "./wizard-context"
 import { WizardNavigation } from "./wizard-navigation"
-import { Button } from "@/components/ui/button"
-import { useEffect, useState } from "react"
-import { AlertCircle, CheckCircle2, Loader2, RefreshCw } from "lucide-react"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { cn } from "@/lib/utils"
-import { useI18n } from "@/app/hooks/use-i18n"
-import { dataIntegrationName } from "@/lib/yyc3/i18n/data"
 
 export function StepConnectionTest() {
   const { t } = useI18n()
@@ -47,12 +47,12 @@ export function StepConnectionTest() {
   return (
     <div className="space-y-6">
       <div className="space-y-4">
-        <div className="bg-gray-50 p-4 rounded-lg border">
+        <div className="bg-muted p-4 rounded-lg border">
           <h3 className="text-sm font-medium mb-2">{t("install.连接信息")}</h3>
           <div className="grid grid-cols-2 gap-2 text-sm">
-            <div className="text-gray-500">{t("install.集成名称:")}</div>
+            <div className="text-muted-foreground">{t("install.集成名称:")}</div>
             <div>{dataIntegrationName(formData.name)}</div>
-            <div className="text-gray-500">{t("install.环境:")}</div>
+            <div className="text-muted-foreground">{t("install.环境:")}</div>
             <div>
               {formData.environment === "production"
                 ? t("install.生产环境")
@@ -62,11 +62,11 @@ export function StepConnectionTest() {
                     ? t("install.测试环境")
                     : t("install.预发布环境")}
             </div>
-            <div className="text-gray-500">{t("install.认证方式:")}</div>
+            <div className="text-muted-foreground">{t("install.认证方式:")}</div>
             <div>{formData.authType === "apiKey" ? t("install.API密钥") : "OAuth 2.0"}</div>
-            <div className="text-gray-500">{t("install.数据格式:")}</div>
+            <div className="text-muted-foreground">{t("install.数据格式:")}</div>
             <div>{formData.dataFormat?.toUpperCase()}</div>
-            <div className="text-gray-500">{t("install.同步间隔:")}</div>
+            <div className="text-muted-foreground">{t("install.同步间隔:")}</div>
             <div>{t("install.{count} 分钟", { count: String(formData.syncInterval) })}</div>
           </div>
         </div>
@@ -74,17 +74,17 @@ export function StepConnectionTest() {
         <div
           className={cn(
             "p-4 rounded-lg",
-            connectionStatus === "success" && "bg-green-50 border-green-200 border",
-            connectionStatus === "error" && "bg-red-50 border-red-200 border",
-            connectionStatus === "testing" && "bg-blue-50 border-blue-200 border",
-            connectionStatus === "idle" && "bg-gray-50 border",
+            connectionStatus === "success" && "bg-success/15 border-success/30 border",
+            connectionStatus === "error" && "bg-destructive/15 border-destructive/30 border",
+            connectionStatus === "testing" && "bg-info/15 border-info/30 border",
+            connectionStatus === "idle" && "bg-muted border",
           )}
         >
           <div className="flex items-center gap-3">
-            {connectionStatus === "success" && <CheckCircle2 className="h-5 w-5 text-green-500" />}
-            {connectionStatus === "error" && <AlertCircle className="h-5 w-5 text-red-500" />}
-            {connectionStatus === "testing" && <Loader2 className="h-5 w-5 text-blue-500 animate-spin" />}
-            {connectionStatus === "idle" && <RefreshCw className="h-5 w-5 text-gray-500" />}
+            {connectionStatus === "success" && <CheckCircle2 className="h-5 w-5 text-success" />}
+            {connectionStatus === "error" && <AlertCircle className="h-5 w-5 text-destructive" />}
+            {connectionStatus === "testing" && <Loader2 className="h-5 w-5 text-info animate-spin" />}
+            {connectionStatus === "idle" && <RefreshCw className="h-5 w-5 text-muted-foreground" />}
 
             <div>
               <h3 className="font-medium">
@@ -93,7 +93,7 @@ export function StepConnectionTest() {
                 {connectionStatus === "testing" && t("install.正在测试连接")}
                 {connectionStatus === "idle" && t("install.准备测试连接")}
               </h3>
-              <p className="text-sm text-gray-600">{connectionMessage}</p>
+              <p className="text-sm text-muted-foreground">{connectionMessage}</p>
             </div>
           </div>
         </div>

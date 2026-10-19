@@ -1,7 +1,7 @@
 {
   "id": "/",
-  "name": "言语云³集成中心系统",
-  "short_name": "言语云³",
+  "name": "YanYuCloudCube集成中心系统",
+  "short_name": "YanYuCloudCube",
   "description": "发现、连接并管理强大的集成应用，提升您的业务效率。",
   "lang": "zh-CN",
   "dir": "ltr",
@@ -19,10 +19,25 @@
     { "src": "/yyc3-icons/pwa/icon-128x128.png", "sizes": "128x128", "type": "image/png" },
     { "src": "/yyc3-icons/pwa/icon-144x144.png", "sizes": "144x144", "type": "image/png" },
     { "src": "/yyc3-icons/pwa/icon-152x152.png", "sizes": "152x152", "type": "image/png" },
-    { "src": "/yyc3-icons/pwa/icon-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    {
+      "src": "/yyc3-icons/pwa/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
     { "src": "/yyc3-icons/pwa/icon-384x384.png", "sizes": "384x384", "type": "image/png" },
-    { "src": "/yyc3-icons/pwa/icon-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "/yyc3-icons/pwa/icon-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    {
+      "src": "/yyc3-icons/pwa/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/yyc3-icons/pwa/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
     { "src": "/yyc3-icons/webp/icon-192x192.webp", "sizes": "192x192", "type": "image/webp" },
     { "src": "/yyc3-icons/webp/icon-512x512.webp", "sizes": "512x512", "type": "image/webp" }
   ],
@@ -31,13 +46,17 @@
       "name": "集成市场",
       "short_name": "市场",
       "url": "/integrations/",
-      "icons": [{ "src": "/yyc3-icons/pwa/icon-192x192.png", "sizes": "192x192", "type": "image/png" }]
+      "icons": [
+        { "src": "/yyc3-icons/pwa/icon-192x192.png", "sizes": "192x192", "type": "image/png" }
+      ]
     },
     {
       "name": "开发者指南",
       "short_name": "指南",
       "url": "/developer/guide/",
-      "icons": [{ "src": "/yyc3-icons/pwa/icon-192x192.png", "sizes": "192x192", "type": "image/png" }]
+      "icons": [
+        { "src": "/yyc3-icons/pwa/icon-192x192.png", "sizes": "192x192", "type": "image/png" }
+      ]
     }
   ]
 }

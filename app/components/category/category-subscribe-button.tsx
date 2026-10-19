@@ -103,7 +103,7 @@ export default function CategorySubscribeButton({
       </Button>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-form">
           <DialogHeader>
             <DialogTitle>{t("category.订阅分类: {name}", { name: dataCat(categoryName) })}</DialogTitle>
             <DialogDescription>

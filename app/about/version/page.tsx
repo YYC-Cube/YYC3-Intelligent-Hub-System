@@ -1,20 +1,26 @@
 "use client"
 
-import { VersionCheckProvider } from "@/app/context/version-check-context"
-import { CheckUpdateButton } from "@/app/components/version/check-update-button"
+import { PageHeader } from "@/app/components/layout/page-header"
 import { VersionDisplay } from "@/app/components/ui/version-display"
+import { CheckUpdateButton } from "@/app/components/version/check-update-button"
+import { VersionCheckProvider } from "@/app/context/version-check-context"
 import { useI18n } from "@/app/hooks/use-i18n"
+import { Badge } from "@/components/ui/badge"
 import { tc } from "@/lib/yyc3/i18n/data"
 
 function VersionPageContent() {
   const { t } = useI18n()
 
   return (
-    <div className="container py-10">
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">{t("pages.版本信息")}</h1>
+    <div className="mx-auto w-full max-w-page px-4 py-10">
+      <div className="max-w-content mx-auto">
+        <PageHeader
+          crumbs={[{ label: t("ui.关于我们"), href: "/about" }, { label: t("pages.版本信息") }]}
+          title={t("pages.版本信息")}
+          className="mb-6"
+        />
 
-        <div className="bg-white rounded-lg shadow p-6 mb-8">
+        <div className="bg-card rounded-lg shadow p-6 mb-8">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">{t("pages.当前版本")}</h2>
             <CheckUpdateButton />
@@ -25,7 +31,7 @@ function VersionPageContent() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-card rounded-lg shadow p-6">
           <h2 className="text-xl font-semibold mb-4">{t("pages.版本历史")}</h2>
 
           <div className="space-y-8">
@@ -83,26 +89,19 @@ function VersionHistoryItem({ version, date, changes }: VersionHistoryItemProps)
     <div className="border-b pb-6 last:border-0 last:pb-0">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
         <h3 className="text-lg font-medium">{t("pages.版本 {version}", { version })}</h3>
-        <span className="text-sm text-gray-500">{tc("pages", date)}</span>
+        <span className="text-sm text-muted-foreground">{tc("pages", date)}</span>
       </div>
 
       <div className="space-y-3">
         {changes.map((change, index) => (
           <div key={index} className="flex items-start">
-            <span
-              className={`
-              inline-block px-2 py-1 text-xs rounded-full mr-3 mt-0.5
-              ${
-                change.type === "feature"
-                  ? "bg-blue-100 text-blue-800"
-                  : change.type === "fix"
-                    ? "bg-red-100 text-red-800"
-                    : "bg-green-100 text-green-800"
-              }
-            `}
+            {/* 变更类型标签：收编至 Badge 语义变体（feature=secondary / fix=destructive / improvement=success） */}
+            <Badge
+              variant={change.type === "feature" ? "secondary" : change.type === "fix" ? "destructive" : "success"}
+              className="mr-3 mt-0.5"
             >
               {change.type === "feature" ? t("pages.新功能") : change.type === "fix" ? t("pages.修复") : t("pages.改进")}
-            </span>
+            </Badge>
             <span>{tc("pages", change.text)}</span>
           </div>
         ))}

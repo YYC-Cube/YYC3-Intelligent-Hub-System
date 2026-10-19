@@ -29,11 +29,11 @@ export default function CategoryConnectButton({
 
   return (
     <Button
-      variant="default"
+      variant="info"
       size={size}
       onClick={handleConnect}
       className={cn(
-        "bg-sky-500 hover:bg-sky-600 text-white font-medium",
+        "font-medium",
         size === "sm" && "text-xs py-1 px-2 h-7",
         className,
       )}

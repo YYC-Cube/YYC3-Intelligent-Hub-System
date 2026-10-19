@@ -2,14 +2,14 @@
 
 import type React from "react"
 
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
-import { ChevronLeft, ChevronRight, Check, AlertCircle } from "lucide-react"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
-import { cn } from "@/lib/utils"
 import { useI18n } from "@/app/hooks/use-i18n"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import { Progress } from "@/components/ui/progress"
+import { cn } from "@/lib/utils"
+import { AlertCircle, Check, ChevronLeft, ChevronRight } from "lucide-react"
+import { useState } from "react"
 
 interface WizardStep {
   id: string
@@ -75,7 +75,7 @@ export function WizardContainer({ steps, onComplete, onCancel, title, descriptio
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-2xl">{title}</CardTitle>
-              {description && <p className="text-gray-600 mt-2">{description}</p>}
+              {description && <p className="text-muted-foreground mt-2">{description}</p>}
             </div>
             <Button variant="outline" onClick={onCancel}>
               {t("install.取消")}
@@ -85,13 +85,13 @@ export function WizardContainer({ steps, onComplete, onCancel, title, descriptio
           {/* 进度条 */}
           <div className="mt-6">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-muted-foreground">
                 {t("install.步骤 {current} / {total}", {
                   current: String(currentStep + 1),
                   total: String(steps.length),
                 })}
               </span>
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-muted-foreground">
                 {t("install.{percent}% 完成", { percent: String(Math.round(progress)) })}
               </span>
             </div>
@@ -100,7 +100,7 @@ export function WizardContainer({ steps, onComplete, onCancel, title, descriptio
 
           {/* 步骤概览 */}
           <Collapsible open={showStepDetails} onOpenChange={setShowStepDetails}>
-            <CollapsibleTrigger className="flex items-center justify-between w-full mt-4 p-2 hover:bg-gray-50 rounded-lg transition-colors">
+            <CollapsibleTrigger className="flex items-center justify-between w-full mt-4 p-2 hover:bg-muted rounded-lg transition-colors">
               <span className="text-sm font-medium">{t("install.查看所有步骤")}</span>
               <ChevronRight className={cn("h-4 w-4 transition-transform", showStepDetails && "rotate-90")} />
             </CollapsibleTrigger>
@@ -111,27 +111,27 @@ export function WizardContainer({ steps, onComplete, onCancel, title, descriptio
                     key={step.id}
                     className={cn(
                       "flex items-center p-3 rounded-lg border transition-colors",
-                      index === currentStep && "border-blue-200 bg-blue-50",
-                      completedSteps.has(index) && "border-green-200 bg-green-50",
-                      step.hasError && "border-red-200 bg-red-50",
+                      index === currentStep && "border-primary/30 bg-brand-50",
+                      completedSteps.has(index) && "border-success/30 bg-success/15",
+                      step.hasError && "border-destructive/30 bg-destructive/15",
                     )}
                   >
                     <div className="flex-shrink-0 mr-3">
                       {completedSteps.has(index) ? (
-                        <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                          <Check className="h-4 w-4 text-white" />
+                        <div className="w-6 h-6 bg-success rounded-full flex items-center justify-center">
+                          <Check className="h-4 w-4 text-success-foreground" />
                         </div>
                       ) : step.hasError ? (
-                        <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
-                          <AlertCircle className="h-4 w-4 text-white" />
+                        <div className="w-6 h-6 bg-destructive rounded-full flex items-center justify-center">
+                          <AlertCircle className="h-4 w-4 text-destructive-foreground" />
                         </div>
                       ) : (
                         <div
                           className={cn(
                             "w-6 h-6 rounded-full border-2 flex items-center justify-center text-sm font-medium",
                             index === currentStep
-                              ? "border-blue-500 bg-blue-500 text-white"
-                              : "border-gray-300 text-gray-500",
+                              ? "border-primary bg-primary text-primary-foreground"
+                              : "border-border text-muted-foreground",
                           )}
                         >
                           {index + 1}
@@ -140,8 +140,8 @@ export function WizardContainer({ steps, onComplete, onCancel, title, descriptio
                     </div>
                     <div className="flex-1">
                       <h4 className="font-medium">{step.title}</h4>
-                      <p className="text-sm text-gray-600">{step.description}</p>
-                      {step.isOptional && <span className="text-xs text-gray-400">{t("install.（可选）")}</span>}
+                      <p className="text-sm text-muted-foreground">{step.description}</p>
+                      {step.isOptional && <span className="text-xs text-muted-foreground">{t("install.（可选）")}</span>}
                     </div>
                   </div>
                 ))}
@@ -155,7 +155,7 @@ export function WizardContainer({ steps, onComplete, onCancel, title, descriptio
           <div className="mb-8">
             <div className="mb-4">
               <h3 className="text-xl font-semibold">{steps[currentStep]?.title}</h3>
-              <p className="text-gray-600">{steps[currentStep]?.description}</p>
+              <p className="text-muted-foreground">{steps[currentStep]?.description}</p>
             </div>
 
             {CurrentStepComponent && (

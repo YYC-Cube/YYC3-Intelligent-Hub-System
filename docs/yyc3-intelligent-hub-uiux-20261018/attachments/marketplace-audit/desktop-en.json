@@ -1,0 +1,508 @@
+{
+ "viewport": {
+  "w": 1440,
+  "h": 900
+ },
+ "docHeight": 2720,
+ "sections": [
+  {
+   "index": 0,
+   "top": 64,
+   "height": 338,
+   "cls": "bg-gradient-to-r from-primary to-accent text-white py-16"
+  },
+  {
+   "index": 1,
+   "top": 434,
+   "height": 336,
+   "cls": "mb-12"
+  },
+  {
+   "index": 2,
+   "top": 818,
+   "height": 754,
+   "cls": "mb-12"
+  },
+  {
+   "index": 3,
+   "top": 1620,
+   "height": 524,
+   "cls": ""
+  },
+  {
+   "index": 4,
+   "top": 2208,
+   "height": 122,
+   "cls": "mt-16 mb-8"
+  }
+ ],
+ "h1": {
+  "text": "YanYuCloudCube Marketplace",
+  "tag": "h1",
+  "top": 128,
+  "height": 48,
+  "width": 768,
+  "fontSize": "48px",
+  "fontWeight": "700",
+  "lineHeight": "48px",
+  "color": "rgb(255, 255, 255)",
+  "bg": "rgba(0, 0, 0, 0)",
+  "bgImage": "none",
+  "padding": "0px",
+  "radius": "0px"
+ },
+ "h1p": {
+  "text": "Discover and connect powerful integrations to boost your bus",
+  "tag": "p",
+  "top": 192,
+  "height": 28,
+  "width": 768,
+  "fontSize": "20px",
+  "fontWeight": "400",
+  "lineHeight": "28px",
+  "color": "rgb(220, 235, 254)",
+  "bg": "rgba(0, 0, 0, 0)",
+  "bgImage": "none",
+  "padding": "0px",
+  "radius": "0px"
+ },
+ "h2s": [
+  {
+   "text": "Featured Integrations",
+   "tag": "h2",
+   "top": 434,
+   "height": 32,
+   "width": 1248,
+   "fontSize": "24px",
+   "fontWeight": "700",
+   "lineHeight": "32px",
+   "color": "rgb(7, 17, 44)",
+   "bg": "rgba(0, 0, 0, 0)",
+   "bgImage": "none",
+   "padding": "0px",
+   "radius": "0px"
+  },
+  {
+   "text": "Browse Categories",
+   "tag": "h2",
+   "top": 820,
+   "height": 32,
+   "width": 212,
+   "fontSize": "24px",
+   "fontWeight": "700",
+   "lineHeight": "32px",
+   "color": "rgb(7, 17, 44)",
+   "bg": "rgba(0, 0, 0, 0)",
+   "bgImage": "none",
+   "padding": "0px",
+   "radius": "0px"
+  },
+  {
+   "text": "Integrations",
+   "tag": "h2",
+   "top": 1624,
+   "height": 32,
+   "width": 135,
+   "fontSize": "24px",
+   "fontWeight": "700",
+   "lineHeight": "32px",
+   "color": "rgb(7, 17, 44)",
+   "bg": "rgba(0, 0, 0, 0)",
+   "bgImage": "none",
+   "padding": "0px",
+   "radius": "0px"
+  },
+  {
+   "text": "YanYuCloudCube",
+   "tag": "h2",
+   "top": 2435,
+   "height": 28,
+   "width": 288,
+   "fontSize": "18px",
+   "fontWeight": "600",
+   "lineHeight": "28px",
+   "color": "rgb(7, 17, 44)",
+   "bg": "rgba(0, 0, 0, 0)",
+   "bgImage": "none",
+   "padding": "0px",
+   "radius": "0px"
+  }
+ ],
+ "heroSearch": {
+  "text": "",
+  "tag": "input",
+  "top": 15,
+  "height": 34,
+  "width": 192,
+  "fontSize": "14px",
+  "fontWeight": "400",
+  "lineHeight": "20px",
+  "color": "rgb(7, 17, 44)",
+  "bg": "rgba(255, 255, 255, 0.7)",
+  "bgImage": "none",
+  "padding": "6px 16px 6px 40px",
+  "radius": "8px"
+ },
+ "buttons": [
+  {
+   "text": "Search",
+   "h": 40,
+   "bg": "rgb(36, 99, 235)",
+   "color": "rgb(248, 250, 252)",
+   "border": "rgb(229, 231, 235)",
+   "fontWeight": "500"
+  },
+  {
+   "text": "Advanced Filters",
+   "h": 20,
+   "bg": "rgba(0, 0, 0, 0)",
+   "color": "rgb(220, 235, 254)",
+   "border": "rgb(229, 231, 235)",
+   "fontWeight": "400"
+  },
+  {
+   "text": "View Details",
+   "h": 40,
+   "bg": "rgb(255, 255, 255)",
+   "color": "rgb(36, 99, 235)",
+   "border": "rgb(229, 231, 235)",
+   "fontWeight": "500"
+  },
+  {
+   "text": "Install Now",
+   "h": 40,
+   "bg": "rgb(249, 250, 251)",
+   "color": "rgb(255, 255, 255)",
+   "border": "rgba(255, 255, 255, 0.3)",
+   "fontWeight": "500"
+  },
+  {
+   "text": "",
+   "h": 40,
+   "bg": "rgba(255, 255, 255, 0.8)",
+   "color": "rgb(7, 17, 44)",
+   "border": "rgb(229, 231, 235)",
+   "fontWeight": "500"
+  },
+  {
+   "text": "",
+   "h": 40,
+   "bg": "rgba(255, 255, 255, 0.8)",
+   "color": "rgb(7, 17, 44)",
+   "border": "rgb(229, 231, 235)",
+   "fontWeight": "500"
+  },
+  {
+   "text": "",
+   "h": 8,
+   "bg": "rgb(36, 99, 235)",
+   "color": "rgb(7, 17, 44)",
+   "border": "rgb(229, 231, 235)",
+   "fontWeight": "400"
+  },
+  {
+   "text": "",
+   "h": 8,
+   "bg": "rgb(243, 244, 246)",
+   "color": "rgb(7, 17, 44)",
+   "border": "rgb(229, 231, 235)",
+   "fontWeight": "400"
+  },
+  {
+   "text": "",
+   "h": 8,
+   "bg": "rgb(243, 244, 246)",
+   "color": "rgb(7, 17, 44)",
+   "border": "rgb(229, 231, 235)",
+   "fontWeight": "400"
+  },
+  {
+   "text": "",
+   "h": 8,
+   "bg": "rgb(243, 244, 246)",
+   "color": "rgb(7, 17, 44)",
+   "border": "rgb(229, 231, 235)",
+   "fontWeight": "400"
+  },
+  {
+   "text": "",
+   "h": 8,
+   "bg": "rgb(243, 244, 246)",
+   "color": "rgb(7, 17, 44)",
+   "border": "rgb(229, 231, 235)",
+   "fontWeight": "400"
+  },
+  {
+   "text": "View All",
+   "h": 36,
+   "bg": "rgb(249, 250, 251)",
+   "color": "rgb(7, 17, 44)",
+   "border": "rgb(229, 231, 235)",
+   "fontWeight": "500"
+  },
+  {
+   "text": "Featured",
+   "h": 32,
+   "bg": "rgb(249, 250, 251)",
+   "color": "rgb(7, 17, 44)",
+   "border": "rgb(229, 231, 235)",
+   "fontWeight": "500"
+  },
+  {
+   "text": "New",
+   "h": 32,
+   "bg": "rgba(0, 0, 0, 0)",
+   "color": "rgb(107, 114, 128)",
+   "border": "rgb(229, 231, 235)",
+   "fontWeight": "500"
+  }
+ ],
+ "cardBoxes": [
+  {
+   "card": {
+    "text": "View Details",
+    "tag": "a",
+    "top": 694,
+    "height": 40,
+    "width": 113,
+    "fontSize": "14px",
+    "fontWeight": "500",
+    "lineHeight": "20px",
+    "color": "rgb(36, 99, 235)",
+    "bg": "rgb(255, 255, 255)",
+    "bgImage": "none",
+    "padding": "8px 16px",
+    "radius": "6px"
+   },
+   "title": null,
+   "desc": null,
+   "badgeTexts": []
+  },
+  {
+   "card": {
+    "text": "Data Sync1 Future Network #0001 Provides efficient data sync",
+    "tag": "div",
+    "top": 1676,
+    "height": 184,
+    "width": 294,
+    "fontSize": "16px",
+    "fontWeight": "400",
+    "lineHeight": "24px",
+    "color": "rgb(7, 17, 44)",
+    "bg": "rgb(255, 255, 255)",
+    "bgImage": "none",
+    "padding": "0px",
+    "radius": "8px"
+   },
+   "title": {
+    "text": "Data Sync1",
+    "tag": "h3",
+    "top": 1699,
+    "height": 20,
+    "width": 87,
+    "fontSize": "14px",
+    "fontWeight": "600",
+    "lineHeight": "20px",
+    "color": "rgb(7, 17, 44)",
+    "bg": "rgba(0, 0, 0, 0)",
+    "bgImage": "none",
+    "padding": "0px",
+    "radius": "0px"
+   },
+   "desc": {
+    "text": "Provides efficient data sync services, keeping your informat",
+    "tag": "p",
+    "top": 1753,
+    "height": 32,
+    "width": 260,
+    "fontSize": "12px",
+    "fontWeight": "400",
+    "lineHeight": "16px",
+    "color": "rgb(107, 114, 128)",
+    "bg": "rgba(0, 0, 0, 0)",
+    "bgImage": "none",
+    "padding": "0px",
+    "radius": "0px"
+   },
+   "badgeTexts": [
+    "#0001",
+    "3.5",
+    "(377)",
+    "Education & Training"
+   ]
+  },
+  {
+   "card": {
+    "text": "Smart Analytics2 Yellow River Tech #0002 Leverages AI to ana",
+    "tag": "div",
+    "top": 1676,
+    "height": 184,
+    "width": 294,
+    "fontSize": "16px",
+    "fontWeight": "400",
+    "lineHeight": "24px",
+    "color": "rgb(7, 17, 44)",
+    "bg": "rgb(255, 255, 255)",
+    "bgImage": "none",
+    "padding": "0px",
+    "radius": "8px"
+   },
+   "title": {
+    "text": "Smart Analytics2",
+    "tag": "h3",
+    "top": 1699,
+    "height": 20,
+    "width": 116,
+    "fontSize": "14px",
+    "fontWeight": "600",
+    "lineHeight": "20px",
+    "color": "rgb(7, 17, 44)",
+    "bg": "rgba(0, 0, 0, 0)",
+    "bgImage": "none",
+    "padding": "0px",
+    "radius": "0px"
+   },
+   "desc": {
+    "text": "Leverages AI to analyze your business data, delivering deep ",
+    "tag": "p",
+    "top": 1753,
+    "height": 32,
+    "width": 260,
+    "fontSize": "12px",
+    "fontWeight": "400",
+    "lineHeight": "16px",
+    "color": "rgb(107, 114, 128)",
+    "bg": "rgba(0, 0, 0, 0)",
+    "bgImage": "none",
+    "padding": "0px",
+    "radius": "0px"
+   },
+   "badgeTexts": [
+    "#0002",
+    "3.8",
+    "(7)",
+    "Finance Management"
+   ]
+  }
+ ],
+ "categoryTileCount": 29,
+ "categoryDistinctIconColors": [
+  "rgb(36, 99, 235)",
+  "rgb(16, 183, 127)",
+  "rgb(71, 71, 209)",
+  "rgb(239, 67, 67)",
+  "rgb(245, 159, 10)",
+  "rgb(60, 131, 246)",
+  "rgb(107, 114, 128)"
+ ],
+ "svgCount": 87,
+ "tabTriggers": [
+  {
+   "text": "Featured",
+   "tag": "button",
+   "top": 1624,
+   "height": 32,
+   "width": 83,
+   "fontSize": "14px",
+   "fontWeight": "500",
+   "lineHeight": "20px",
+   "color": "rgb(7, 17, 44)",
+   "bg": "rgb(249, 250, 251)",
+   "bgImage": "none",
+   "padding": "6px 12px",
+   "radius": "4px"
+  },
+  {
+   "text": "New",
+   "tag": "button",
+   "top": 1624,
+   "height": 32,
+   "width": 53,
+   "fontSize": "14px",
+   "fontWeight": "500",
+   "lineHeight": "20px",
+   "color": "rgb(107, 114, 128)",
+   "bg": "rgba(0, 0, 0, 0)",
+   "bgImage": "none",
+   "padding": "6px 12px",
+   "radius": "4px"
+  },
+  {
+   "text": "Popular",
+   "tag": "button",
+   "top": 1624,
+   "height": 32,
+   "width": 75,
+   "fontSize": "14px",
+   "fontWeight": "500",
+   "lineHeight": "20px",
+   "color": "rgb(107, 114, 128)",
+   "bg": "rgba(0, 0, 0, 0)",
+   "bgImage": "none",
+   "padding": "6px 12px",
+   "radius": "4px"
+  },
+  {
+   "text": "Top Rated",
+   "tag": "button",
+   "top": 1624,
+   "height": 32,
+   "width": 91,
+   "fontSize": "14px",
+   "fontWeight": "500",
+   "lineHeight": "20px",
+   "color": "rgb(107, 114, 128)",
+   "bg": "rgba(0, 0, 0, 0)",
+   "bgImage": "none",
+   "padding": "6px 12px",
+   "radius": "4px"
+  }
+ ],
+ "stats": [
+  {
+   "text": "1000+",
+   "tag": "div",
+   "top": 2233,
+   "height": 40,
+   "width": 345,
+   "fontSize": "36px",
+   "fontWeight": "700",
+   "lineHeight": "40px",
+   "color": "rgb(36, 99, 235)",
+   "bg": "rgba(0, 0, 0, 0)",
+   "bgImage": "none",
+   "padding": "0px",
+   "radius": "0px"
+  },
+  {
+   "text": "29",
+   "tag": "div",
+   "top": 2233,
+   "height": 40,
+   "width": 345,
+   "fontSize": "36px",
+   "fontWeight": "700",
+   "lineHeight": "40px",
+   "color": "rgb(36, 99, 235)",
+   "bg": "rgba(0, 0, 0, 0)",
+   "bgImage": "none",
+   "padding": "0px",
+   "radius": "0px"
+  },
+  {
+   "text": "4987K+",
+   "tag": "div",
+   "top": 2233,
+   "height": 40,
+   "width": 345,
+   "fontSize": "36px",
+   "fontWeight": "700",
+   "lineHeight": "40px",
+   "color": "rgb(36, 99, 235)",
+   "bg": "rgba(0, 0, 0, 0)",
+   "bgImage": "none",
+   "padding": "0px",
+   "radius": "0px"
+  }
+ ]
+}

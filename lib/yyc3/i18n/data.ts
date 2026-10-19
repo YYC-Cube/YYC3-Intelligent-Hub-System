@@ -8,6 +8,7 @@
  * name/desc 先做结构拆分再查词表键，保证 1000+ 动态条目仅靠少量词表键即可翻译。
  */
 import { t } from "./index"
+import { en as enMessages } from "./messages/en"
 
 /** 翻译数据层分类名（主分类）。 */
 export function dataCat(category: string): string {
@@ -49,4 +50,28 @@ export function dataIntegrationDesc(description: string): string {
 /** 通用「命名空间 + 动态段」翻译。 */
 export function tc(ns: string, value: string): string {
   return t(`${ns}.${value}`)
+}
+
+/** 翻译数据层开发者名（专有名词，词表 data.dev 提供）。 */
+export function dataDev(developer: string): string {
+  return t(`data.dev.${developer}`)
+}
+
+/** 翻译数据层标签（词表 data.tag 提供）。 */
+export function dataTag(tag: string): string {
+  return t(`data.tag.${tag}`)
+}
+
+/** 英译名 → 中文原名倒排表（供 document.title 双向本地化）。 */
+const EN_NAME_TO_ZH: Record<string, string> = Object.fromEntries(
+  Object.entries((enMessages.data as Record<string, unknown>)?.name as Record<string, string> ?? {}).map(([zh, enValue]) => [enValue, zh]),
+)
+
+/** 英文集成名反查中文名（含尾随序号）；未知名返回 null。 */
+export function dataIntegrationNameReverse(localized: string): string | null {
+  const m = localized.match(/^(.+?)(\d+)$/)
+  const base = m ? m[1] : localized
+  const num = m ? m[2] : ""
+  const zh = EN_NAME_TO_ZH[base]
+  return zh ? `${zh}${num}` : null
 }
