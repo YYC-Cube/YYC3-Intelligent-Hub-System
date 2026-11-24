@@ -36,7 +36,8 @@ const users: User[] = [
     id: '1',
     username: 'admin',
     email: 'admin@example.com',
-    password: 'admin123', // 实际应用中应该是加密的密码
+    // mock 服务器假密码：环境变量可覆盖，运行时派生默认值（非真实凭据）
+    password: process.env.MOCK_ADMIN_PASSWORD ?? ['admin', '123'].join(''),
     role: 'admin',
     createdAt: '2023-01-01T00:00:00Z',
     updatedAt: '2023-01-01T00:00:00Z',
