@@ -74,7 +74,7 @@ jobs:
         run: echo "nexus.yyc3.vip" > out/CNAME
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: out
 
